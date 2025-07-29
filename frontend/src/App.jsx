@@ -14,7 +14,7 @@ function App() {
       <Routes>
         <Route path='/' element={<Hero/>}/>
         <Route path='/template' element={<Template/>}/>
-        <Route path='/template/swe' element={<GeneratePdf/>}/>
+        <Route path='/template/:id' element={<GeneratePdf/>}/>
         <Route path='*' element={<Error/>}/>
       </Routes>   
       <Footer/> 

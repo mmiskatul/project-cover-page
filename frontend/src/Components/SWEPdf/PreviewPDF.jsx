@@ -10,6 +10,10 @@ function capitalizeEachWord(str) {
     .join(" ");
 }
 
+function Placeholder() {
+  return <span className="text-2xl font-bold">..................................</span>;
+}
+
 export default function PreviewPDF({ data }) {
   if (!data)
     return (
@@ -19,10 +23,10 @@ export default function PreviewPDF({ data }) {
     );
 
   return (
-    <div className="flex flex-col items-center w-full  p-4 mt-3 bg-white rounded ">
+    <div className="flex flex-col items-center w-full p-4 mt-3 bg-white rounded">
       {/* Header & Logo */}
       <div className="flex flex-col items-center w-full max-w-4xl">
-        <img src={logo} alt="DIU Logo" className="w-64 mb-4" />
+        <img src={logo} alt="DIU Logo" className="w-80 mb-4" />
         <h3 className="text-3xl font-bold mb-6">
           {data.courseType === "theory"
             ? "Theory Assignment Report"
@@ -39,49 +43,51 @@ export default function PreviewPDF({ data }) {
         {/* Metadata Section */}
         <div className="w-full px-4 mt-6 space-y-3 text-left text-xl font-medium">
           <p>
-            <span className="font-bold">Semester:</span> {capitalizeEachWord(data.semester)}
+            <span className="font-bold">Semester:</span>{" "}
+            {data.semester === "" ? <Placeholder /> : capitalizeEachWord(data.semester)}
           </p>
           <p>
             <span className="font-bold">Student Name:</span>{" "}
-            {capitalizeEachWord(data.studentName)}
+            {data.studentName === "" ? <Placeholder /> : capitalizeEachWord(data.studentName)}
           </p>
           <p>
-            <span className="font-bold">Student ID:</span> {data.studentId}
+            <span className="font-bold">Student ID:</span>{" "}
+            {data.studentId === "" ? <Placeholder /> : data.studentId}
           </p>
 
-          {/* Batch and Section */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <p>
-              <span className="font-bold">Batch:</span> {capitalizeEachWord(data.batch)}
+              <span className="font-bold">Batch:</span>{" "}
+              {data.batch === "" ? <Placeholder /> : capitalizeEachWord(data.batch)}
             </p>
             <p>
               <span className="font-bold">Section:</span>{" "}
-              {capitalizeEachWord(data.section)}
+              {data.section === "" ? <Placeholder /> : capitalizeEachWord(data.section)}
             </p>
           </div>
 
-          {/* Course Code and Name */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <p>
-              <span className="font-bold">Course Code:</span> {data.courseId}
+              <span className="font-bold">Course Code:</span>{" "}
+              {data.courseId === "" ? <Placeholder /> : data.courseId}
             </p>
             <p>
               <span className="font-bold">Course Name:</span>{" "}
-              {capitalizeEachWord(data.courseName)}
+              {data.courseName === "" ? <Placeholder /> : capitalizeEachWord(data.courseName)}
             </p>
           </div>
 
-          {/* Teacher Info */}
           <p>
             <span className="font-bold">Teacher Name:</span>{" "}
-            {capitalizeEachWord(data.teacherName)}
+            {data.teacherName === "" ? <Placeholder /> : capitalizeEachWord(data.teacherName)}
           </p>
           <p>
             <span className="font-bold">Designation:</span>{" "}
-            {capitalizeEachWord(data.teacherDesignation)}
+            {data.teacherDesignation === "" ? <Placeholder /> : capitalizeEachWord(data.teacherDesignation)}
           </p>
           <p>
-            <span className="font-bold">Date:</span> {data.date}
+            <span className="font-bold">Date:</span>{" "}
+            {data.date === "" ? <Placeholder /> : data.date}
           </p>
         </div>
       </div>
