@@ -1,10 +1,10 @@
-import Batch_section from "../Batch_Section/Batch_section";
-import Course from "../Course/Course";
-import CourseType from "../CourseType/CourseType";
-import DatePickerField from "../DatePicker/DatePickerField";
-import Semester from "../Semester/Semester";
-import StudentInfo from "../StudentInfo/StudentInfo";
-import TeacherInfo from "../TeacherInfo/TeacherInfo";
+import Batch_section from "../../FormInfo/Batch_Section/Batch_section";
+import Course from "../../FormInfo/Course/Course";
+import CourseType from "../../FormInfo/CourseType/CourseType";
+import DatePickerField from "../../FormInfo/DatePicker/DatePickerField";
+import Semester from "../../FormInfo/Semester/Semester";
+import StudentInfo from "../../FormInfo/StudentInfo/StudentInfo";
+import TeacherInfo from "../../FormInfo/TeacherInfo/TeacherInfo";
 
 function InputForm ({ inputData, setInputData }) {
     const handleChange = (e) => {
