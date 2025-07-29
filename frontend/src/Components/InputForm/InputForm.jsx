@@ -6,6 +6,7 @@ import Departments from "../../FormInfo/Departments/Departments";
 import Semester from "../../FormInfo/Semester/Semester";
 import StudentInfo from "../../FormInfo/StudentInfo/StudentInfo";
 import TeacherInfo from "../../FormInfo/TeacherInfo/TeacherInfo";
+import TopicName from "../../FormInfo/TopicName/TopicName";
 
 function InputForm ({ inputData, setInputData }) {
     const handleChange = (e) => {
@@ -21,16 +22,19 @@ function InputForm ({ inputData, setInputData }) {
       <div className="max-w-96 w-full px-4">
         {/* Semester SELECTION */}
         <CourseType inputData={inputData} handleChange={handleChange} />
-        {
-          url.includes("swe") && (
+        
             <Semester inputData={inputData} handleChange={handleChange} />
-          ) 
-        }
+        
         {
           url.includes("default") && (
             <Departments inputData={inputData} handleChange={handleChange} />
           )
+        }{
+          url.includes("default") && (
+            <TopicName inputData={inputData} handleChange={handleChange} />
+          )
         }
+        
         <StudentInfo inputData={inputData} handleChange={handleChange} />
         {/* Batch and Section */}
         <Batch_section inputData={inputData} handleChange={handleChange} />

@@ -9,6 +9,7 @@ function GeneratePdf() {
     studentName: "",
     studentId: "",
     courseName: "",
+    courseId: "",
     teacherName: "",
     teacherDesignation: "",
     semester: "",
@@ -17,6 +18,7 @@ function GeneratePdf() {
     courseType: "",
     date: "",
     department:"",
+    topicname: "",
   });
 
   const url = window.location.pathname;
