@@ -28,8 +28,9 @@ export default function DefaultPreview({ data }) {
   return (
     <div className="w-full flex justify-center items-center min-h-screen bg-gray-100">
       {/* Fixed-size container */}
-      <div
-        className="relative bg-white shadow-lg overflow-hidden border-2 border-gray-500"
+      <div className="relative bg-white shadow-lg overflow-hidden border-2 border-gray-500">
+        <div
+        className="relative  bg-white shadow-lg overflow-hidden border-2 border-gray-500"
         style={{
           width: "794px", // A4 size width
           height: "1123px", // A4 size height
@@ -74,7 +75,7 @@ export default function DefaultPreview({ data }) {
           </div>
 
           {/* Submitted To */}
-          <div className="w-full mt-10 text-left text-2xl font-bold underline">Submitted To:</div>
+          <div className="w-full text-purple-950 mt-10 text-left text-2xl font-bold underline">Submitted To:</div>
           <div className="w-full ml-60 text-left text-xl font-medium space-y-1 mt-2">
             <p><span className="font-bold">Name:</span> {data.teacherName ? capitalizeEachWord(data.teacherName) : <Placeholder />}</p>
             <p><span className="font-bold">Designation:</span> {data.teacherDesignation ? capitalizeEachWord(data.teacherDesignation) : <Placeholder />}</p>
@@ -83,7 +84,7 @@ export default function DefaultPreview({ data }) {
           </div>
 
           {/* Submitted By */}
-          <div className="w-full mt-8 text-left text-2xl font-bold underline">Submitted By:</div>
+          <div className="w-full text-purple-950 mt-8 text-left text-2xl font-bold underline">Submitted By:</div>
           <div className="w-full text-left ml-60 text-xl font-medium space-y-1 mt-2">
             <p><span className="font-bold">Name:</span> {data.studentName ? capitalizeEachWord(data.studentName) : <Placeholder />}</p>
             <p><span className="font-bold">ID:</span> {data.studentId ? capitalizeEachWord(data.studentId) : <Placeholder />}</p>
@@ -94,11 +95,12 @@ export default function DefaultPreview({ data }) {
           </div>
 
           {/* Submission Date */}
-          <div className="w-full mt-10 text-left text-xl font-bold">
+          <div className="w-full text-purple-950 mt-10 text-left text-xl font-bold">
             <span className="underline text-2xl">Submission Date:</span>{" "}
             {data.date ? capitalizeEachWord(data.date) : <Placeholder />}
           </div>
         </div>
+      </div>
       </div>
     </div>
   );

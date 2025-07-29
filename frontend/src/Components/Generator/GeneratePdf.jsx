@@ -3,6 +3,7 @@ import InputForm from "../InputForm/InputForm";
 import PreviewPDF from "../SWEPdf/PreviewPDF";
 import DefaultPreview from "../DefaultPdf/DefaultPreviewPDF";
 import BackButton from "../BackButton/BackButton";
+import Default2PreviewPDF from "../DeafultPdf2/Default2PreviewPDF";
 
 function GeneratePdf() {
   const [inputData, setInputData] = useState({
@@ -44,7 +45,9 @@ function GeneratePdf() {
         <div className="w-full lg:w-3/5">
           {url.includes("swe") ? (
             <PreviewPDF data={inputData} />
-          ) : (
+          ) : url.includes("default2") ?
+            (<Default2PreviewPDF data={inputData} />)
+            :(
             <DefaultPreview  data={inputData}/>
           )}
         </div>
