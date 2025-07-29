@@ -18,7 +18,7 @@ function GeneratePdf() {
   });
 
   return (
-    <div className="w-full mt-28 px-4">
+    <div className="w-full mt-28 px-4 py-10">
       {/* Styled Back Button */}
       <div className="mb-6">
         <BackButton className="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 transition duration-200" />

@@ -19,7 +19,7 @@ export default function PreviewPDF({ data }) {
     );
 
   return (
-    <div className="flex flex-col items-center w-full p-4 mt-3 bg-white rounded shadow-md">
+    <div className="flex flex-col items-center w-full  p-4 mt-3 bg-white rounded ">
       {/* Header & Logo */}
       <div className="flex flex-col items-center w-full max-w-4xl">
         <img src={logo} alt="DIU Logo" className="w-64 mb-4" />
