@@ -34,7 +34,7 @@ export default function PreviewPDF({ data }) {
             ? "Lab Assignment Report"
             : data.courseType === "project"
             ? "Project Report"
-            : ""}
+            : "Select the type of report"}
         </h3>
 
         {/* Mark Distribution Table */}

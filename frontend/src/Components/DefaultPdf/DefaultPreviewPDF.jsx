@@ -1,6 +1,7 @@
 import logo from "../../assets/daffodil-international-university-seeklogo.png";
+import bglogo from "../../assets/BgImage.png";
 
-// Capitalize first letter of each word
+// Capitalize each word
 function capitalizeEachWord(str) {
   if (!str) return "";
   return str
@@ -9,10 +10,13 @@ function capitalizeEachWord(str) {
     .join(" ");
 }
 
-// Reusable placeholder for empty fields
+// Placeholder for empty fields
 function Placeholder() {
-  return <span className="text-2xl font-bold">....................................................</span>;
+  return (
+    <span className="text-2xl font-bold">....................................................</span>
+  );
 }
+
 export default function DefaultPreview({ data }) {
   if (!data)
     return (
@@ -22,121 +26,79 @@ export default function DefaultPreview({ data }) {
     );
 
   return (
-    <div className="Doc flex flex-col items-center  w-full p-4 mt-3  bg-white rounded shadow-lg">
-      {/* Header & Logo */}
-      <div className="flex flex-col  border-2 border-gray-500 p-10 items-center w-full max-w-4xl">
-        <img src={logo} alt="DIU Logo" className="w-100 mb-4 pt-20" />
-        <h3 className="text-3xl font-bold pt-10  underline">
-          {data.courseType === "theory"
-            ? "ASSIGNMENT "
-            : data.courseType === "lab"
-            ? "LAB REPORT"
-            : data.courseType === "project"
-            ? "Project Report"
-            : "Select the type of report"}
-        </h3>
+    <div className="w-full flex justify-center items-center min-h-screen bg-gray-100">
+      {/* Fixed-size container */}
+      <div
+        className="relative bg-white shadow-lg overflow-hidden border-2 border-gray-500"
+        style={{
+          width: "794px", // A4 size width
+          height: "1123px", // A4 size height
+          padding: "60px",
+          boxSizing: "border-box",
+        }}
+      >
+        {/* ✅ Background Watermark */}
+        <div
+          className="absolute top-1/2 left-1/2 pointer-events-none"
+          style={{
+            transform: "translate(-50%, -50%)",
+            backgroundImage: `url(${bglogo})`,
+            backgroundRepeat: "no-repeat",
+            backgroundPosition: "center",
+            backgroundSize: "contain",
+            width: "400px",
+            height: "500px",
+            opacity: 0.13,
+            zIndex: 0,
+          }}
+        ></div>
 
-          {/* Metadata Section */}
+        {/* ✅ Foreground Content */}
+        <div className="relative z-10 w-full h-full flex flex-col items-center justify-start">
+          <img src={logo} alt="DIU Logo" style={{ width: "400px", marginTop: "20px" }} />
+          <h3 className="text-3xl font-bold underline mt-10">
+            {data.courseType === "theory"
+              ? "ASSIGNMENT"
+              : data.courseType === "lab"
+              ? "LAB REPORT"
+              : data.courseType === "project"
+              ? "Project Report"
+              : "Select the type of report"}
+          </h3>
 
-            {/* Course Code and Name */}
-            <div className="w-full px-6 mb-10 space-y-0 mt-10 text-left text-xl font-medium">
-              <p>
-              <span className="font-bold">Course Code:</span>
-              {data.courseId === "" ? <Placeholder /> : capitalizeEachWord(data.courseId)}
-            </p>
-            <p>
-              <span className="font-bold">Course Title :</span>
-              {data.courseName === "" ? <Placeholder /> : capitalizeEachWord(data.courseName)}
-            </p>
-            {/* Topic name */}
-             <p>
-              <span className="font-bold">Topic  Name :</span>
-              {data.topicname === "" ? <Placeholder /> : capitalizeEachWord(data.topicname)}
-            </p>
-            </div>
-
-            {/* Submitted to  */}
-
-              {/* Teacher Info */}
-              
-            <div className="w-full px-6 mb-8 text-2xl space-y-2 text-left  font-bold underline">
-              <h1>
-                Submitted To :
-              </h1>
-            </div>
-          <div className="w-full px-14 mb-8  space-y-0 text-left text-xl font-medium ml-30">
-            
-                  <p>
-                  <span className="font-bold">Name :</span>
-                  {data.teacherName === "" ? <Placeholder /> : capitalizeEachWord(data.teacherName)}
-                </p>
-                <p>
-                  <span className="font-bold">Designation :</span>
-                  {data.teacherDesignation === "" ? <Placeholder /> : capitalizeEachWord(data.teacherDesignation)}
-                </p>
-                  {/* Department */}
-                <p> 
-                  <span className="font-bold">Department :</span>
-                  {data.department === "" ? <Placeholder /> : capitalizeEachWord(data.department)}
-                </p>
-                {/* University Title */}
-                <p className=" text-2xl font-bold">
-                  Daffodil International University
-                </p>
+          {/* Course Info */}
+          <div className="w-full mt-10 ml-10 text-left text-xl font-medium space-y-2">
+            <p><span className="font-bold">Course Code:</span> {data.courseId ? capitalizeEachWord(data.courseId) : <Placeholder />}</p>
+            <p><span className="font-bold">Course Title:</span> {data.courseName ? capitalizeEachWord(data.courseName) : <Placeholder />}</p>
+            <p><span className="font-bold">Topic Name:</span> {data.topicname ? capitalizeEachWord(data.topicname) : <Placeholder />}</p>
           </div>
 
-
-            {/* Submitted By */}
-
-
-            <div className="w-full px-6 mb-8 space-y-3 text-left text-2xl font-bold underline">
-              <h1>
-                Submitted By :
-              </h1>
-            </div>
-
-            <div className="w-full px-14 mb-8 space-y-0 text-left text-xl font-medium ml-30">
-                {/* Student Name */}
-                  <p>
-                  <span className="font-bold">Name :</span>
-                  {data.studentName === "" ? <Placeholder /> : capitalizeEachWord(data.studentName)}
-                </p>
-                {/* Student ID */}
-                <p>
-                  <span className="font-bold">ID :</span>
-                  {data.studentId === "" ? <Placeholder /> : capitalizeEachWord(data.studentId)}
-                </p>
-                {/* Section  */}
-                <p>
-                  <span className="font-bold">Section :</span>
-                  {data.section === "" ? <Placeholder /> : capitalizeEachWord(data.section)}
-                </p>
-                {/* Semester */}
-                <p>
-                  <span className="font-bold">Semester :</span>
-                  {data.semester === "" ? <Placeholder /> : capitalizeEachWord(data.semester)}
-                </p>
-                  {/* Department */}
-                <p> 
-                  <span className="font-bold">Department :</span>
-                  {data.department === "" ? <Placeholder /> : capitalizeEachWord(data.department)}
-                </p>
-                {/* University Title */}
-                <p className=" text-2xl font-bold">
-                  Daffodil International University
-                </p>
+          {/* Submitted To */}
+          <div className="w-full mt-10 text-left text-2xl font-bold underline">Submitted To:</div>
+          <div className="w-full ml-60 text-left text-xl font-medium space-y-1 mt-2">
+            <p><span className="font-bold">Name:</span> {data.teacherName ? capitalizeEachWord(data.teacherName) : <Placeholder />}</p>
+            <p><span className="font-bold">Designation:</span> {data.teacherDesignation ? capitalizeEachWord(data.teacherDesignation) : <Placeholder />}</p>
+            <p><span className="font-bold">Department:</span> {data.department ? capitalizeEachWord(data.department) : <Placeholder />}</p>
+            <p className="text-2xl font-bold">Daffodil International University</p>
           </div>
 
-          {/* Submission Date   */}
-          <div className="w-full px-6 mb-30 space-y-3 text-left text-xl font-bold ">
-            <h1>
-              <span className="underline text-2xl">Submission Date :</span>
-                {data.department === "" ? <Placeholder /> : "    "+capitalizeEachWord(data.date)}
+          {/* Submitted By */}
+          <div className="w-full mt-8 text-left text-2xl font-bold underline">Submitted By:</div>
+          <div className="w-full text-left ml-60 text-xl font-medium space-y-1 mt-2">
+            <p><span className="font-bold">Name:</span> {data.studentName ? capitalizeEachWord(data.studentName) : <Placeholder />}</p>
+            <p><span className="font-bold">ID:</span> {data.studentId ? capitalizeEachWord(data.studentId) : <Placeholder />}</p>
+            <p><span className="font-bold">Section:</span> {data.section ? capitalizeEachWord(data.section) : <Placeholder />}</p>
+            <p><span className="font-bold">Semester:</span> {data.semester ? capitalizeEachWord(data.semester) : <Placeholder />}</p>
+            <p><span className="font-bold">Department:</span> {data.department ? capitalizeEachWord(data.department) : <Placeholder />}</p>
+            <p className="text-2xl font-bold">Daffodil International University</p>
+          </div>
 
-            </h1> 
-            </div>
-
-       
+          {/* Submission Date */}
+          <div className="w-full mt-10 text-left text-xl font-bold">
+            <span className="underline text-2xl">Submission Date:</span>{" "}
+            {data.date ? capitalizeEachWord(data.date) : <Placeholder />}
+          </div>
+        </div>
       </div>
     </div>
   );
