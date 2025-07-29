@@ -13,7 +13,6 @@ function capitalizeEachWord(str) {
 function Placeholder() {
   return <span className="text-2xl font-bold">....................................................</span>;
 }
-
 export default function DefaultPreview({ data }) {
   if (!data)
     return (
@@ -23,9 +22,9 @@ export default function DefaultPreview({ data }) {
     );
 
   return (
-    <div className="flex flex-col items-center w-full p-4 mt-3  bg-white rounded shadow-lg">
+    <div className="Doc flex flex-col items-center w-full p-4 mt-3  bg-white rounded shadow-lg">
       {/* Header & Logo */}
-      <div className="flex flex-col border p-5 items-center w-full max-w-4xl">
+      <div className="flex flex-col border  p-10 items-center w-full max-w-4xl">
         <img src={logo} alt="DIU Logo" className="w-100 mb-4 pt-10" />
         <h3 className="text-3xl font-bold pt-10 mb-6 underline">
           {data.courseType === "theory"
@@ -34,7 +33,7 @@ export default function DefaultPreview({ data }) {
             ? "Lab Report"
             : data.courseType === "project"
             ? "Project Report"
-            : ""}
+            : "Select the type of report"}
         </h3>
 
         {/* Metadata Section */}

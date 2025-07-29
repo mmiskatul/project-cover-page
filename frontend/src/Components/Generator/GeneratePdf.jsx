@@ -16,6 +16,7 @@ function GeneratePdf() {
     section: "",
     courseType: "",
     date: "",
+    department:"",
   });
 
   const url = window.location.pathname;
