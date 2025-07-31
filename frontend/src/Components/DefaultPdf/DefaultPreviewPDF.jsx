@@ -39,22 +39,22 @@ export default function DefaultPreview({ data }) {
       >
         {/* ✅ Background Watermark */}
         <div
-          className="absolute top-1/2 left-1/2 pointer-events-none"
+          className="absolute top-1/2 left-1/2 pointer-events-none mt-10"
           style={{
             transform: "translate(-50%, -50%)",
             backgroundImage: `url(${data.bglogo})`,
             backgroundRepeat: "no-repeat",
             backgroundPosition: "center",
             backgroundSize: "contain",
-            width: "400px",
-            height: "500px",
+            width: "380px",
+            height: "460px",
             opacity: 0.13,
             zIndex: 0,
           }}
         ></div>
 
         {/* ✅ Foreground Content */}
-        <div className="relative z-10 w-full h-full flex flex-col items-center">
+        <div className="relative p-5 px-10 z-10 w-full h-full flex flex-col items-center">
           {/* Logo */}
           <img src={data.logo} alt="DIU Logo" style={{ width: "300px", marginTop: "10px" }} />
 
@@ -97,7 +97,7 @@ export default function DefaultPreview({ data }) {
           </div>
 
           {/* Date */}
-          <div className="w-full text-left text-[16px] font-bold mt-40">
+          <div className="w-full text-left text-purple-900 text-[16px] font-bold mt-20">
             <span className="underline text-lg">Submission Date:</span>{" "}
             {data.date ? data.date : <Placeholder />}
           </div>

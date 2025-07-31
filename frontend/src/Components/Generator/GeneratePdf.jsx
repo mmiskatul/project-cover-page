@@ -107,7 +107,7 @@ function GeneratePdf() {
       {/* Generate Button */}
       <div className="w-full text-center mt-6">
         <button
-          className="px-6 py-3 bg-blue-600 text-white rounded hover:bg-blue-700 transition duration-200"
+          className="px-6 py-3 bg-blue-600 text-white rounded hover:bg-blue-700 transition duration-200 hover:scale-105 active:scale-95"
           onClick={async () => {
             const html = getHtmlFromPreview();
             if (!html) {

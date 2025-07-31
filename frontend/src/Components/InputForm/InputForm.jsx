@@ -13,7 +13,7 @@ function InputForm ({ inputData, setInputData }) {
     const { name, value } = e.target;
     setInputData(prev => ({ ...prev, [name]: value }));
      };
-     const url = window.location.pathname;
+     const url = window.location.href;
   return (
     <form className="flex flex-col items-center text-sm text-slate-800">
       {/* Headding of the Inpute filed for generate Cover Page */}
@@ -26,11 +26,11 @@ function InputForm ({ inputData, setInputData }) {
             <Semester inputData={inputData} handleChange={handleChange} />
         
         {
-          url.includes("normal") && (
+         (url.includes("normal") || url.includes("bba")) && (
             <Departments inputData={inputData} handleChange={handleChange} />
           )
         }{
-          url.includes("normal") && (
+          (url.includes("normal") || url.includes("bba"))&&(
             <TopicName inputData={inputData} handleChange={handleChange} />
           )
         }
