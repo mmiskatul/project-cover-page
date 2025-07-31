@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import InputForm from "../InputForm/InputForm";
 import PreviewPDF from "../SWEPdf/PreviewPDF";
+import PreviewPDFNFE from "../NFEPdf/PreviewPDF";
 import DefaultPreview from "../DefaultPdf/DefaultPreviewPDF";
 import BackButton from "../BackButton/BackButton";
 import Default2PreviewPDF from "../DeafultPdf2/Default2PreviewPDF";
@@ -61,6 +62,7 @@ function GeneratePdf() {
     topicname: "",
     logo: "", // set later after loading base64
     bglogo: "", // optional
+    level: "",
   });
 
   // Inside GeneratePdf component
@@ -113,10 +115,12 @@ function GeneratePdf() {
         <div className="w-full lg:w-3/5">
           {templateName === "swe" && <PreviewPDF data={inputData} />}
           {templateName === "bba" && <Default2PreviewPDF data={inputData} />}
+          {templateName ==="nfe" && <PreviewPDFNFE data={inputData} />}
           {!templateName && <DefaultPreview data={inputData} />}
-          {templateName !== "swe" && templateName !== "bba" && templateName && (
+          {templateName !== "swe" && templateName !== "bba" && templateName && templateName !=="nfe" && (
             <DefaultPreview data={inputData} />
           )}
+
         </div>
       </div>
 
@@ -124,34 +128,7 @@ function GeneratePdf() {
       <div className="w-full text-center mt-6">
         <button 
           className="px-6 py-3 bg-blue-600 text-white rounded hover:bg-blue-700 transition duration-200 hover:scale-105 active:scale-95"
-          // onClick={async () => {
-          //   const html = getHtmlFromPreview();
-          //   if (!html) {
-          //     alert("Preview not found!");
-          //     return;
-          //   }
-
-          //   try {
-          //     const res = await fetch("http://localhost:5000/generate-pdf", {
-          //       method: "POST",
-          //       headers: { "Content-Type": "application/json" },
-          //       body: JSON.stringify({ html }),
-          //     });
-
-          //     const blob = await res.blob();
-          //     const url = URL.createObjectURL(blob);
-
-          //     const link = document.createElement("a");
-          //     link.href = url;
-          //     link.download = `${inputData.courseName} Assignemet (${inputData.studentId}) .pdf`;
-          //     link.click();
-          //   } catch (err) {
-          //     console.error("PDF generation failed", err);
-          //     alert("Failed to generate PDF");
-          //   }
-          // }}
-
-          // redirect to download page
+          
           onClick={handleGenerate}
         >
           Generate PDF

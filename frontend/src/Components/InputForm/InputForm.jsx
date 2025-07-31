@@ -3,6 +3,7 @@ import Course from "../../FormInfo/Course/Course";
 import CourseType from "../../FormInfo/CourseType/CourseType";
 import DatePickerField from "../../FormInfo/DatePicker/DatePickerField";
 import Departments from "../../FormInfo/Departments/Departments";
+import Level from "../../FormInfo/level-term/Level-term";
 import Semester from "../../FormInfo/Semester/Semester";
 import StudentInfo from "../../FormInfo/StudentInfo/StudentInfo";
 import TeacherInfo from "../../FormInfo/TeacherInfo/TeacherInfo";
@@ -30,8 +31,13 @@ function InputForm ({ inputData, setInputData }) {
             <Departments inputData={inputData} handleChange={handleChange} />
           )
         }{
-          (url.includes("normal") || url.includes("bba"))&&(
+          (url.includes("normal") || url.includes("bba") || url.includes("nfe"))&& (
             <TopicName inputData={inputData} handleChange={handleChange} />
+          )
+        }
+        {
+          url.includes("nfe") && (
+           <Level inputData={inputData} handleChange={handleChange}/>
           )
         }
         

@@ -1,14 +1,12 @@
 const express = require("express");
 const puppeteer = require("puppeteer");
 const cors = require("cors");
-const htmlDocx = require("html-docx-js"); // ⬅️ DOCX generator
 
 const app = express();
 
 app.use(cors());
 app.use(express.json({ limit: "10mb" }));
 
-// ✅ PDF generation route
 app.post("/generate-pdf", async (req, res) => {
   const { html } = req.body;
   if (!html) return res.status(400).send("Missing HTML content");
@@ -29,6 +27,7 @@ app.post("/generate-pdf", async (req, res) => {
 
     await page.setContent(html, { waitUntil: "networkidle0" });
 
+    // Ensure fonts and images are fully loaded
     await page.evaluateHandle("document.fonts.ready");
 
     const pdfBuffer = await page.pdf({
@@ -53,27 +52,6 @@ app.post("/generate-pdf", async (req, res) => {
   } catch (error) {
     console.error("PDF Generation Error:", error);
     res.status(500).send("Failed to generate PDF");
-  }
-});
-
-// ✅ DOCX generation route
-app.post("/generate-docx", (req, res) => {
-  const { html } = req.body;
-  if (!html) return res.status(400).send("Missing HTML content");
-
-  try {
-    const docxBuffer = htmlDocx.asBlob(html); // Convert HTML to .docx Buffer
-
-    res.set({
-      "Content-Type":
-        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-      "Content-Disposition": `attachment; filename="cover-${Date.now()}.docx"`,
-    });
-
-    res.send(docxBuffer);
-  } catch (error) {
-    console.error("DOCX Generation Error:", error);
-    res.status(500).send("Failed to generate DOCX");
   }
 });
 
