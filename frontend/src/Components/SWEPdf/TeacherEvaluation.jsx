@@ -1,6 +1,6 @@
 function TeacherEvaluation({ data }) {
   return (
-    <div className="w-full mt-10 px-6 text-black font-bold bg-white">
+    <div className="w-full -ml-10  px-6 text-black font-bold bg-white">
 
       <table className="w-full border border-black border-collapse text-sm">
         <thead>

@@ -26,11 +26,11 @@ function InputForm ({ inputData, setInputData }) {
             <Semester inputData={inputData} handleChange={handleChange} />
         
         {
-          url.includes("default") && (
+          url.includes("normal") && (
             <Departments inputData={inputData} handleChange={handleChange} />
           )
         }{
-          url.includes("default") && (
+          url.includes("normal") && (
             <TopicName inputData={inputData} handleChange={handleChange} />
           )
         }

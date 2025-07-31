@@ -9,13 +9,13 @@ import GeneratePdf from './Components/Generator/GeneratePdf'
 
 function App() {
   return (
-    <div className=' '>
+    <div className=''>
       <NavBar/>
       <Routes>
-        <Route path='/' element={<Hero/>}/>
-        <Route path='/template' element={<Template/>}/>
-        <Route path='/template/:id' element={<GeneratePdf/>}/>
-        <Route path='*' element={<Error/>}/>
+        <Route path='/' element={<Hero/>} />
+        <Route path='/template' element={<Template/>} />
+        <Route path='/template/:templateName' element={<GeneratePdf/>} />
+        <Route path='*' element={<Error/>} />
       </Routes>   
       <Footer/> 
     </div>

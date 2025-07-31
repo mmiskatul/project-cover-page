@@ -1,6 +1,3 @@
-import logo from "../../assets/daffodil-international-university-seeklogo.png";
-import bglogo from "../../assets/BgImage.png";
-
 // Capitalize each word
 function capitalizeEachWord(str) {
   if (!str) return "";
@@ -10,12 +7,12 @@ function capitalizeEachWord(str) {
     .join(" ");
 }
 
-
 // Info Row Component
-function InfoRow({ label,value }) {
+function InfoRow({ label, value }) {
   return (
-    <p className="text-base text-center">
-      <span className="font-semibold">{label} :</span> {capitalizeEachWord(value) }
+    <p className="text-base text-left">
+      <span className="font-semibold">{label}:</span>{" "}
+      {value ? capitalizeEachWord(value) : "........................"}
     </p>
   );
 }
@@ -30,75 +27,91 @@ export default function Default2PreviewPDF({ data }) {
   }
 
   return (
-    <div className="w-full flex justify-center items-center min-h-screen bg-gray-100">
-      {/* A4 Container */}
+    <div
+      id="cover-preview"
+      className="w-full flex justify-center items-center min-h-screen bg-gray-100"
+    >
+      {/* A4 Fixed Container */}
       <div
-        className="relative bg-white shadow-md overflow-hidden"
+        className="relative bg-white shadow-md border border-gray-400"
         style={{
           width: "794px", // A4 width
           height: "1123px", // A4 height
-          padding: "20px", // page margin
+          padding: "30px",
           boxSizing: "border-box",
         }}
       >
-       
-
-        {/* Content Box */}
-        <div className="relative z-10 w-full h-full border border-gray-400 p-8 box-border flex flex-col items-center space-y-5">
+        {/* Content Wrapper */}
+        <div className="relative z-10 w-full h-full flex flex-col items-center">
           {/* Logo */}
-          <img src={logo} alt="DIU Logo" className="w-80 my-14" />
+          <img src={data.logo} alt="DIU Logo" className="w-72 my-10" />
 
-          {/* Report Title Bar */}
-          <div className="-mx-8 px-8 w-[calc(100%+64px)] bg-blue-500 flex justify-between items-center">
-            <h3 className="text-xl ml-30 font-semibold py-2 text-white">Report</h3>
-            <h3 className="text-xl font-bold py-2 text-white" />
+          {/* Report Header */}
+          <div className="w-full bg-blue-600 text-white py-2 px-6 text-lg font-semibold text-center mb-6">
+            {data.courseType
+              ? capitalizeEachWord(data.courseType) + " Report"
+              : "Report"}
           </div>
 
-          {/* Info Section */}
-          <div className="w-full flex flex-col lg:flex-row justify-between items-start gap-6">
-            
-            <div className="w-full flex flex-col lg:flex-row justify-between items-start gap-6 ">
-            {/* Left - Course & Teacher Info */}
-            <div className="w-1/2 ">
-              <h1 className="text-center mt-10 mb-6 font-bold text-lg underline">COURSE</h1> 
-              <div className="space-y-0 text-sm font-medium">
+          {/* Content Grid */}
+          <div className="w-full flex flex-col lg:flex-row gap-6">
+            {/* Left Side */}
+            <div className="w-full lg:w-1/2 px-4">
+              <h1 className="text-center text-lg font-bold underline mb-3">
+                COURSE
+              </h1>
+              <div className="space-y-2 text-sm font-medium">
                 <InfoRow label="Course Name" value={data.courseName} />
                 <InfoRow label="Course Code" value={data.courseId} />
               </div>
-              <h1 className="text-center mt-10 mb-6 font-bold text-lg underline">TOPIC</h1> 
-              <div className="space-y-0 text-base font-medium">
-                <h3>
-                  <span className="font-semibold text-center "></span> {capitalizeEachWord(data.topicname)}
-                </h3>
-              </div>
 
-              <div className="text-sm text-center font-bold underline mt-4">Submitted To:</div>
+              <h1 className="text-center text-lg font-bold underline mt-6 mb-3">
+                TOPIC
+              </h1>
+              <p className="text-base font-medium text-center mb-6">
+                {data.topicname ? capitalizeEachWord(data.topicname) : ".................................."}
+              </p>
+
+              <h1 className="text-center text-lg font-bold underline mb-2">
+                Submitted To:
+              </h1>
               <div className="ml-4 space-y-1 text-base font-medium">
                 <InfoRow label="Name" value={data.teacherName} />
-                <InfoRow label="Department" value={data.department} />
-                <p className="text-lg font-bold">Daffodil International University</p>
+                <p className="text-base text-center font-bold">
+                  Daffodil International University
+                </p>
               </div>
             </div>
 
-            {/* Right - Student Info */}
-            <div className="w-1/2  -mr-8 -mt-5  bg-lime-400/80 p-4 ">
-              <img src={bglogo} alt=""  className="w-60 -z-10 opacity-20 ml-5 mb-15 "/>
-              <div className="text-lg text-center font-bold underline my">Submitted By:</div>
-              <div className="ml-4  text-base font-medium">
+            {/* Right Side */}
+            <div className="w-full lg:w-1/2 relative bg-lime-300/30 p-4 border border-lime-400">
+              {/* Watermark */}
+              <img
+                src={data.bglogo}
+                alt="Background Logo"
+                className="absolute top-1/2 left-1/2 w-52 opacity-10 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none"
+              />
+
+              {/* Student Info */}
+              <h1 className="text-center text-lg font-bold underline mb-4">
+                Submitted By:
+              </h1>
+              <div className="space-y-2 text-base font-medium z-10 relative">
                 <InfoRow label="Name" value={data.studentName} />
                 <InfoRow label="ID" value={data.studentId} />
                 <InfoRow label="Section" value={data.section} />
-                <InfoRow label="Semester" value={data.semester} />
                 <InfoRow label="Department" value={data.department} />
-                <p className="text-lg font-bold">Daffodil International University</p>
+                <p className="text-center font-bold">
+                  Daffodil International University
+                </p>
               </div>
 
-              <p className="text-base font-semibold mt-4">
+              {/* Submission Date */}
+              <p className="text-base text-center font-semibold mt-6">
                 <span className="underline">Submission Date:</span>{" "}
-                 {capitalizeEachWord(data.date)}
+                {data.date ? capitalizeEachWord(data.date) : "........................"}
               </p>
             </div>
-          </div>
           </div>
         </div>
       </div>

@@ -1,6 +1,3 @@
-import logo from "../../assets/daffodil-international-university-seeklogo.png";
-import bglogo from "../../assets/BgImage.png";
-
 // Capitalize each word
 function capitalizeEachWord(str) {
   if (!str) return "";
@@ -13,7 +10,7 @@ function capitalizeEachWord(str) {
 // Placeholder for empty fields
 function Placeholder() {
   return (
-    <span className="text-2xl font-bold">....................................................</span>
+    <span className="text-xl font-bold">....................................................</span>
   );
 }
 
@@ -26,16 +23,18 @@ export default function DefaultPreview({ data }) {
     );
 
   return (
-    <div className="w-full flex justify-center items-center min-h-screen bg-gray-100">
-      {/* Fixed-size container */}
-      <div className="relative bg-white shadow-lg overflow-hidden border-2 border-gray-500">
-        <div
-        className="relative  bg-white shadow-lg overflow-hidden border-2 border-gray-500"
+    <div
+      id="cover-preview"
+      className="flex justify-center items-center w-full min-h-screen bg-gray-100"
+    >
+      <div
+        className="relative bg-white text-black shadow border border-gray-400"
         style={{
-          width: "794px", // A4 size width
-          height: "1123px", // A4 size height
-          padding: "60px",
+          width: "794px", // A4 width
+          height: "1123px", // A4 height
+          padding: "50px 40px",
           boxSizing: "border-box",
+          overflow: "hidden",
         }}
       >
         {/* ✅ Background Watermark */}
@@ -43,7 +42,7 @@ export default function DefaultPreview({ data }) {
           className="absolute top-1/2 left-1/2 pointer-events-none"
           style={{
             transform: "translate(-50%, -50%)",
-            backgroundImage: `url(${bglogo})`,
+            backgroundImage: `url(${data.bglogo})`,
             backgroundRepeat: "no-repeat",
             backgroundPosition: "center",
             backgroundSize: "contain",
@@ -55,52 +54,54 @@ export default function DefaultPreview({ data }) {
         ></div>
 
         {/* ✅ Foreground Content */}
-        <div className="relative z-10 w-full h-full flex flex-col items-center justify-start">
-          <img src={logo} alt="DIU Logo" style={{ width: "400px", marginTop: "20px" }} />
-          <h3 className="text-3xl font-bold underline mt-10">
+        <div className="relative z-10 w-full h-full flex flex-col items-center">
+          {/* Logo */}
+          <img src={data.logo} alt="DIU Logo" style={{ width: "300px", marginTop: "10px" }} />
+
+          {/* Report Title */}
+          <h3 className="text-2xl font-bold underline mt-6 mb-8">
             {data.courseType === "theory"
               ? "ASSIGNMENT"
               : data.courseType === "lab"
               ? "LAB REPORT"
               : data.courseType === "project"
-              ? "Project Report"
-              : "Select the type of report"}
+              ? "PROJECT REPORT"
+              : "SELECT THE TYPE OF REPORT"}
           </h3>
 
           {/* Course Info */}
-          <div className="w-full mt-10 ml-10 text-left text-xl font-medium space-y-2">
+          <div className="w-full text-left text-[17px] font-medium space-y-2 mb-6">
             <p><span className="font-bold">Course Code:</span> {data.courseId ? capitalizeEachWord(data.courseId) : <Placeholder />}</p>
             <p><span className="font-bold">Course Title:</span> {data.courseName ? capitalizeEachWord(data.courseName) : <Placeholder />}</p>
             <p><span className="font-bold">Topic Name:</span> {data.topicname ? capitalizeEachWord(data.topicname) : <Placeholder />}</p>
           </div>
 
           {/* Submitted To */}
-          <div className="w-full text-purple-950 mt-10 text-left text-2xl font-bold underline">Submitted To:</div>
-          <div className="w-full ml-60 text-left text-xl font-medium space-y-1 mt-2">
+          <div className="w-full text-purple-900 text-left text-[18px] font-bold underline mb-2">Submitted To:</div>
+          <div className="w-full pl-32 text-left text-[16px] font-medium space-y-1 mb-6">
             <p><span className="font-bold">Name:</span> {data.teacherName ? capitalizeEachWord(data.teacherName) : <Placeholder />}</p>
             <p><span className="font-bold">Designation:</span> {data.teacherDesignation ? capitalizeEachWord(data.teacherDesignation) : <Placeholder />}</p>
             <p><span className="font-bold">Department:</span> {data.department ? capitalizeEachWord(data.department) : <Placeholder />}</p>
-            <p className="text-2xl font-bold">Daffodil International University</p>
+            <p className="text-lg font-bold">Daffodil International University</p>
           </div>
 
           {/* Submitted By */}
-          <div className="w-full text-purple-950 mt-8 text-left text-2xl font-bold underline">Submitted By:</div>
-          <div className="w-full text-left ml-60 text-xl font-medium space-y-1 mt-2">
+          <div className="w-full text-purple-900 text-left text-[18px] font-bold underline mb-2">Submitted By:</div>
+          <div className="w-full pl-32 text-left text-[16px] font-medium space-y-1 mb-6">
             <p><span className="font-bold">Name:</span> {data.studentName ? capitalizeEachWord(data.studentName) : <Placeholder />}</p>
-            <p><span className="font-bold">ID:</span> {data.studentId ? capitalizeEachWord(data.studentId) : <Placeholder />}</p>
+            <p><span className="font-bold">ID:</span> {data.studentId ? data.studentId : <Placeholder />}</p>
             <p><span className="font-bold">Section:</span> {data.section ? capitalizeEachWord(data.section) : <Placeholder />}</p>
             <p><span className="font-bold">Semester:</span> {data.semester ? capitalizeEachWord(data.semester) : <Placeholder />}</p>
             <p><span className="font-bold">Department:</span> {data.department ? capitalizeEachWord(data.department) : <Placeholder />}</p>
-            <p className="text-2xl font-bold">Daffodil International University</p>
+            <p className="text-lg font-bold">Daffodil International University</p>
           </div>
 
-          {/* Submission Date */}
-          <div className="w-full text-purple-950 mt-10 text-left text-xl font-bold">
-            <span className="underline text-2xl">Submission Date:</span>{" "}
-            {data.date ? capitalizeEachWord(data.date) : <Placeholder />}
+          {/* Date */}
+          <div className="w-full text-left text-[16px] font-bold mt-40">
+            <span className="underline text-lg">Submission Date:</span>{" "}
+            {data.date ? data.date : <Placeholder />}
           </div>
         </div>
-      </div>
       </div>
     </div>
   );
