@@ -29,7 +29,7 @@ export default function Default2PreviewPDF({ data }) {
   return (
     <div
       id="cover-preview"
-      className="w-full flex justify-center items-center min-h-screen bg-gray-100"
+      className="w-full gupter flex justify-center items-center min-h-screen bg-gray-100"
     >
       {/* A4 Fixed Container */}
       <div
@@ -88,13 +88,13 @@ export default function Default2PreviewPDF({ data }) {
               </div>
             </div>
             {/* line */}
-              <div className=" w-[2px] -mr-4 px-1 -mt-6 cal(h-full+mt-6) bg-[#9BBB58] flex items-center justify-center"> </div>
-              <div className="w-[2px] -mr-4 px-1 -mt-6  cal(h-full+mt-6)  bg-[#9BBB58] flex items-center justify-center"> </div>
+              <div className=" w-[2px] -mr-4 px-0.5 -mt-6 cal(h-full+mt-6) bg-[#9BBB58]/80 flex items-center justify-center"> </div>
+              <div className="w-[2px] -mr-4 px-1 -mt-6  cal(h-full+mt-6)  bg-[#9BBB58]/80 flex items-center justify-center"> </div>
             {/* Right Side */}
             <div className="w-1/2   -mt-6 flex flex-col bg-[#9BBB58] p-4  border-[#9BBB58]">
               {/* Watermark */}
              <div >
-               <img
+               <img 
                 src={data.bglogo}
                 alt="Background Logo"
                 className=" ml-14 mt-20 mb-20  w-54 opacity-15 "

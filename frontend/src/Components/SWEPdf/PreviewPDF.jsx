@@ -26,7 +26,7 @@ export default function PreviewPDF({ data }) {
   return (
     <div
       id="cover-preview"
-      className="Doc mx-auto bg-white text-black"
+      className="gupter mx-auto bg-white text-black"
       style={{
         width: "794px", // A4 width in px at 96 DPI
         minHeight: "1123px", // A4 height in px at 96 DPI

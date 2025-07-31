@@ -25,7 +25,7 @@ export default function DefaultPreview({ data }) {
   return (
     <div
       id="cover-preview"
-      className="flex justify-center items-center w-full min-h-screen bg-gray-100"
+      className="flex gupter justify-center items-center w-full min-h-screen bg-gray-100"
     >
       <div
         className="relative bg-white text-black shadow border border-gray-400"

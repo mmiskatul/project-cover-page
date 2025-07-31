@@ -6,6 +6,7 @@ import Error from './Components/Error/Error'
 import Footer from './Components/Footer/Footer'
 import Template from './Pages/Template/Template'
 import GeneratePdf from './Components/Generator/GeneratePdf'
+import Download from './Components/Download/Download'
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
         <Route path='/' element={<Hero/>} />
         <Route path='/template' element={<Template/>} />
         <Route path='/template/:templateName' element={<GeneratePdf/>} />
+        <Route path='/download' element={<Download/>}/>
         <Route path='*' element={<Error/>} />
       </Routes>   
       <Footer/> 

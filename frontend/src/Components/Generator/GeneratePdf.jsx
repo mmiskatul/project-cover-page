@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import InputForm from "../InputForm/InputForm";
 import PreviewPDF from "../SWEPdf/PreviewPDF";
 import DefaultPreview from "../DefaultPdf/DefaultPreviewPDF";
@@ -43,7 +43,6 @@ const getHtmlFromPreview = () => {
   `;
 };
 
-
 function GeneratePdf() {
   const { templateName } = useParams();
   const [inputData, setInputData] = useState({
@@ -64,6 +63,9 @@ function GeneratePdf() {
     bglogo: "", // optional
   });
 
+  // Inside GeneratePdf component
+  const navigate = useNavigate();
+
   // Convert image to base64 and set in state
   useEffect(() => {
     const convertToBase64 = async (imgPath, key) => {
@@ -71,7 +73,7 @@ function GeneratePdf() {
       const blob = await response.blob();
       const reader = new FileReader();
       reader.onloadend = () => {
-        setInputData(prev => ({ ...prev, [key]: reader.result }));
+        setInputData((prev) => ({ ...prev, [key]: reader.result }));
       };
       reader.readAsDataURL(blob);
     };
@@ -79,6 +81,20 @@ function GeneratePdf() {
     convertToBase64(diulogo, "logo");
     convertToBase64(bglogo, "bglogo");
   }, []);
+
+  const handleGenerate = () => {
+  const html = getHtmlFromPreview(); // your function to extract HTML
+  if (!html) {
+    alert("Preview not found");
+    return;
+  }
+
+  const fileName = `${inputData.courseName} Assignment (${inputData.studentId})`;
+
+  navigate("/download", {
+    state: { html, fileName },
+  });
+};
 
   return (
     <div className="w-full mt-28 px-4 py-10">
@@ -106,34 +122,37 @@ function GeneratePdf() {
 
       {/* Generate Button */}
       <div className="w-full text-center mt-6">
-        <button
+        <button 
           className="px-6 py-3 bg-blue-600 text-white rounded hover:bg-blue-700 transition duration-200 hover:scale-105 active:scale-95"
-          onClick={async () => {
-            const html = getHtmlFromPreview();
-            if (!html) {
-              alert("Preview not found!");
-              return;
-            }
+          // onClick={async () => {
+          //   const html = getHtmlFromPreview();
+          //   if (!html) {
+          //     alert("Preview not found!");
+          //     return;
+          //   }
 
-            try {
-              const res = await fetch("http://localhost:5000/generate-pdf", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ html }),
-              });
+          //   try {
+          //     const res = await fetch("http://localhost:5000/generate-pdf", {
+          //       method: "POST",
+          //       headers: { "Content-Type": "application/json" },
+          //       body: JSON.stringify({ html }),
+          //     });
 
-              const blob = await res.blob();
-              const url = URL.createObjectURL(blob);
+          //     const blob = await res.blob();
+          //     const url = URL.createObjectURL(blob);
 
-              const link = document.createElement("a");
-              link.href = url;
-              link.download = `${inputData.courseName} Assignemet (${inputData.studentId}) .pdf`;
-              link.click();
-            } catch (err) {
-              console.error("PDF generation failed", err);
-              alert("Failed to generate PDF");
-            }
-          }}
+          //     const link = document.createElement("a");
+          //     link.href = url;
+          //     link.download = `${inputData.courseName} Assignemet (${inputData.studentId}) .pdf`;
+          //     link.click();
+          //   } catch (err) {
+          //     console.error("PDF generation failed", err);
+          //     alert("Failed to generate PDF");
+          //   }
+          // }}
+
+          // redirect to download page
+          onClick={handleGenerate}
         >
           Generate PDF
         </button>
