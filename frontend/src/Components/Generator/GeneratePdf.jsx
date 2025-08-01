@@ -5,7 +5,7 @@ import PreviewPDF from "../SWEPdf/PreviewPDF";
 import PreviewPDFNFE from "../NFEPdf/PreviewPDF";
 import DefaultPreview from "../DefaultPdf/DefaultPreviewPDF";
 import BackButton from "../BackButton/BackButton";
-import Default2PreviewPDF from "../DeafultPdf2/Default2PreviewPDF";
+import Default2PreviewPDF from "../BBAPdf/Default2PreviewPDF";
 import diulogo from "../../assets/daffodil-international-university-seeklogo.png";
 import bglogo from "../../assets/BgImage.png";
 

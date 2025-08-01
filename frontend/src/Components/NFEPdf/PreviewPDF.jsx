@@ -60,7 +60,7 @@ export default function PreviewPDF({ data }) {
         </h3>
 
         {/* Course Info Table */}
-        <table className="table-auto w-full font-bold border border-black border-collapse">
+        <table className="table-auto w-full font-bold border border-black border-collapse mt-10">
           <thead>
             <tr>
               <th className="border border-black px-4 py-2 text-left">
@@ -90,7 +90,7 @@ export default function PreviewPDF({ data }) {
 
         {/* Evaluation Table */}
         <br />
-        <table className="table-fixed w-full border border-black border-collapse text-sm">
+        <table className="table-fixed w-full border border-black border-collapse text-sm mt-10">
           <thead>
             <tr>
               <th
@@ -194,7 +194,7 @@ export default function PreviewPDF({ data }) {
             </tr>
             <tr>
               <td colSpan="8" className="border border-black px-2 py-1">
-                <span className="font-semibold">Date of Submission:</span>{" "}
+                <span className="font-bold">Date of Submission:</span>{" "}
                 {data.date === "" ? <Placeholder /> : data.date}
               </td>
               <td
@@ -215,7 +215,7 @@ export default function PreviewPDF({ data }) {
 
         {/* Semester Info */}
         <br />
-        <table className="table-auto w-full font-bold border border-black border-collapse">
+        <table className="table-auto w-full font-bold border border-black border-collapse mt-10">
           <thead>
             <tr>
               <th className="border border-black px-4 py-2 text-left">
@@ -237,7 +237,7 @@ export default function PreviewPDF({ data }) {
 
         {/* Submission Info */}
         <br />
-        <table className="table-auto w-full font-bold border border-black border-collapse">
+        <table className="table-auto w-full font-bold border border-black border-collapse mt-10">
           <thead>
             <tr>
               <th className="border border-black px-4 py-2 text-left">

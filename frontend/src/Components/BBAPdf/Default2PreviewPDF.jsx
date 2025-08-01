@@ -12,7 +12,7 @@ function InfoRow({ label, value }) {
   return (
     <p className="text-base text-left">
       <span className="font-semibold">{label}:</span>{" "}
-      { capitalizeEachWord(value) }
+      {capitalizeEachWord(value)}
     </p>
   );
 }
@@ -47,16 +47,14 @@ export default function Default2PreviewPDF({ data }) {
           <img src={data.logo} alt="DIU Logo" className="w-72 my-20" />
 
           {/* Report Header */}
-         <div className="w-full text-center text-2xl font-bold mb-6 bg-blue-600">
-           <div className="w-1/2  text-white py-3 px-6 text-lg font-semibold text-center ">
-            {data.courseType
-              ? capitalizeEachWord(data.courseType) + " Report"
-              : "Report"}
+          <div className="w-full text-center text-2xl font-bold mb-6 bg-blue-600">
+            <div className="w-1/2  text-white py-3 px-6 text-lg font-semibold text-center ">
+              {data.courseType
+                ? capitalizeEachWord(data.courseType) + " Report"
+                : "Report"}
+            </div>
+            <div className="w-1/2 text-white  px-6 text-lg font-semibold text-center"></div>
           </div>
-          <div className="w-1/2 text-white  px-6 text-lg font-semibold text-center">
-
-          </div>
-         </div>
 
           {/* Content Grid */}
           <div className="w-full flex flex-row gap-6">
@@ -74,7 +72,7 @@ export default function Default2PreviewPDF({ data }) {
                 TOPIC
               </h1>
               <p className="text-base font-medium text-center mb-10">
-                { capitalizeEachWord(data.topicname) }
+                {capitalizeEachWord(data.topicname)}
               </p>
 
               <h1 className="text-center text-lg font-bold underline mb-10 mt-5">
@@ -88,40 +86,54 @@ export default function Default2PreviewPDF({ data }) {
               </div>
             </div>
             {/* line */}
-              <div className=" w-[2px] -mr-4 px-0.5 -mt-6 cal(h-full+mt-6) bg-[#9BBB58]/80 flex items-center justify-center"> </div>
-              <div className="w-[2px] -mr-4 px-1 -mt-6  cal(h-full+mt-6)  bg-[#9BBB58]/80 flex items-center justify-center"> </div>
-            {/* Right Side */}
-            <div className="w-1/2   -mt-6 flex flex-col bg-[#9BBB58] p-4  border-[#9BBB58]">
-              {/* Watermark */}
-             <div >
-               <img 
-                src={data.bglogo}
-                alt="Background Logo"
-                className=" ml-14 mt-20 mb-20  w-54 opacity-15 "
-              />
-             </div>
+            <div
+              className=" w-[2px] -mr-4 px-0.5 -mt-6 cal(h-full+mt-6) bg-[#9BBB58]/80 flex items-center justify-center"
+             style={{ backgroundColor: "#9BBB58"}}
+            />
 
-             <div>
-               {/* Student Info */}
-              <h1 className="text-center text-lg font-bold underline mb-4">
-                Submitted By:
-              </h1>
-              <div className="space-y-2 text-base font-medium z-10 relative">
-                <InfoRow label="Name" value={data.studentName} />
-                <InfoRow label="ID" value={data.studentId} />
-                <InfoRow label="Section" value={data.section} />
-                <InfoRow label="Department" value={data.department} />
-                <p className="text-center font-bold">
-                  Daffodil International University
-                </p>
+            <div
+              className="w-[2px] -mr-4 px-1 -mt-6   cal(h-full+mt-6)  bg-[#9BBB58]/80 flex items-center justify-center"
+              style={{ backgroundColor: "#9BBB58"}}
+            />
+
+            {/* Right Side */}
+            <div
+              className="w-1/2   -mt-6 flex flex-col bg-[#9BBB58] p-4  border-[#9BBB58]"
+              style={{
+                backgroundColor: "#9BBB58",
+                borderColor: "#9BBB58",
+              }}
+            >
+              {/* Watermark */}
+              <div>
+                <img
+                  src={data.bglogo}
+                  alt="Background Logo"
+                  className=" ml-14 mt-20 mb-20  w-54 opacity-15 "
+                />
               </div>
 
-              {/* Submission Date */}
-              <p className="text-base text-center font-semibold mt-6 mb-25">
-                <span className="underline">Submission Date:</span>{" "}
-                { capitalizeEachWord(data.date) }
-              </p>
-             </div>
+              <div>
+                {/* Student Info */}
+                <h1 className="text-center text-lg font-bold underline mb-4">
+                  Submitted By:
+                </h1>
+                <div className="space-y-2 text-base font-medium z-10 relative">
+                  <InfoRow label="Name" value={data.studentName} />
+                  <InfoRow label="ID" value={data.studentId} />
+                  <InfoRow label="Section" value={data.section} />
+                  <InfoRow label="Department" value={data.department} />
+                  <p className="text-center font-bold">
+                    Daffodil International University
+                  </p>
+                </div>
+
+                {/* Submission Date */}
+                <p className="text-base text-center font-semibold mt-6 mb-25">
+                  <span className="underline">Submission Date:</span>{" "}
+                  {capitalizeEachWord(data.date)}
+                </p>
+              </div>
             </div>
           </div>
         </div>
