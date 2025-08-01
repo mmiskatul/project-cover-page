@@ -80,11 +80,11 @@ function Download() {
   }
 
   return (
-    <div className="flex flex-col items-center gap-4 mt-32">
+    <div className="flex flex-col items-center gap-4 mt-20">
       <BackButton />
-      <h2 className="text-xl font-semibold my-5">Download Your File</h2>
+      <h2 className="text-4xl font-semibold my-10">Download Your File</h2>
 
-      <div className="flex gap-4">
+      <div className="flex gap-30">
         <button
           onClick={() => handleDownload("pdf")}
           className="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition hover:scale-105 active:scale-95"
@@ -99,7 +99,7 @@ function Download() {
           Download as DOCX
         </button>
       </div>
-
+        <br />
       <div className="mt-6">
         <Link
           to="/merge"

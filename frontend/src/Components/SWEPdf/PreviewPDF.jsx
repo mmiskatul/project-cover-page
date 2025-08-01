@@ -32,7 +32,7 @@ export default function PreviewPDF({ data }) {
         minHeight: "1123px", // A4 height in px at 96 DPI
         padding: "40px", // Inner padding
         boxSizing: "border-box",
-        fontFamily: "Arial, sans-serif",
+        fontFamily: "Gupter, sans-serif",
       }}
     >
       {/* Header & Logo */}
@@ -84,7 +84,7 @@ export default function PreviewPDF({ data }) {
             {data.studentId === "" ? <Placeholder /> : data.studentId}
           </p>
 
-          <div className="flex flex-row jsutify-around gap-4">
+          <div className="flex flex-row  gap-20">
             <p>
               <span className="font-bold ">Batch:</span>
               {data.batch === "" ? (
@@ -103,7 +103,7 @@ export default function PreviewPDF({ data }) {
             </p>
           </div>
 
-          <div className="flex flex-row justify-around gap-4 items-start">
+          <div className="flex flex-row justify-between gap-4 items-start">
             <p className="whitespace-nowrap flex items-center gap-1">
               <span className="font-bold">Course Code:</span>
               {data.courseId === "" ? <Placeholder /> : data.courseId}

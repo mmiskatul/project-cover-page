@@ -35,6 +35,7 @@ export default function DefaultPreview({ data }) {
           padding: "50px 40px",
           boxSizing: "border-box",
           overflow: "hidden",
+          fontFamily: "Gupter, sans-serif",
         }}
       >
         {/* ✅ Background Watermark */}

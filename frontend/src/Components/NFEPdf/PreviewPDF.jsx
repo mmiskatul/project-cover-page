@@ -33,7 +33,7 @@ export default function PreviewPDF({ data }) {
         minHeight: "1123px", // A4 height
         padding: "40px",
         boxSizing: "border-box",
-        fontFamily: "Arial, sans-serif",
+        fontFamily: "Gupter, sans-serif",
       }}
     >
       {/* Header */}

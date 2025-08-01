@@ -39,6 +39,7 @@ export default function Default2PreviewPDF({ data }) {
           height: "1123px", // A4 height
           padding: "30px",
           boxSizing: "border-box",
+          fontFamily: "Gupter, sans-serif",
         }}
       >
         {/* Content Wrapper */}
