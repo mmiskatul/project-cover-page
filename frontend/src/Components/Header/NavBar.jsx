@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 const NavBar = () => {
     const navLinks = [
         { name: 'Home', path: '/' },
-        { name: 'Merge', path: '/merge' },
+        { name: 'Merge', path: '/mergepage' },
         { name: 'About', path: '/about' },
     ];
 
@@ -23,7 +23,7 @@ const NavBar = () => {
             <nav className="fixed top-0 left-0 p-6 bg-indigo-800 w-full flex items-center justify-between px-4 md:px-16 lg:px-24 xl:px-32 transition-all duration-500 z-50">
                 {/* Logo and desktop links */}
                 <div className="flex items-center justify-between w-full">
-                    <h1 className="text-xl font-bold text-white">DCM</h1>
+                    <Link to='/' className="text-xl font-bold text-white">DCM</Link>
 
                     <div className="hidden md:flex items-center gap-8">
                         {navLinks.map((link, i) => (

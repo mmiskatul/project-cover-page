@@ -5,7 +5,7 @@ const Hero = () => {
         <section className="flex flex-col items-center bg-gradient-to-b from-[#F1EAFF] to-[#FFFFFF] text-gray-800 pb-16 text-sm">
             
             {/* Assignement Cover page Builder Hero */}
-            <h1 className="text-4xl mt-32 md:text-6xl text-center font-medium max-w-3xl  bg-gradient-to-r from-black to-[#748298] text-transparent bg-clip-text">
+            <h1 className="text-4xl mb-6 mt-32 md:text-6xl text-center font-medium max-w-3xl  bg-gradient-to-r from-black to-[#748298] text-transparent bg-clip-text">
                 Build Your Assignment Cover Page with Ease
             </h1>
             <p className="text-slate-600 md:text-base max-md:px-2 text-center max-w-xl mt-3">

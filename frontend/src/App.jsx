@@ -7,7 +7,7 @@ import Footer from './Components/Footer/Footer'
 import Template from './Pages/Template/Template'
 import GeneratePdf from './Components/Generator/GeneratePdf'
 import Download from './Components/Download/Download'
-import MergePage from './Pages/Mege-page/Merge'
+import Merge from './Pages/Mege-page/Merge'
 
 function App() {
   return (
@@ -18,7 +18,7 @@ function App() {
         <Route path='/template' element={<Template/>} />
         <Route path='/template/:templateName' element={<GeneratePdf/>} />
         <Route path='/download' element={<Download/>}/>
-        <Route path='/merge' element={<MergePage/>}/>
+        <Route path='/merge' element={<Merge/>}/>
         <Route path='*' element={<Error/>} />
       </Routes>   
       <Footer/> 

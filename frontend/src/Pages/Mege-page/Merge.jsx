@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { AiOutlinePlus } from "react-icons/ai";
 
 function Merge() {
   const { state } = useLocation();
@@ -141,11 +142,21 @@ function Merge() {
       </div>
 
       {/* File Upload Input */}
+       {/* Upload Button */}
+      <label
+        htmlFor="file-upload"
+        className="inline-flex items-center gap-2 px-4 py-2 mt-4 bg-gray-200 text-gray-800 border border-gray-400 rounded hover:bg-gray-300 cursor-pointer transition shadow"
+      >
+        <AiOutlinePlus size={20} />
+        Upload PDF File
+      </label>
+
       <input
+        id="file-upload"
         type="file"
         accept=".pdf"
         onChange={handleFileChange}
-        className="mt-4 border p-2 rounded w-full max-w-md"
+        className="hidden"
       />
 
       {/* Merge Button */}

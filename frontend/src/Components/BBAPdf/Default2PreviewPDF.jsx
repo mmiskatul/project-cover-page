@@ -110,7 +110,7 @@ export default function Default2PreviewPDF({ data }) {
                 <img
                   src={data.bglogo}
                   alt="Background Logo"
-                  className=" ml-14 mt-20 mb-20  w-54 opacity-15 "
+                  className=" ml-7 mt-20 mb-20  w-54 opacity-15 "
                 />
               </div>
 
