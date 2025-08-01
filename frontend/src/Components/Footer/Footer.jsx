@@ -1,7 +1,9 @@
+import { Link } from "react-router-dom";
+
 const  Footer=()=> {
   const navLinks = [
     { name: "Home", path: "/" },
-    { name: "Merge", path: "/merge" },
+    { name: "Merge", path: "/mergepage" },
     { name: "About", path: "/about" },
   ];
   return (
@@ -24,12 +26,13 @@ const  Footer=()=> {
         <div className="text-center max-w-xl text-sm font-normal leading-relaxed ">
           {navLinks.map((link, index) => (
             <span key={index}>
-              <a
-                href={link.path}
+              <Link
+              
+                to={link.path}
                 className="text-white hover:text-indigo-800 transition duration-300"
               >
                 {link.name}
-              </a>
+              </Link>
               {index < navLinks.length - 1 && " | "}
             </span>
           ))}
