@@ -26,6 +26,17 @@ mongoose.connect(process.env.MONGODB_URI, {
 
 
 
+
+// API routes
+app.get('/api/hello', (req, res) => {
+  res.json({ message: 'Hello from Vercel!' });
+});
+
+// Serve frontend
+app.use(express.static('frontend/dist'));
+
+
+
 // Stats Schema
 const statsSchema = new mongoose.Schema({
   totalCoverPages: { type: Number, default: 0 },
