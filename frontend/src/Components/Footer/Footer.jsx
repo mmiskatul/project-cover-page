@@ -33,7 +33,7 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Branding and description */}
           <div className="space-y-4">
-            <h1 className="text-2xl font-bold text-white">DIU Cover Pro</h1>
+            <h1 className="text-2xl font-bold text-white">DIU PageCrafter</h1>
             <p className="text-sm text-gray-400 leading-relaxed">
               Create professional DIU assignment cover pages in seconds. 
               Designed for students to customize, merge, and download easily.
@@ -85,7 +85,7 @@ const Footer = () => {
         <div className="mt-12 pt-8 border-t border-slate-800">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <p className="text-xs text-gray-500">
-              © {new Date().getFullYear()} DIU Cover Pro. All rights reserved.
+              © {new Date().getFullYear()} DIU PageCrafter. All rights reserved.
             </p>
             <div className="mt-4 md:mt-0">
               <a

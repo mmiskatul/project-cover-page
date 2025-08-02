@@ -65,7 +65,7 @@ const NavBar = () => {
                 to="/"
                 className="text-2xl font-bold text-white hover:text-indigo-100 transition-colors"
               >
-                DCP
+               DIu PageCrafter
                 <span className="text-indigo-300">.</span>
               </Link>
             </div>
