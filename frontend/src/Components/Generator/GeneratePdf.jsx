@@ -113,9 +113,9 @@ function GeneratePdf() {
         {/* Main Content */}
         <div className="bg-white rounded-xl shadow-md overflow-hidden">
           <div className="p-6 md:p-8">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              {/* Input Form Section */}
-              <div className="space-y-6">
+            <div className="flex flex-col lg:flex-row gap-8">
+              {/* Input Form Section - 35% width */}
+              <div className="w-full lg:w-[35%] space-y-6">
                 <div className="border-b border-gray-200 pb-4">
                   <h2 className="text-xl font-semibold text-gray-800">Assignment Details</h2>
                   <p className="text-gray-500 mt-1">Fill in your assignment information</p>
@@ -123,13 +123,13 @@ function GeneratePdf() {
                 <InputForm inputData={inputData} setInputData={setInputData} />
               </div>
 
-              {/* Preview Section */}
-              <div className="space-y-6">
+              {/* Preview Section - 65% width */}
+              <div className="w-full lg:w-[65%] space-y-6">
                 <div className="border-b border-gray-200 pb-4">
                   <h2 className="text-xl font-semibold text-gray-800">Preview</h2>
                   <p className="text-gray-500 mt-1">Your assignment will appear here</p>
                 </div>
-                <div className="flex justify-center border border-gray-200 rounded-lg p-4 bg-gray-50">
+                <div className="flex justify-center border border-gray-200 rounded-lg p-4 bg-gray-50 h-full">
                   {templateName === "swe" && <PreviewPDF data={inputData} />}
                   {templateName === "bba" && <Default2PreviewPDF data={inputData} />}
                   {templateName === "nfe" && <PreviewPDFNFE data={inputData} />}
@@ -141,11 +141,11 @@ function GeneratePdf() {
             </div>
 
             {/* Generate Button */}
-            <div className="mt-10 flex justify-center">
+            <div className="mt-30 flex justify-center">
               <button 
                 onClick={handleGenerate}
                 disabled={isGenerating || !inputData.courseName || !inputData.studentName}
-                className={`px-8 py-3 rounded-lg shadow-md transition-all duration-200 flex items-center justify-center gap-2 w-full max-w-md ${
+                className={`px-8 py-3  rounded-lg shadow-md transition-all duration-200 flex items-center justify-center gap-2 w-full max-w-md ${
                   isGenerating 
                     ? 'bg-blue-400 cursor-not-allowed' 
                     : (!inputData.courseName || !inputData.studentName)

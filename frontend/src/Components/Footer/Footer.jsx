@@ -62,7 +62,7 @@ const Footer = () => {
           {/* Social and contact */}
           <div className="space-y-4">
             <h3 className="text-sm font-semibold uppercase tracking-wider text-white">
-              Connect With Us
+              Connect With me
             </h3>
             <div className="flex space-x-4">
               {socialLinks.map((social, index) => (

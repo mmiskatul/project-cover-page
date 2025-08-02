@@ -15,8 +15,20 @@ const NavBar = () => {
 
   // Lock body scroll when mobile menu is open
   useEffect(() => {
-    document.body.style.overflow = isMenuOpen ? "hidden" : "";
-    return () => (document.body.style.overflow = "");
+    if (isMenuOpen) {
+      document.body.style.overflow = "hidden";
+      document.body.style.position = "fixed";
+      document.body.style.width = "100%";
+    } else {
+      document.body.style.overflow = "";
+      document.body.style.position = "";
+      document.body.style.width = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+      document.body.style.position = "";
+      document.body.style.width = "";
+    };
   }, [isMenuOpen]);
 
   // Add scroll effect
@@ -97,27 +109,30 @@ const NavBar = () => {
 
         {/* Mobile menu */}
         <div
-          className={`md:hidden transition-all duration-300 ease-in-out ${
+          className={`md:hidden fixed inset-x-0 top-16 transition-all duration-300 ease-in-out ${
             isMenuOpen
-              ? "opacity-100 scale-100"
-              : "opacity-0 scale-95 pointer-events-none"
+              ? "opacity-100 translate-y-0"
+              : "opacity-0 -translate-y-4 pointer-events-none"
           }`}
+          style={{ height: "calc(100vh - 4rem)" }}
         >
-          <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-indigo-800 shadow-xl">
-            {navLinks.map((link, index) => (
-              <Link
-                key={index}
-                to={link.path}
-                className={`block px-3 py-2 rounded-md text-base font-medium transition-colors ${
-                  location.pathname === link.path
-                    ? "text-white bg-indigo-700"
-                    : "text-indigo-100 hover:text-white hover:bg-indigo-600"
-                }`}
-                onClick={() => setIsMenuOpen(false)}
-              >
-                {link.name}
-              </Link>
-            ))}
+          <div className="h-full bg-indigo-800 shadow-xl overflow-y-auto">
+            <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+              {navLinks.map((link, index) => (
+                <Link
+                  key={index}
+                  to={link.path}
+                  className={`block px-3 py-2 rounded-md text-base font-medium transition-colors ${
+                    location.pathname === link.path
+                      ? "text-white bg-indigo-700"
+                      : "text-indigo-100 hover:text-white hover:bg-indigo-600"
+                  }`}
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  {link.name}
+                </Link>
+              ))}
+            </div>
           </div>
         </div>
       </nav>
