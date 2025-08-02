@@ -24,29 +24,7 @@ mongoose.connect(process.env.MONGODB_URI, {
 .then(() => console.log('✅ Connected to MongoDB'))
 .catch(err => console.error('MongoDB connection error:', err));
 
-// Feedback Schema
-const feedbackSchema = new mongoose.Schema({
-  email: { 
-    type: String,
-    trim: true,
-    lowercase: true,
-    validate: {
-      validator: (v) => {
-        if (!v) return true;
-        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
-      },
-      message: props => `${props.value} is not a valid email address!`
-    }
-  },
-  feedback: { 
-    type: String, 
-    required: true,
-    trim: true,
-    minLength: [10, 'Feedback must be at least 10 characters long']
-  },
-  createdAt: { type: Date, default: Date.now }
-});
-const Feedback = mongoose.model('Feedback', feedbackSchema);
+
 
 // Stats Schema
 const statsSchema = new mongoose.Schema({
@@ -289,7 +267,7 @@ app.use((err, req, res, next) => {
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, (req,res) => {
   console.log(`✅ Server running on http://localhost:${PORT}`);
-  initializeStats();
+    initializeStats();
 }).on('error', err => {
   console.error('Server error:', err);
 });

@@ -3,12 +3,12 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Link, useLocation } from "react-router-dom";
 import BackButton from "../BackButton/BackButton";
+import urlBackend from "../../assets/url";
 
 
 function Download() {
   const { state } = useLocation();
   const { html, fileName } = state || {};
-  const urlBackend='http://localhost:5000';
 
 
   const handleDownload = async () => {

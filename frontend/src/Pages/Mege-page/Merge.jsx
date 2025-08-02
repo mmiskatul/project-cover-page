@@ -4,7 +4,7 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { AiOutlinePlus, AiOutlineClose, AiOutlineFilePdf } from "react-icons/ai";
 import { FiUpload, FiDownload } from "react-icons/fi";
-
+import urlbackend from "../../assets/url";
 
 
 
@@ -14,7 +14,6 @@ function Merge() {
   const { html, fileName } = state || {};
 
   // backend server
-  const urlBackend='http://localhost:5000';
 
   const [coverBlob, setCoverBlob] = useState(null);
   const [coverURL, setCoverURL] = useState(null);
@@ -39,7 +38,7 @@ function Merge() {
       );
 
       try {
-        const res = await fetch(`${urlBackend}/generate-pdf`, {
+        const res = await fetch(`${urlbackend}/generate-pdf`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ html }),
@@ -188,7 +187,7 @@ function Merge() {
         formData.append("files", file.file);
       });
 
-      const res = await fetch(`${urlBackend}/merge-auto`, {
+      const res = await fetch(`${urlbackend}/merge-auto`, {
         method: "POST",
         body: formData,
       });
