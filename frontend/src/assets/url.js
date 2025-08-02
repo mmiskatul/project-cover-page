@@ -1,3 +1,3 @@
- const urlBackend=`https://cover-page-backend.onrender.com`;
+ const urlBackend=`http://localhost:5000/`;
 
  export default urlBackend;
