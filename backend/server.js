@@ -287,7 +287,7 @@ app.use((err, req, res, next) => {
 
 // Start Server
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
+app.listen(PORT, (req,res) => {
   console.log(`✅ Server running on http://localhost:${PORT}`);
   initializeStats();
 }).on('error', err => {

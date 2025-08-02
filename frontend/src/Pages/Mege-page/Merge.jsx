@@ -14,7 +14,7 @@ function Merge() {
   const { html, fileName } = state || {};
 
   // backend server
-  const urlBackend='https://project-cover-page.vercel.app/';
+  const urlBackend='http://localhost:5000';
 
   const [coverBlob, setCoverBlob] = useState(null);
   const [coverURL, setCoverURL] = useState(null);
