@@ -17,8 +17,10 @@ function CourseType({inputData,handleChange}) {
         >
           <option value="" disabled>Select course type</option>
           <option value="theory">Theory</option>
-          <option value="lab">Lab</option>
+          <option value="lab assignment">Lab Assignment</option>
           <option value="project">Project</option>
+          <option value="lab report">lab Report</option>
+
         </select>
       </div>
     </div>

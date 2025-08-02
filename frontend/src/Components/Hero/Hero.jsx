@@ -3,10 +3,6 @@ import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 
 const Hero = () => {
-    const [email, setEmail] = useState("");
-    const [feedback, setFeedback] = useState("");
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    const [isSubmitted, setIsSubmitted] = useState(false);
     const [stats, setStats] = useState({
         templates: 12,
         users: 0,
@@ -46,28 +42,7 @@ const Hero = () => {
         return () => clearInterval(intervalId);
     }, []);
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setIsSubmitting(true);
-        
-        try {
-            const response = await fetch('/api/feedback', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, feedback }),
-            });
-
-            if (!response.ok) throw new Error('Failed to submit feedback');
-            
-            setIsSubmitted(true);
-            setEmail("");
-            setFeedback("");
-        } catch (error) {
-            console.error('Error submitting feedback:', error);
-        } finally {
-            setIsSubmitting(false);
-        }
-    };
+  
 
     const formatNumber = (num) => {
         return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -151,79 +126,7 @@ const Hero = () => {
                     Refresh Stats
                 </button>
 
-                {/* Feedback Form */}
-                <div className="mt-16 w-full max-w-2xl">
-                    <div className="bg-white p-8 rounded-2xl shadow-lg border border-gray-100 backdrop-blur-sm bg-opacity-80">
-                        {isSubmitted ? (
-                            <div className="text-center py-6">
-                                <div className="inline-flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mb-4">
-                                    <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-                                    </svg>
-                                </div>
-                                <h4 className="text-lg font-medium text-gray-800 mb-1">Thank You!</h4>
-                                <p className="text-gray-600">We appreciate your feedback.</p>
-                                <button
-                                    onClick={() => setIsSubmitted(false)}
-                                    className="mt-4 text-indigo-600 hover:text-indigo-800 text-sm font-medium"
-                                >
-                                    Submit another feedback
-                                </button>
-                            </div>
-                        ) : (
-                            <>
-                                <div className="text-center mb-6">
-                                    <h3 className="text-2xl font-semibold text-gray-800">Help Me Improve</h3>
-                                    <p className="text-gray-600 mt-2">Your feedback helps me improve</p>
-                                </div>
-                                <form onSubmit={handleSubmit} className="space-y-6">
-                                    <div>
-                                        <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                                            Email (Optional)
-                                        </label>
-                                        <input
-                                            type="email"
-                                            id="email"
-                                            value={email}
-                                            onChange={(e) => setEmail(e.target.value)}
-                                            className="w-full px-5 py-3 text-gray-700 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
-                                            placeholder="your@email.com"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label htmlFor="feedback" className="block text-sm font-medium text-gray-700 mb-2">
-                                            Your Feedback
-                                        </label>
-                                        <textarea
-                                            id="feedback"
-                                            value={feedback}
-                                            onChange={(e) => setFeedback(e.target.value)}
-                                            className="w-full px-5 py-3 text-gray-700 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
-                                            rows="4"
-                                            required
-                                            placeholder="Your thoughts..."
-                                        ></textarea>
-                                    </div>
-                                    <button
-                                        type="submit"
-                                        disabled={isSubmitting}
-                                        className={`w-full py-3 px-6 rounded-lg font-semibold text-white transition ${isSubmitting ? 'bg-indigo-400 cursor-not-allowed' : 'bg-indigo-600 hover:bg-indigo-700 shadow-md hover:shadow-lg'}`}
-                                    >
-                                        {isSubmitting ? (
-                                            <span className="flex items-center justify-center">
-                                                <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                                </svg>
-                                                Sending...
-                                            </span>
-                                        ) : 'Submit Feedback'}
-                                    </button>
-                                </form>
-                            </>
-                        )}
-                    </div>
-                </div>
+                
             </div>
         </section>
     );

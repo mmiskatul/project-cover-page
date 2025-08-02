@@ -40,15 +40,15 @@ export default function DefaultPreview({ data }) {
       >
         {/* ✅ Background Watermark */}
         <div
-          className="absolute top-1/2 left-1/2 pointer-events-none mt-10"
+          className="absolute top-1/2 left-1/2 pointer-events-none mt-10 ml-"
           style={{
             transform: "translate(-50%, -50%)",
             backgroundImage: `url(${data.bglogo})`,
             backgroundRepeat: "no-repeat",
             backgroundPosition: "center",
             backgroundSize: "contain",
-            width: "380px",
-            height: "460px",
+            width: "370px",
+            height: "440px",
             opacity: 0.13,
             zIndex: 0,
           }}

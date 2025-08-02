@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require("express");
 const puppeteer = require("puppeteer");
 const multer = require("multer");
@@ -6,6 +7,7 @@ const fs = require("fs");
 const path = require("path");
 const cors = require("cors");
 const mongoose = require('mongoose');
+const { body, validationResult } = require('express-validator');
 
 const app = express();
 
@@ -15,7 +17,7 @@ app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 
 // Connect to MongoDB
-mongoose.connect(process.env.MONGODB_URI || "mongodb+srv://masabimiskat:masabimiskat@cluster0.41p8umu.mongodb.net/", {
+mongoose.connect(process.env.MONGODB_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true
 })
@@ -24,13 +26,29 @@ mongoose.connect(process.env.MONGODB_URI || "mongodb+srv://masabimiskat:masabimi
 
 // Feedback Schema
 const feedbackSchema = new mongoose.Schema({
-  email: String,
-  feedback: { type: String, required: true },
+  email: { 
+    type: String,
+    trim: true,
+    lowercase: true,
+    validate: {
+      validator: (v) => {
+        if (!v) return true;
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+      },
+      message: props => `${props.value} is not a valid email address!`
+    }
+  },
+  feedback: { 
+    type: String, 
+    required: true,
+    trim: true,
+    minLength: [10, 'Feedback must be at least 10 characters long']
+  },
   createdAt: { type: Date, default: Date.now }
 });
 const Feedback = mongoose.model('Feedback', feedbackSchema);
 
-// Enhanced Stats Schema
+// Stats Schema
 const statsSchema = new mongoose.Schema({
   totalCoverPages: { type: Number, default: 0 },
   totalUsers: { type: Number, default: 0 },
@@ -52,7 +70,6 @@ const initializeStats = async () => {
       console.log('✅ Initialized stats document');
     }
     
-    // Reset daily count if new day
     const today = new Date().toDateString();
     const lastUpdatedDate = stats.lastUpdated.toDateString();
     if (today !== lastUpdatedDate) {
@@ -103,19 +120,57 @@ app.post('/api/increment-count', async (req, res) => {
 });
 
 // Feedback Endpoint
-app.post('/api/feedback', async (req, res) => {
+app.post('/api/feedback', [
+  body('email').optional().isEmail().withMessage('Please provide a valid email').normalizeEmail(),
+  body('feedback').trim().notEmpty().withMessage('Feedback is required')
+    .isLength({ min: 10 }).withMessage('Feedback must be at least 10 characters long')
+], async (req, res) => {
   try {
-    const { email, feedback } = req.body;
-    if (!feedback) return res.status(400).json({ error: 'Feedback required' });
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ 
+        success: false,
+        errors: errors.array().map(err => ({
+          field: err.param,
+          message: err.msg
+        }))
+      });
+    }
 
-    await Feedback.create({
-      email: email || 'anonymous',
+    const { email, feedback } = req.body;
+    const newFeedback = await Feedback.create({
+      email: email || undefined,
       feedback
     });
-    res.status(201).json({ message: 'Feedback submitted' });
+
+    res.status(201).json({ 
+      success: true,
+      message: 'Feedback submitted successfully',
+      data: {
+        id: newFeedback._id,
+        createdAt: newFeedback.createdAt
+      }
+    });
+
   } catch (error) {
-    console.error('Feedback error:', error);
-    res.status(500).json({ error: 'Failed to submit feedback' });
+    console.error('Feedback submission error:', error);
+    
+    if (error.name === 'ValidationError') {
+      return res.status(400).json({ 
+        success: false,
+        error: 'Validation failed',
+        details: Object.values(error.errors).map(err => ({
+          field: err.path,
+          message: err.message
+        }))
+      });
+    }
+    
+    res.status(500).json({ 
+      success: false,
+      error: 'Failed to submit feedback',
+      message: process.env.NODE_ENV === 'development' ? error.message : 'Please try again later'
+    });
   }
 });
 
@@ -162,8 +217,9 @@ app.post("/generate-pdf", async (req, res) => {
     await browser.close();
 
     // Track generation
-    await fetch('http://localhost:5000/api/increment-count', { method: 'POST' })
-      .catch(err => console.error('Tracking error:', err));
+    await fetch(`http://localhost:${process.env.PORT || 5000}/api/increment-count`, { 
+      method: 'POST' 
+    }).catch(err => console.error('Tracking error:', err));
 
     res.set({
       "Content-Type": "application/pdf",

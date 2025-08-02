@@ -51,11 +51,14 @@ export default function PreviewPDF({ data }) {
         <h3 className="text-3xl font-bold mb-6 text-center">
           {data.courseType === "theory"
             ? "Theory Assignment Report"
-            : data.courseType === "lab"
+            : data.courseType === "lab assignment"
             ? "Lab Assignment Report"
             : data.courseType === "project"
             ? "Project Report"
-            : "Select the type of report"}
+            :data.courseType ==="lab report"
+            ? "Lab Report"            
+            : "Select the type of report"
+            }
         </h3>
 
         {/* Mark Distribution Table */}
