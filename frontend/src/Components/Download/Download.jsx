@@ -8,6 +8,8 @@ import BackButton from "../BackButton/BackButton";
 function Download() {
   const { state } = useLocation();
   const { html, fileName } = state || {};
+  const urlBackend='https://project-cover-page.vercel.app/';
+
 
   const handleDownload = async () => {
     const loadingToastId = toast.loading(
@@ -24,7 +26,7 @@ function Download() {
     );
 
     try {
-      const res = await fetch("http://localhost:5000/generate-pdf", {
+      const res = await fetch(`${urlBackend}/generate-pdf`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ html }),

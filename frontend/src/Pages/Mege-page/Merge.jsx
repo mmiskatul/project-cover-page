@@ -5,9 +5,16 @@ import "react-toastify/dist/ReactToastify.css";
 import { AiOutlinePlus, AiOutlineClose, AiOutlineFilePdf } from "react-icons/ai";
 import { FiUpload, FiDownload } from "react-icons/fi";
 
+
+
+
+
 function Merge() {
   const { state } = useLocation();
   const { html, fileName } = state || {};
+
+  // backend server
+  const urlBackend='https://project-cover-page.vercel.app/';
 
   const [coverBlob, setCoverBlob] = useState(null);
   const [coverURL, setCoverURL] = useState(null);
@@ -32,7 +39,7 @@ function Merge() {
       );
 
       try {
-        const res = await fetch("http://localhost:5000/generate-pdf", {
+        const res = await fetch(`${urlBackend}/generate-pdf`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ html }),
@@ -181,7 +188,7 @@ function Merge() {
         formData.append("files", file.file);
       });
 
-      const res = await fetch("http://localhost:5000/merge-auto", {
+      const res = await fetch(`${urlBackend}/merge-auto`, {
         method: "POST",
         body: formData,
       });
