@@ -18,7 +18,7 @@ import devPic from "../../assets/develop.png";
 
 function About() {
   return (
-    <div className="min-h-screen mt-10 px-8 md:px-0 py-16 text-gray-800 max-w-5xl mx-auto relative">
+    <div className="min-h-screen pt-20 px-8 md:px-0 py-16 text-gray-800 max-w-5xl mx-auto relative">
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
       

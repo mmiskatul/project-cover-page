@@ -1,7 +1,6 @@
 import React, { useRef, useState, useEffect } from "react";
-import { FiAlignJustify } from "react-icons/fi";
-import { IoClose } from "react-icons/io5";
-import { Link } from "react-router-dom";
+import { FiMenu, FiX } from "react-icons/fi";
+import { Link, useLocation } from "react-router-dom";
 
 const NavBar = () => {
   const navLinks = [
@@ -10,83 +9,119 @@ const NavBar = () => {
   ];
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const ref = useRef(null);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const location = useLocation();
+  const navRef = useRef(null);
 
   // Lock body scroll when mobile menu is open
   useEffect(() => {
     document.body.style.overflow = isMenuOpen ? "hidden" : "";
+    return () => (document.body.style.overflow = "");
   }, [isMenuOpen]);
 
-  return (
-    <div ref={ref} className="relative">
-      <nav className="fixed top-0 left-0 p-6 bg-indigo-800 w-full flex items-center justify-between px-4 md:px-16 lg:px-24 xl:px-32 transition-all duration-500 z-50">
-        {/* Logo and desktop links */}
-        <div className="flex items-center justify-between w-full">
-          <Link to="/" className="text-xl font-bold text-white">
-           DCP
-          </Link>
+  // Add scroll effect
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 10) {
+        setIsScrolled(true);
+      } else {
+        setIsScrolled(false);
+      }
+    };
 
-          <div className="hidden md:flex items-center gap-8">
-            {navLinks.map((link, i) => (
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  // Close menu when route changes
+  useEffect(() => {
+    setIsMenuOpen(false);
+  }, [location]);
+
+  return (
+    <header ref={navRef} className="fixed w-full z-50">
+      <nav
+        className={`transition-all duration-300 ${
+          isScrolled ? "bg-indigo-900 shadow-lg" : "bg-indigo-800"
+        }`}
+      >
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
+            {/* Logo */}
+            <div className="flex-shrink-0 flex items-center">
               <Link
-                key={i}
+                to="/"
+                className="text-2xl font-bold text-white hover:text-indigo-100 transition-colors"
+              >
+                DCP
+                <span className="text-indigo-300">.</span>
+              </Link>
+            </div>
+
+            {/* Desktop Navigation */}
+            <div className="hidden md:block">
+              <div className="ml-10 flex items-center space-x-8">
+                {navLinks.map((link, index) => (
+                  <Link
+                    key={index}
+                    to={link.path}
+                    className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                      location.pathname === link.path
+                        ? "text-white bg-indigo-700"
+                        : "text-indigo-100 hover:text-white hover:bg-indigo-600"
+                    }`}
+                  >
+                    {link.name}
+                  </Link>
+                ))}
+              </div>
+            </div>
+
+            {/* Mobile menu button */}
+            <div className="md:hidden flex items-center">
+              <button
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
+                className="inline-flex items-center justify-center p-2 rounded-md text-indigo-100 hover:text-white hover:bg-indigo-700 focus:outline-none transition-colors"
+                aria-expanded={isMenuOpen}
+                aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+              >
+                {isMenuOpen ? (
+                  <FiX className="block h-6 w-6" />
+                ) : (
+                  <FiMenu className="block h-6 w-6" />
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Mobile menu */}
+        <div
+          className={`md:hidden transition-all duration-300 ease-in-out ${
+            isMenuOpen
+              ? "opacity-100 scale-100"
+              : "opacity-0 scale-95 pointer-events-none"
+          }`}
+        >
+          <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-indigo-800 shadow-xl">
+            {navLinks.map((link, index) => (
+              <Link
+                key={index}
                 to={link.path}
-                className="text-white font-medium hover:text-gray-200 transition duration-300"
+                className={`block px-3 py-2 rounded-md text-base font-medium transition-colors ${
+                  location.pathname === link.path
+                    ? "text-white bg-indigo-700"
+                    : "text-indigo-100 hover:text-white hover:bg-indigo-600"
+                }`}
                 onClick={() => setIsMenuOpen(false)}
               >
                 {link.name}
               </Link>
             ))}
           </div>
-
-          {/* Mobile menu button */}
-          <button
-            aria-label={isMenuOpen ? "Close menu" : "Open menu"}
-            aria-expanded={isMenuOpen}
-            className="md:hidden bg-black text-white px-4 py-2 rounded-full transition duration-300"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-          >
-            {isMenuOpen ? <IoClose /> : <FiAlignJustify />}
-          </button>
         </div>
       </nav>
-
-      {/* Mobile menu */}
-      <div
-        className={`fixed top-0 left-0 w-full h-screen bg-white text-base flex flex-col items-center justify-center gap-6 text-gray-800 transition-transform transform ease-in-out duration-300 md:hidden z-40 ${
-          isMenuOpen ? "translate-x-0" : "-translate-x-full"
-        }`}
-      >
-        <button
-          className="absolute top-4 right-4"
-          onClick={() => setIsMenuOpen(false)}
-          aria-label="Close menu"
-        >
-          <svg
-            className="h-6 w-6"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            viewBox="0 0 24 24"
-          >
-            <line x1="18" y1="6" x2="6" y2="18" />
-            <line x1="6" y1="6" x2="18" y2="18" />
-          </svg>
-        </button>
-
-        {navLinks.map((link, i) => (
-          <Link
-            key={i}
-            to={link.path}
-            className="text-white font-medium hover:text-gray-200 transition duration-300"
-            onClick={() => setIsMenuOpen(false)}
-          >
-            {link.name}
-          </Link>
-        ))}
-      </div>
-      {/* text-gray-800 hover:text-gray-600 transition duration-300 */}
-    </div>
+    </header>
   );
 };
 
