@@ -14,100 +14,142 @@ app.use(cors());
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 
-
-
-
 // Connect to MongoDB
-mongoose.connect(process.env.MONGODB_URI || "mongodb+srv://masabimiskat:masabimiskat@cluster0.41p8umu.mongodb.net/ ", {
+mongoose.connect(process.env.MONGODB_URI || "mongodb+srv://masabimiskat:masabimiskat@cluster0.41p8umu.mongodb.net/", {
   useNewUrlParser: true,
   useUnifiedTopology: true
 })
 .then(() => console.log('✅ Connected to MongoDB'))
 .catch(err => console.error('MongoDB connection error:', err));
 
-// Create feedback schema and model
+// Feedback Schema
 const feedbackSchema = new mongoose.Schema({
   email: String,
   feedback: { type: String, required: true },
   createdAt: { type: Date, default: Date.now }
 });
-
 const Feedback = mongoose.model('Feedback', feedbackSchema);
 
-// Add this new endpoint before the error handling middleware
-// Feedback Submission Endpoint
+// Enhanced Stats Schema
+const statsSchema = new mongoose.Schema({
+  totalCoverPages: { type: Number, default: 0 },
+  totalUsers: { type: Number, default: 0 },
+  templates: { type: Number, default: 12 },
+  lastUpdated: { type: Date, default: Date.now },
+  dailyGenerations: {
+    date: { type: Date, default: Date.now },
+    count: { type: Number, default: 0 }
+  }
+}, { timestamps: true });
+const Stats = mongoose.model('Stats', statsSchema);
+
+// Initialize Stats
+const initializeStats = async () => {
+  try {
+    let stats = await Stats.findOne();
+    if (!stats) {
+      stats = await Stats.create({});
+      console.log('✅ Initialized stats document');
+    }
+    
+    // Reset daily count if new day
+    const today = new Date().toDateString();
+    const lastUpdatedDate = stats.lastUpdated.toDateString();
+    if (today !== lastUpdatedDate) {
+      stats.dailyGenerations = { date: new Date(), count: 0 };
+      await stats.save();
+    }
+  } catch (err) {
+    console.error('Stats initialization error:', err);
+  }
+};
+
+// Stats Endpoints
+app.get('/api/stats', async (req, res) => {
+  try {
+    const stats = await Stats.findOne();
+    res.json({
+      templates: stats?.templates || 12,
+      users: stats?.totalUsers || 0,
+      coverPagesGenerated: stats?.totalCoverPages || 0,
+      dailyGenerations: stats?.dailyGenerations?.count || 0
+    });
+  } catch (error) {
+    console.error('Stats fetch error:', error);
+    res.status(500).json({ 
+      error: 'Failed to fetch stats',
+      fallback: { templates: 12, users: 1250, coverPagesGenerated: 3842 }
+    });
+  }
+});
+
+app.post('/api/increment-count', async (req, res) => {
+  try {
+    await Stats.updateOne({}, {
+      $inc: { 
+        totalCoverPages: 1,
+        'dailyGenerations.count': 1 
+      },
+      $set: { 
+        lastUpdated: new Date(),
+        'dailyGenerations.date': new Date()
+      }
+    });
+    res.status(200).send();
+  } catch (error) {
+    console.error('Count increment error:', error);
+    res.status(500).json({ error: 'Failed to update count' });
+  }
+});
+
+// Feedback Endpoint
 app.post('/api/feedback', async (req, res) => {
   try {
     const { email, feedback } = req.body;
-    
-    if (!feedback) {
-      return res.status(400).json({ error: 'Feedback content is required' });
-    }
+    if (!feedback) return res.status(400).json({ error: 'Feedback required' });
 
-    const newFeedback = new Feedback({
+    await Feedback.create({
       email: email || 'anonymous',
       feedback
     });
-
-    await newFeedback.save();
-    
-    res.status(201).json({ message: 'Feedback submitted successfully' });
+    res.status(201).json({ message: 'Feedback submitted' });
   } catch (error) {
-    console.error('Feedback submission error:', error);
+    console.error('Feedback error:', error);
     res.status(500).json({ error: 'Failed to submit feedback' });
   }
 });
 
-
-
-
-
-
-// Configure storage for uploaded files
+// File Upload Configuration
 const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
+  destination: (req, file, cb) => {
     const dir = "uploads/";
     if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
     cb(null, dir);
   },
-  filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+  filename: (req, file, cb) => {
     const ext = path.extname(file.originalname) || ".pdf";
-    cb(null, file.fieldname + "-" + uniqueSuffix + ext);
-  },
+    cb(null, `${file.fieldname}-${Date.now()}${ext}`);
+  }
 });
 
 const upload = multer({ 
   storage,
-  limits: {
-    fileSize: 50 * 1024 * 1024, // 50MB limit per file
-    files: 10 // Maximum 10 files
-  }
+  limits: { fileSize: 50 * 1024 * 1024, files: 10 }
 });
-
-
-
-
 
 // PDF Generation Endpoint
 app.post("/generate-pdf", async (req, res) => {
-  const { html } = req.body;
-  if (!html) return res.status(400).json({ error: "Missing HTML content" });
-
   try {
+    const { html } = req.body;
+    if (!html) return res.status(400).json({ error: "HTML content required" });
+
     const browser = await puppeteer.launch({
       headless: "new",
       args: ["--no-sandbox", "--disable-setuid-sandbox"],
     });
 
     const page = await browser.newPage();
-
-    await page.setViewport({
-      width: 794,   // A4 width at 96 DPI
-      height: 1123, // A4 height at 96 DPI
-      deviceScaleFactor: 1,
-    });
-
+    await page.setViewport({ width: 794, height: 1123, deviceScaleFactor: 1 });
     await page.setContent(html, { waitUntil: "networkidle0" });
     await page.evaluateHandle("document.fonts.ready");
 
@@ -119,6 +161,10 @@ app.post("/generate-pdf", async (req, res) => {
 
     await browser.close();
 
+    // Track generation
+    await fetch('http://localhost:5000/api/increment-count', { method: 'POST' })
+      .catch(err => console.error('Tracking error:', err));
+
     res.set({
       "Content-Type": "application/pdf",
       "Content-Disposition": `inline; filename="cover-${Date.now()}.pdf"`,
@@ -129,53 +175,42 @@ app.post("/generate-pdf", async (req, res) => {
   }
 });
 
-
-
-
 // PDF Merging Endpoint
 app.post("/merge-auto", upload.fields([
   { name: "cover", maxCount: 1 },
-  { name: "files", maxCount: 10 },
+  { name: "files", maxCount: 10 }
 ]), async (req, res) => {
   try {
-    const coverFile = req.files?.cover?.[0];
-    const uploadedFiles = req.files?.files || [];
-
-    if (!coverFile || uploadedFiles.length === 0) {
-      return res.status(400).json({ error: "Cover and at least one file are required" });
+    const { cover, files } = req.files;
+    if (!cover?.[0] || !files?.length) {
+      return res.status(400).json({ error: "Cover and files required" });
     }
 
-    // Read all files in parallel
     const [coverData, ...filesData] = await Promise.all([
-      fs.promises.readFile(coverFile.path),
-      ...uploadedFiles.map(file => fs.promises.readFile(file.path))
+      fs.promises.readFile(cover[0].path),
+      ...files.map(file => fs.promises.readFile(file.path))
     ]);
 
-    // Load all PDFs in parallel
     const [coverDoc, ...fileDocs] = await Promise.all([
       PDFDocument.load(coverData),
       ...filesData.map(data => PDFDocument.load(data))
     ]);
 
     const mergedPdf = await PDFDocument.create();
-
-    // Add cover pages
     const coverPages = await mergedPdf.copyPages(coverDoc, coverDoc.getPageIndices());
     coverPages.forEach(page => mergedPdf.addPage(page));
 
-    // Add all other pages in order
     for (const doc of fileDocs) {
       const pages = await mergedPdf.copyPages(doc, doc.getPageIndices());
       pages.forEach(page => mergedPdf.addPage(page));
     }
 
-    // Save the merged PDF
     const mergedPdfBytes = await mergedPdf.save();
-
-    // Clean up temporary files in parallel
+    
+    // Cleanup
     await Promise.all([
-      fs.promises.unlink(coverFile.path),
-      ...uploadedFiles.map(file => fs.promises.unlink(file.path))
+      fs.promises.unlink(cover[0].path),
+      ...files.map(file => fs.promises.unlink(file.path))
     ]);
 
     res.set({
@@ -184,20 +219,21 @@ app.post("/merge-auto", upload.fields([
     }).send(Buffer.from(mergedPdfBytes));
   } catch (err) {
     console.error("Merge error:", err);
-    res.status(500).json({ error: err.message || "Failed to merge files" });
+    res.status(500).json({ error: err.message || "Merge failed" });
   }
 });
 
-
-
-
-// Error handling middleware
+// Error Handling
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  res.status(500).json({ error: "Something went wrong!" });
+  res.status(500).json({ error: "Internal server error" });
 });
 
+// Start Server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`✅ Server running on http://localhost:${PORT}`);
+  initializeStats();
+}).on('error', err => {
+  console.error('Server error:', err);
 });

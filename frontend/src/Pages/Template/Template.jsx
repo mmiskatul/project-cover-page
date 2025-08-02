@@ -15,7 +15,7 @@ const departments = [
   {name:'nfe', id: 4, fullName: 'Nutrition and Food Engineering', tempLogo: nfetemplate},
 ];
   return (
-    <div className='pt-32 px-5 items-center justify-center text-gray-800 text-lg'>
+    <div className='pt-32 px-5 mb-20 items-center justify-center text-gray-800 text-lg'>
       {/* Back Button */}
       <BackButton />
 

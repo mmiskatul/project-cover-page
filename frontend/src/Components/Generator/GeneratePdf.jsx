@@ -12,36 +12,7 @@ import bglogo from "../../assets/BgImage.png";
 const getHtmlFromPreview = () => {
   const preview = document.getElementById("cover-preview");
   if (!preview) return null;
-
-  const content = preview.outerHTML;
-
-  return `
-    <!DOCTYPE html>
-    <html lang="en">
-      <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>PDF</title>
-        <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-        <style>
-          * {
-            box-sizing: border-box;
-          }
-          html, body {
-            margin: 0;
-            padding: 0;
-            width: 794px;
-            height: 1123px;
-            font-family: sans-serif;
-            background-color: white;
-          }
-        </style>
-      </head>
-      <body>
-        ${content}
-      </body>
-    </html>
-  `;
+  return preview.outerHTML;
 };
 
 function GeneratePdf() {
@@ -60,15 +31,13 @@ function GeneratePdf() {
     date: "",
     department: "",
     topicname: "",
-    logo: "", // set later after loading base64
-    bglogo: "", // optional
+    logo: "",
+    bglogo: "",
     level: "",
   });
-
-  // Inside GeneratePdf component
+  const [isGenerating, setIsGenerating] = useState(false);
   const navigate = useNavigate();
 
-  // Convert image to base64 and set in state
   useEffect(() => {
     const convertToBase64 = async (imgPath, key) => {
       const response = await fetch(imgPath);
@@ -84,23 +53,44 @@ function GeneratePdf() {
     convertToBase64(bglogo, "bglogo");
   }, []);
 
-  const handleGenerate = () => {
-  const html = getHtmlFromPreview(); // your function to extract HTML
-  if (!html) {
-    alert("Preview not found");
-    return;
-  }
+  const handleGenerate = async () => {
+    setIsGenerating(true);
+    const html = getHtmlFromPreview();
+    if (!html) {
+      alert("Preview not found");
+      setIsGenerating(false);
+      return;
+    }
 
-  const fileName = `${inputData.courseName} Assignment (${inputData.studentId})`;
+    const fileName = `${inputData.courseName} Assignment (${inputData.studentId})`;
 
-  navigate("/download", {
-    state: { html, fileName },
-  });
-};
+    try {
+      // Track the PDF generation
+      await fetch('/api/increment-count', { method: 'POST' });
+      
+      navigate("/download", {
+        state: { 
+          html: `<!DOCTYPE html><html><head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+            <style>
+              * { box-sizing: border-box; }
+              html, body { margin: 0; padding: 0; width: 794px; height: 1123px; }
+            </style>
+          </head><body>${html}</body></html>`, 
+          fileName 
+        },
+      });
+    } catch (error) {
+      console.error("Generation error:", error);
+    } finally {
+      setIsGenerating(false);
+    }
+  };
 
   return (
     <div className="w-full mt-28 px-4 py-10">
-      {/* Back Button */}
       <div className="mb-6">
         <BackButton className="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 transition duration-200" />
       </div>
@@ -115,23 +105,30 @@ function GeneratePdf() {
         <div className="w-full lg:w-3/5">
           {templateName === "swe" && <PreviewPDF data={inputData} />}
           {templateName === "bba" && <Default2PreviewPDF data={inputData} />}
-          {templateName ==="nfe" && <PreviewPDFNFE data={inputData} />}
-          {!templateName && <DefaultPreview data={inputData} />}
-          {templateName !== "swe" && templateName !== "bba" && templateName && templateName !=="nfe" && (
+          {templateName === "nfe" && <PreviewPDFNFE data={inputData} />}
+          {(!templateName || (templateName !== "swe" && templateName !== "bba" && templateName !== "nfe")) && (
             <DefaultPreview data={inputData} />
           )}
-
         </div>
       </div>
 
-      {/* Generate Button */}
       <div className="w-full text-center mt-6">
         <button 
-          className="px-6 py-3 bg-blue-600 text-white rounded hover:bg-blue-700 transition duration-200 hover:scale-105 active:scale-95"
-          
           onClick={handleGenerate}
+          disabled={isGenerating}
+          className={`px-6 py-3 text-white rounded transition duration-200 hover:scale-105 active:scale-95 ${
+            isGenerating ? 'bg-blue-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'
+          }`}
         >
-          Generate PDF
+          {isGenerating ? (
+            <span className="flex items-center justify-center">
+              <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              Generating...
+            </span>
+          ) : 'Generate PDF'}
         </button>
       </div>
     </div>
