@@ -12,7 +12,10 @@ const { body, validationResult } = require('express-validator');
 const app = express();
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: 'https://cover-page-backend.onrender.com'
+  
+}));
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 
