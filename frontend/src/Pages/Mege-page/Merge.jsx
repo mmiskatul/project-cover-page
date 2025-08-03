@@ -1,21 +1,13 @@
-import React, { useEffect, useState, useCallback } from "react";
-import { useLocation } from "react-router-dom";
-import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import {
-  AiOutlinePlus,
-  AiOutlineClose,
-  AiOutlineFilePdf,
-} from "react-icons/ai";
-import { FiUpload, FiDownload } from "react-icons/fi";
-// import urlbackend from "../../assets/url";
+import React, { useEffect, useState, useCallback } from 'react';
+import { useLocation } from 'react-router-dom';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { AiOutlinePlus, AiOutlineClose, AiOutlineFilePdf } from 'react-icons/ai';
+import { FiUpload, FiDownload } from 'react-icons/fi';
 
 function Merge() {
   const { state } = useLocation();
   const { html, fileName } = state || {};
-
-  // backend server
-
   const [coverBlob, setCoverBlob] = useState(null);
   const [coverURL, setCoverURL] = useState(null);
   const [uploadedFiles, setUploadedFiles] = useState([]);
@@ -23,42 +15,31 @@ function Merge() {
   const [isDragging, setIsDragging] = useState(false);
 
   // Generate cover PDF
-  // Generate cover PDF (updated with proper error handling)
   useEffect(() => {
     const generateCover = async () => {
       if (!html) return;
 
-      const toastId = toast.loading("Preparing your cover...", {
-        position: "bottom-right",
+      const toastId = toast.loading('Generating cover...', { 
+        position: 'bottom-right' 
       });
 
       try {
-        const res = await fetch(`/api/generate-pdf`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
+        const res = await fetch('/api/generate-pdf', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ html }),
         });
 
-        if (!res.ok) {
-          const error = await res.json().catch(() => ({}));
-          throw new Error(error.message || "Cover generation failed");
-        }
+        if (!res.ok) throw new Error('Cover generation failed');
 
         const blob = await res.blob();
         const url = URL.createObjectURL(blob);
         setCoverBlob(blob);
         setCoverURL(url);
-
-        toast.success("Cover PDF ready!", {
-          position: "bottom-right",
-          autoClose: 3000,
-        });
+        toast.success('Cover generated!');
       } catch (error) {
         console.error(error);
-        toast.error(`Failed: ${error.message}`, {
-          position: "bottom-right",
-          autoClose: 3000,
-        });
+        toast.error(`Failed: ${error.message}`);
       } finally {
         toast.dismiss(toastId);
       }
@@ -68,7 +49,7 @@ function Merge() {
 
     return () => {
       if (coverURL) URL.revokeObjectURL(coverURL);
-      uploadedFiles.forEach((file) => {
+      uploadedFiles.forEach(file => {
         if (file.previewURL) URL.revokeObjectURL(file.previewURL);
       });
     };
@@ -77,35 +58,31 @@ function Merge() {
   // Handle file processing
   const processFiles = useCallback((files) => {
     const validFiles = Array.from(files).filter(
-      (file) => file.type === "application/pdf"
+      file => file.type === 'application/pdf'
     );
 
     if (validFiles.length === 0) {
-      toast.error("Please upload PDF files only");
+      toast.error('Please upload PDF files only');
       return;
     }
 
-    if (validFiles.length !== files.length) {
-      toast.warning("Some files were not PDFs and were ignored");
-    }
-
-    const newFiles = validFiles.map((file) => ({
+    const newFiles = validFiles.map(file => ({
       file,
       previewURL: URL.createObjectURL(file),
       name: file.name,
       id: Date.now() + Math.random().toString(36).substr(2, 9),
     }));
 
-    setUploadedFiles((prev) => [...prev, ...newFiles]);
+    setUploadedFiles(prev => [...prev, ...newFiles]);
   }, []);
 
   // Handle file input change
   const handleFileChange = (e) => {
     processFiles(e.target.files);
-    e.target.value = ""; // Reset input to allow selecting same files again
+    e.target.value = '';
   };
 
-  // Handle drag events
+  // Drag and drop handlers
   const handleDragEnter = (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -127,7 +104,6 @@ function Merge() {
     e.preventDefault();
     e.stopPropagation();
     setIsDragging(false);
-
     if (e.dataTransfer.files.length > 0) {
       processFiles(e.dataTransfer.files);
     }
@@ -135,55 +111,47 @@ function Merge() {
 
   // Remove file
   const removeFile = (id) => {
-    setUploadedFiles((prev) => {
-      const fileToRemove = prev.find((f) => f.id === id);
-      if (fileToRemove && fileToRemove.previewURL) {
-        URL.revokeObjectURL(fileToRemove.previewURL);
-      }
-      return prev.filter((f) => f.id !== id);
+    setUploadedFiles(prev => {
+      const fileToRemove = prev.find(f => f.id === id);
+      if (fileToRemove?.previewURL) URL.revokeObjectURL(fileToRemove.previewURL);
+      return prev.filter(f => f.id !== id);
     });
   };
 
   // Merge files
-  // Updated merge function
   const handleMerge = async () => {
     if (!coverBlob || uploadedFiles.length === 0) {
-      toast.error("Please add both a cover and at least one PDF file");
+      toast.error('Please add both a cover and at least one PDF file');
       return;
     }
 
     setIsMerging(true);
-    const toastId = toast.loading("Merging documents...", {
-      position: "bottom-right",
-    });
+    const toastId = toast.loading('Merging documents...');
 
     try {
       const formData = new FormData();
-      formData.append("cover", coverBlob, "cover.pdf");
-      uploadedFiles.forEach((file) => {
-        formData.append("files", file.file);
+      formData.append('cover', coverBlob, 'cover.pdf');
+      uploadedFiles.forEach(file => {
+        formData.append('files', file.file);
       });
 
-      const res = await fetch(`/api/merge-auto`, {
-        method: "POST",
+      const res = await fetch('/api/merge-auto', {
+        method: 'POST',
         body: formData,
       });
 
-      if (!res.ok) {
-        const error = await res.json().catch(() => ({}));
-        throw new Error(error.message || "Merge failed");
-      }
+      if (!res.ok) throw new Error('Merge failed');
 
       const blob = await res.blob();
       const url = URL.createObjectURL(blob);
 
-      const link = document.createElement("a");
+      const link = document.createElement('a');
       link.href = url;
-      link.download = `${fileName || "merged"}_merged.pdf`;
+      link.download = `${fileName || 'merged'}_merged.pdf`;
       link.click();
 
       setTimeout(() => URL.revokeObjectURL(url), 100);
-      toast.success("Merge successful! Download started");
+      toast.success('Merge successful!');
     } catch (err) {
       console.error(err);
       toast.error(`Merge failed: ${err.message}`);
@@ -192,7 +160,6 @@ function Merge() {
       toast.dismiss(toastId);
     }
   };
-
   return (
     <div className="min-h-screen pt-20 bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
