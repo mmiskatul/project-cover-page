@@ -1,44 +1,85 @@
-import React from 'react';
-import { toast, ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import { Link, useLocation } from 'react-router-dom';
-import BackButton from '../BackButton/BackButton';
+import React from "react";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { Link, useLocation } from "react-router-dom";
+import BackButton from "../BackButton/BackButton";
+import urlBackend from "../../assets/url";
+
 
 function Download() {
   const { state } = useLocation();
   const { html, fileName } = state || {};
 
+
   const handleDownload = async () => {
-    const toastId = toast.loading('Generating PDF...', { 
-      position: 'top-center' 
-    });
+    const loadingToastId = toast.loading(
+      <div className="flex items-center">
+        <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          {/* <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path> */}
+        </svg>
+        <span>Preparing your PDF...</span>
+      </div>,
+      {
+        position: "top-center",
+      }
+    );
 
     try {
-      const res = await fetch('/api/generate-pdf', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const res = await fetch(`${urlBackend}/generate-pdf`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ html }),
       });
 
-      if (!res.ok) throw new Error('PDF generation failed');
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.message || "Failed to generate PDF");
+      }
 
       const blob = await res.blob();
       const url = URL.createObjectURL(blob);
 
-      const link = document.createElement('a');
+      const link = document.createElement("a");
       link.href = url;
-      link.download = `${fileName || 'document'}.pdf`;
+      link.download = `${fileName || "document"}.pdf`;
+      document.body.appendChild(link);
       link.click();
+      document.body.removeChild(link);
 
       setTimeout(() => URL.revokeObjectURL(url), 100);
-      toast.success('PDF ready!');
+
+      toast.update(loadingToastId, {
+        render: (
+          <div className="flex items-center">
+            <svg className="w-6 h-6 mr-2 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              {/* <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /> */}
+            </svg>
+            <span>PDF ready for download!</span>
+          </div>
+        ),
+        type: "success",
+        isLoading: false,
+        autoClose: 3000,
+      });
     } catch (err) {
-      console.error(err);
-      toast.error(`Failed: ${err.message}`);
-    } finally {
-      toast.dismiss(toastId);
+      console.error("PDF generation failed:", err);
+      toast.update(loadingToastId, {
+        render: (
+          <div className="flex items-center">
+            <svg className="w-6 h-6 mr-2 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+            <span>{err.message || "Failed to generate PDF"}</span>
+          </div>
+        ),
+        type: "error",
+        isLoading: false,
+        autoClose: 3000,
+      });
     }
   };
+
   return (
     <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden p-6 sm:p-8">
