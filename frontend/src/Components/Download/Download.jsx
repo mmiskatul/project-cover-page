@@ -4,6 +4,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { Link, useLocation } from "react-router-dom";
 import BackButton from "../BackButton/BackButton";
 import urlBackend from "../../assets/url";
+// import api from '../../api'; 
 
 
 function Download() {
@@ -26,6 +27,11 @@ function Download() {
     );
 
     try {
+
+      // for server
+      // const res = await api.generatePdf(html); 
+
+      // localhost
       const res = await fetch(`${urlBackend}/generate-pdf`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
