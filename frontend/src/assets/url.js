@@ -1,3 +1,3 @@
- const urlBackend=`http://localhost:5000`;
+ const urlBackend=`https://project-backend-xi-sepia.vercel.app`;
 
  export default urlBackend;
