@@ -22,16 +22,21 @@ function InputForm ({ inputData, setInputData }) {
 
       <div className="max-w-96 w-full px-4">
         {/* Semester SELECTION */}
+        { !url.includes("eng") &&
         <CourseType inputData={inputData} handleChange={handleChange} />
-        
-            <Semester inputData={inputData} handleChange={handleChange} />
+
+        }
+        { !url.includes("eng") &&
+        <Semester inputData={inputData} handleChange={handleChange} />
+
+        }
         
         {
-         (url.includes("normal") || url.includes("bba")) && (
+         (url.includes("default") || url.includes("bba") ||url.includes('eng')) && (
             <Departments inputData={inputData} handleChange={handleChange} />
           )
         }{
-          (url.includes("normal") || url.includes("bba") || url.includes("nfe"))&& (
+          (url.includes("default") || url.includes("bba") || url.includes("nfe") || url.includes('agri')|| url.includes('eng'))&& (
             <TopicName inputData={inputData} handleChange={handleChange} />
           )
         }
@@ -46,6 +51,8 @@ function InputForm ({ inputData, setInputData }) {
         <Batch_section inputData={inputData} handleChange={handleChange} />
         {/* Course Name */}
         <Course inputData={inputData} handleChange={handleChange} />
+        {/* Course teacher ID */}
+      
         {/* Teacher Info */}
         <TeacherInfo inputData={inputData} handleChange={handleChange}  />
         {/* Date Picker */}

@@ -4,6 +4,8 @@ import InputForm from "../InputForm/InputForm";
 import PreviewPDF from "../SWEPdf/PreviewPDF";
 import PreviewPDFNFE from "../NFEPdf/PreviewPDF";
 import DefaultPreview from "../DefaultPdf/DefaultPreviewPDF";
+import PreviewPDFAgri from '../AgiPdf/PreviewPDF'
+import PreviewPDFENG from "../ENGPdf/PreviewPDF";
 import BackButton from "../BackButton/BackButton";
 import Default2PreviewPDF from "../BBAPdf/Default2PreviewPDF";
 import diulogo from "../../assets/daffodil-international-university-seeklogo.png";
@@ -24,6 +26,7 @@ function GeneratePdf() {
     courseId: "",
     teacherName: "",
     teacherDesignation: "",
+    courseTeacherId: "",
     semester: "",
     batch: "",
     section: "",
@@ -133,9 +136,11 @@ function GeneratePdf() {
                   {templateName === "swe" && <PreviewPDF data={inputData} />}
                   {templateName === "bba" && <Default2PreviewPDF data={inputData} />}
                   {templateName === "nfe" && <PreviewPDFNFE data={inputData} />}
-                  {(!templateName || (templateName !== "swe" && templateName !== "bba" && templateName !== "nfe")) && (
-                    <DefaultPreview data={inputData} />
-                  )}
+                  {templateName==='agri' && <PreviewPDFAgri data={inputData}/>}
+                  {templateName ==='default' && <DefaultPreview data={inputData} />}
+                  {templateName ==='eng' && <PreviewPDFENG data={inputData} />}
+
+                  
                 </div>
               </div>
             </div>

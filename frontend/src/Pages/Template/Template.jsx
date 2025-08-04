@@ -4,13 +4,18 @@ import templatelogo from '../../assets/templateSWE.png'
 import defaultTemplate from '../../assets/template1.png';
 import defaultTemplate2 from '../../assets/template2.png'
 import nfetemplate from '../../assets/templateNFE.png'
+import agritemplete from '../../assets/templateAGI.png'
+import engtemplate from '../../assets/templateENG.png'
 
 function Template() {
   const departments = [
-    { name: 'normal', id: 1, fullName: 'Default Template', tempLogo: defaultTemplate },
-    { name: 'swe', id: 2, fullName: 'Software Engineering', tempLogo: templatelogo },
-    { name: 'bba', id: 3, fullName: 'Professional Template', tempLogo: defaultTemplate2 },
+    { name: 'swe', id: 1, fullName: 'Software Engineering', tempLogo: templatelogo },
+    { name: 'default', id: 2, fullName: 'Default Template', tempLogo: defaultTemplate },
+    { name: 'bba', id: 3, fullName: 'Default Template', tempLogo: defaultTemplate2 },
     { name: 'nfe', id: 4, fullName: 'Nutrition and Food Engineering', tempLogo: nfetemplate },
+    {name :'agri',id:5,fullName:'Agricultural Science' ,tempLogo:agritemplete},
+    {name :'eng',id:3,fullName:'Department of English' ,tempLogo:engtemplate},
+
 
   ];
 

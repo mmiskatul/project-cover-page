@@ -1,7 +1,9 @@
 import { BsPersonFill } from 'react-icons/bs';
+import { HiOutlineIdentification } from 'react-icons/hi2';
 import { MdWork } from 'react-icons/md';
 
 function TeacherInfo  ({ inputData, handleChange })  {
+  const url = window.location.href;
   return (
     <div>
       {/* Teacher Name */}
@@ -21,6 +23,24 @@ function TeacherInfo  ({ inputData, handleChange })  {
           />
         </div>
       </div>
+      {/* Course Teacher ID */}
+{ url.includes('eng') &&
+      <div className="mb-6">
+      <label htmlFor="courseTeacherId" className="font-medium">Course Teacher ID</label>
+      <div className="flex items-center h-12 pl-3 border border-slate-300 rounded-full focus-within:ring-2 focus-within:ring-indigo-400 overflow-hidden transition-all">
+        <HiOutlineIdentification className="text-gray-500 text-lg" />
+        <input
+          type="text"
+          id="courseTeacherId"
+          name="courseTeacherId"
+          value={inputData.courseTeacherId}
+          onChange={handleChange}
+          className="h-full px-2 w-full outline-none bg-transparent"
+          placeholder="Enter Teacher ID"
+          required
+        />
+      </div>
+    </div>}
 
       {/* Designation */}
       <div>

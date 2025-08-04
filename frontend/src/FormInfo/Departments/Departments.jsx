@@ -18,13 +18,13 @@ function Departments({ inputData, handleChange }) {
 
           <optgroup label="Faculty of Business and Entrepreneurship (FBE)">
             <option value="Business Administration">BBA</option>
-            <option value="Management">Management</option>
-            <option value="Real Estate">Real Estate</option>
+            <option value="Department of Management">Management</option>
+            <option value="Department of Real Estate">Real Estate</option>
             <option value="Tourism & Hospitality Management">Tourism</option>
             <option value="Innovation & Entrepreneurship">Innovation</option>
-            <option value="Finance and Banking">Finance</option>
-            <option value="Accounting">Accounting</option>
-            <option value="Marketing">Marketing</option>
+            <option value="Department of Finance and Banking">Finance</option>
+            <option value="Department of Accounting">Accounting</option>
+            <option value="Department of Marketing">Marketing</option>
           </optgroup>
 
           <optgroup label="Faculty of Science and Information Technology (FSIT)">
@@ -39,25 +39,25 @@ function Departments({ inputData, handleChange }) {
 
           <optgroup label="Faculty of Engineering (FE)">
             <option value="Information and Communication Engineering">ICE</option>
-            <option value="Textile Engineering">Textile</option>
+            <option value="Department of Textile Engineering">Textile</option>
             <option value="Electrical & Electronic Engineering">EEE</option>
-            <option value="Architecture">Architecture</option>
-            <option value="Civil Engineering">Civil</option>
+            <option value="Department of Architecture">Architecture</option>
+            <option value="Department of Civil Engineering">Civil</option>
           </optgroup>
 
           <optgroup label="Faculty of Health and Life Sciences (FHLS)">
-            <option value="Pharmacy">Pharmacy</option>
-            <option value="Public Health">Public Health</option>
+            <option value="Department of Pharmacy">Pharmacy</option>
+            <option value="Department of Public Health">Public Health</option>
             <option value="Nutrition & Food Engineering">NFE</option>
-            <option value="Agricultural Science">AGRI</option>
+            <option value="Department of Agricultural Science">AGRI</option>
             <option value="Genetic Engineering and Biotechnology">Genetics</option>
           </optgroup>
 
           <optgroup label="Faculty of Humanities and Social Sciences (FHSS)">
-            <option value="English">English</option>
-            <option value="Law">Law</option>
-            <option value="Journalism & Mass Communication">Journalism</option>
-            <option value="Development Studies">Development</option>
+            <option value="Department of English">English</option>
+            <option value="Department of Law">Law</option>
+            <option value="Department of Journalism & Mass Communication">Journalism</option>
+            <option value="Department of Development Studies">Development</option>
             <option value="Information Science and Library Management">ISLM</option>
           </optgroup>
         </select>

@@ -29,7 +29,7 @@ export default function Default2PreviewPDF({ data }) {
   return (
     <div
       id="cover-preview"
-      className="w-full gupter flex justify-center items-center min-h-screen bg-gray-100"
+      className="w-full EB flex justify-center items-center min-h-screen bg-gray-100"
     >
       {/* A4 Fixed Container */}
       <div

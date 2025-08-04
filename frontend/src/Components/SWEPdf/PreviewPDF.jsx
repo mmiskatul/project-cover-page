@@ -26,7 +26,7 @@ export default function PreviewPDF({ data }) {
   return (
     <div
       id="cover-preview"
-      className="gupter mx-auto bg-white text-black"
+      className="EB mx-auto bg-white text-black"
       style={{
         width: "794px", // A4 width in px at 96 DPI
         minHeight: "1123px", // A4 height in px at 96 DPI
@@ -37,6 +37,7 @@ export default function PreviewPDF({ data }) {
     >
       {/* Header & Logo */}
       <div className="flex flex-col items-center w-full">
+
         <img
           src={data.logo}
           alt="DIU Logo"
