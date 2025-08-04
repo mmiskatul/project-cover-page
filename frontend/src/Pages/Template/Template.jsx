@@ -13,8 +13,8 @@ function Template() {
     { name: 'default', id: 2, fullName: 'Default Template', tempLogo: defaultTemplate },
     { name: 'bba', id: 3, fullName: 'Default Template', tempLogo: defaultTemplate2 },
     { name: 'nfe', id: 4, fullName: 'Nutrition and Food Engineering', tempLogo: nfetemplate },
-    {name :'agri',id:5,fullName:'Agricultural Science' ,tempLogo:agritemplete},
-    {name :'eng',id:3,fullName:'Department of English' ,tempLogo:engtemplate},
+    { name :'agri',id:5,fullName:'Agricultural Science' ,tempLogo:agritemplete},
+    { name :'eng',id:3,fullName:'Department of English' ,tempLogo:engtemplate},
 
 
   ];

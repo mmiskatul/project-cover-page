@@ -91,7 +91,6 @@ export default function PreviewPDF({ data }) {
         </table>
 
         {/* Evaluation Table */}
-        <br />
         <table className="table-fixed w-full border border-black border-collapse text-sm mt-10">
           <thead>
             <tr>
@@ -216,7 +215,6 @@ export default function PreviewPDF({ data }) {
         </table>
 
         {/* Semester Info */}
-        <br />
         <table className="table-auto w-full font-bold border border-black border-collapse mt-10">
           <thead>
             <tr>
@@ -238,8 +236,7 @@ export default function PreviewPDF({ data }) {
         </table>
 
         {/* Submission Info */}
-        <br />
-        <table className="table-auto w-full font-bold border border-black border-collapse mt-10">
+          <table className="table-auto w-full font-bold border border-black border-collapse mt-10">
           <thead>
             <tr>
               <th className="border border-black px-4 py-2 text-left">

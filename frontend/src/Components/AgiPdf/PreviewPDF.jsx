@@ -38,7 +38,7 @@ export default function PreviewPDF({ data }) {
     >
       {/* Header */}
       <div className="EB flex flex-col items-center w-full">
-            <h1 className="w-full text-center border-b-2 border-black text-base font-bold mb-3 ">Department of Agricultural Science</h1>
+            <h1 className="w-full text-center border-b-2 border-black text-base font-bold mb-1 ">Department of Agricultural Science</h1>
         <img
           src={data.logo}
           alt="DIU Logo"
@@ -50,12 +50,12 @@ export default function PreviewPDF({ data }) {
           }}
         />
 
-        <h3 className="text-xl font-bold mb-2 text-center border-b-2">
+        <h3 className="text-xl font-bold mb-2 text-center border-b-2 border-black">
           Assignment and Presentation
         </h3>
 
         {/* Course Info Table */}
-        <table className="table-auto w-full font-bold border border-black border-collapse mt-10">
+        <table className="table-auto w-full font-bold border border-black border-collapse mt-2">
           <thead>
             <tr>
               <th className="border border-black px-4 py-2 text-left">
@@ -84,7 +84,7 @@ export default function PreviewPDF({ data }) {
         </table>
 
         {/* Evaluation Table */}
-        <table className="table-fixed w-full border border-black border-collapse text-sm mt-10">
+        <table className="table-fixed w-full border border-black border-collapse text-sm mt-2">
           <thead>
             <tr>
               <th
@@ -260,7 +260,7 @@ export default function PreviewPDF({ data }) {
         </table>
 
         {/* Semester Info */}
-        <table className="table-auto w-full font-bold border border-black border-collapse mt-10">
+        <table className="table-auto w-full font-bold border border-black border-collapse mt-2">
           <thead>
             <tr>
               <th className="border border-black px-4 py-2 text-left">
@@ -281,7 +281,7 @@ export default function PreviewPDF({ data }) {
         </table>
 
         {/* Submission Info */}
-        <table className="table-auto w-full font-bold border border-black border-collapse mt-10">
+        <table className="table-auto w-full font-bold border border-black border-collapse mt-2">
           <thead>
             <tr>
               <th className="border border-black px-4 py-2 text-left">
