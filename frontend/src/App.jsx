@@ -9,6 +9,7 @@ import GeneratePdf from './Components/Generator/GeneratePdf'
 import Download from './Components/Download/Download'
 import Merge from './Pages/Mege-page/Merge'
 import About from './Pages/About/about'
+import HistoryPreview from './Pages/HistoryPreview/HistoryPreview'
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
         <Route path='/download' element={<Download/>}/>
         <Route path='/merge' element={<Merge/>}/>
         <Route path='/about' element={<About/>}/>
+        <Route path='/history' element={<HistoryPreview/>}/>
         <Route path='*' element={<Error/>}/>
       </Routes>   
       <Footer/> 
