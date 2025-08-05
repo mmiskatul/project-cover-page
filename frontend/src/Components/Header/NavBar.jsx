@@ -66,7 +66,7 @@ const NavBar = () => {
                 to="/"
                 className="text-2xl font-bold text-white hover:text-indigo-100 transition-colors"
               >
-               D<span className="gupter text-purple-500">I</span>u PageCrafter
+               D<span className="EB text-purple-500">I</span>u PageCrafter
                 <span className="text-indigo-300">.</span>
               </Link>
             </div>

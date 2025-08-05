@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { FiFile, FiTrash2, FiDownload, FiGitMerge } from "react-icons/fi";
+import { FiFile, FiTrash2, FiDownload} from "react-icons/fi";
+import { AiOutlineMergeCells } from "react-icons/ai";
 import BackButton from "../../Components/BackButton/BackButton";
 
 
@@ -67,7 +68,7 @@ function HistoryPreview() {
                     className="p-2 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-md"
                     title="Merge this cover"
                   >
-                    <FiGitMerge />
+                    <AiOutlineMergeCells />
                   </Link>
                   <Link
                     to="/download"
