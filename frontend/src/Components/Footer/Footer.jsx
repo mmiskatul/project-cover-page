@@ -4,6 +4,8 @@ const Footer = () => {
   const navLinks = [
     { name: "Home", path: "/" },
     { name: "About", path: "/about" },
+    {name:"Recent",path:'/recent'}
+
   ];
 
   const socialLinks = [

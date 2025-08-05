@@ -22,7 +22,7 @@ function App() {
         <Route path='/download' element={<Download/>}/>
         <Route path='/merge' element={<Merge/>}/>
         <Route path='/about' element={<About/>}/>
-        <Route path='/history' element={<HistoryPreview/>}/>
+        <Route path='/recent' element={<HistoryPreview/>}/>
         <Route path='*' element={<Error/>}/>
       </Routes>   
       <Footer/> 

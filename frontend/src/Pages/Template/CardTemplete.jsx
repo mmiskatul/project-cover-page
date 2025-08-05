@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 const CardTemplate = ({ data }) => {
     return (
-        <div className="group relative w-full max-w-xs overflow-hidden rounded-xl bg-white shadow-sm transition-all duration-300 hover:shadow-md hover:-translate-y-1">
+        <div className="group relative w-full max-w-xs overflow-hidden rounded-xl bg-white shadow-md transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
             {/* Image container with subtle gradient border */}
             <div className="relative h-48 w-full overflow-hidden bg-gray-50">
                 <img 

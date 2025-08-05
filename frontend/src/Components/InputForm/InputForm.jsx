@@ -22,7 +22,7 @@ function InputForm ({ inputData, setInputData }) {
 
       <div className="max-w-96 w-full px-4">
         {/* Semester SELECTION */}
-        { !url.includes("eng") &&
+        { (!url.includes("eng") || (!url.includes('txt'))) &&
         <CourseType inputData={inputData} handleChange={handleChange} />
 
         }
@@ -30,19 +30,19 @@ function InputForm ({ inputData, setInputData }) {
         <Semester inputData={inputData} handleChange={handleChange} />
 
         }
-        <Semester inputData={inputData} handleChange={handleChange} />
+        <Semester inputData={inputData} handleChange={ handleChange} />
         
         {
          (url.includes("default") || url.includes("bba") ||url.includes('eng')) && (
             <Departments inputData={inputData} handleChange={handleChange} />
           )
         }{
-          (url.includes("default") || url.includes("bba") || url.includes("nfe") || url.includes('agri')|| url.includes('eng'))&& (
+          (url.includes("default") || url.includes("bba") || url.includes("nfe") || url.includes('agri')|| url.includes('eng')|| url.includes('txt'))&& (
             <TopicName inputData={inputData} handleChange={handleChange} />
           )
         }
         {
-          url.includes("nfe") && (
+          (url.includes("nfe") || url.includes('txt'))&& (
            <Level inputData={inputData} handleChange={handleChange}/>
           )
         }
