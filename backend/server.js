@@ -170,18 +170,6 @@ const upload = multer({
   limits: { fileSize: 50 * 1024 * 1024, files: 10 }
 });
 
-
-
-
-
-
-
-
-
-
-
-
-
 // PDF Generation Endpoint
 app.post("/generate-pdf", async (req, res) => {
   try {
@@ -189,14 +177,8 @@ app.post("/generate-pdf", async (req, res) => {
     if (!html) return res.status(400).json({ error: "HTML content required" });
 
     const browser = await puppeteer.launch({
-      executablePath: process.env.CHROME_PATH || '/usr/bin/chromium-browser', // RENDER'S CHROMIUM PATH
       headless: "new",
-      args: [
-        '--no-sandbox',
-        '--disable-setuid-sandbox',
-        '--disable-dev-shm-usage', // IMPORTANT FOR MEMORY LIMITS
-        '--single-process' // RECOMMENDED FOR RENDER
-      ]
+      args: ["--no-sandbox", "--disable-setuid-sandbox"],
     });
 
     const page = await browser.newPage();
@@ -223,28 +205,9 @@ app.post("/generate-pdf", async (req, res) => {
     }).send(pdfBuffer);
   } catch (error) {
     console.error("PDF Generation Error:", error);
-    res.status(500).json({ 
-      error: "Failed to generate PDF",
-      message: error.message // SEND ERROR DETAILS TO FRONTEND
-    });
+    res.status(500).json({ error: "Failed to generate PDF" });
   }
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 // PDF Merging Endpoint
 app.post("/merge-auto", upload.fields([
