@@ -1,6 +1,6 @@
 require('dotenv').config();
 const express = require("express");
-const puppeteer = require("puppeteer");
+const puppeteer = require('puppeteer-core');
 const multer = require("multer");
 const { PDFDocument } = require("pdf-lib");
 const fs = require("fs");
@@ -170,6 +170,18 @@ const upload = multer({
   limits: { fileSize: 50 * 1024 * 1024, files: 10 }
 });
 
+
+
+
+
+
+
+
+
+
+
+
+
 // PDF Generation Endpoint
 app.post("/generate-pdf", async (req, res) => {
   try {
@@ -177,8 +189,14 @@ app.post("/generate-pdf", async (req, res) => {
     if (!html) return res.status(400).json({ error: "HTML content required" });
 
     const browser = await puppeteer.launch({
+      executablePath: process.env.CHROME_PATH || '/usr/bin/chromium-browser', // RENDER'S CHROMIUM PATH
       headless: "new",
-      args: ["--no-sandbox", "--disable-setuid-sandbox"],
+      args: [
+        '--no-sandbox',
+        '--disable-setuid-sandbox',
+        '--disable-dev-shm-usage', // IMPORTANT FOR MEMORY LIMITS
+        '--single-process' // RECOMMENDED FOR RENDER
+      ]
     });
 
     const page = await browser.newPage();
@@ -205,9 +223,28 @@ app.post("/generate-pdf", async (req, res) => {
     }).send(pdfBuffer);
   } catch (error) {
     console.error("PDF Generation Error:", error);
-    res.status(500).json({ error: "Failed to generate PDF" });
+    res.status(500).json({ 
+      error: "Failed to generate PDF",
+      message: error.message // SEND ERROR DETAILS TO FRONTEND
+    });
   }
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // PDF Merging Endpoint
 app.post("/merge-auto", upload.fields([
