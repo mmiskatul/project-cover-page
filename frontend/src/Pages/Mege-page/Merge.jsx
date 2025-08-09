@@ -8,7 +8,7 @@ import {
   AiOutlineFilePdf,
 } from "react-icons/ai";
 import { FiUpload, FiDownload } from "react-icons/fi";
-import urlbackend from "../../assets/url";
+import urlbackend from "../../config/url";
 // import api from "../../api";
 
 function Merge() {
