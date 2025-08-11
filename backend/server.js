@@ -1,6 +1,6 @@
 require('dotenv').config();
 const express = require("express");
-const puppeteer = require('puppeteer-core');
+const puppeteer = require("puppeteer");
 const multer = require("multer");
 const { PDFDocument } = require("pdf-lib");
 const fs = require("fs");

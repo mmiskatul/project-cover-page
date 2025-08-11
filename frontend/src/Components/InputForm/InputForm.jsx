@@ -30,7 +30,6 @@ function InputForm ({ inputData, setInputData }) {
         <Semester inputData={inputData} handleChange={handleChange} />
 
         }
-        <Semester inputData={inputData} handleChange={ handleChange} />
         
         {
          (url.includes("default") || url.includes("bba") ||url.includes('eng')) && (

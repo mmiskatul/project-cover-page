@@ -75,7 +75,7 @@ function GeneratePdf() {
       return;
     }
 
-    const fileName = `${inputData.courseName} Assignment (${inputData.studentId})`.trim() || "document";
+    const fileName = ` ${inputData.courseType} ${inputData.courseId}(${inputData.studentId})`.trim() || "document";
 
     try {
       // Track the PDF generation
