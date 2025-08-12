@@ -1,3 +1,5 @@
+// server.js
+
 require('dotenv').config();
 const express = require("express");
 const puppeteer = require("puppeteer");
@@ -8,6 +10,7 @@ const path = require("path");
 const cors = require("cors");
 const mongoose = require('mongoose');
 const { body, validationResult } = require('express-validator');
+const fetch = require('node-fetch'); // Keep this for now, but the local call is removed
 
 const app = express();
 
@@ -25,6 +28,13 @@ mongoose.connect(process.env.MONGODB_URI, {
 .catch(err => console.error('MongoDB connection error:', err));
 
 
+// Feedback Schema
+const feedbackSchema = new mongoose.Schema({
+  email: { type: String, trim: true },
+  feedback: { type: String, required: true },
+  createdAt: { type: Date, default: Date.now }
+});
+const Feedback = mongoose.model('Feedback', feedbackSchema);
 
 // Stats Schema
 const statsSchema = new mongoose.Schema({
@@ -78,7 +88,8 @@ app.get('/api/stats', async (req, res) => {
   }
 });
 
-app.post('/api/increment-count', async (req, res) => {
+// Refactored into a reusable function to avoid internal fetch calls
+const incrementCount = async () => {
   try {
     await Stats.updateOne({}, {
       $inc: { 
@@ -90,6 +101,14 @@ app.post('/api/increment-count', async (req, res) => {
         'dailyGenerations.date': new Date()
       }
     });
+  } catch (error) {
+    console.error('Count increment error:', error);
+  }
+};
+
+app.post('/api/increment-count', async (req, res) => {
+  try {
+    await incrementCount();
     res.status(200).send();
   } catch (error) {
     console.error('Count increment error:', error);
@@ -152,21 +171,10 @@ app.post('/api/feedback', [
   }
 });
 
-// File Upload Configuration
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    const dir = "uploads/";
-    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-    cb(null, dir);
-  },
-  filename: (req, file, cb) => {
-    const ext = path.extname(file.originalname) || ".pdf";
-    cb(null, `${file.fieldname}-${Date.now()}${ext}`);
-  }
-});
 
+// === CHANGE 1: Use memory storage for Multer ===
 const upload = multer({ 
-  storage,
+  storage: multer.memoryStorage(),
   limits: { fileSize: 50 * 1024 * 1024, files: 10 }
 });
 
@@ -176,6 +184,7 @@ app.post("/generate-pdf", async (req, res) => {
     const { html } = req.body;
     if (!html) return res.status(400).json({ error: "HTML content required" });
 
+    // Ensure Puppeteer can find a browser on the server
     const browser = await puppeteer.launch({
       headless: "new",
       args: ["--no-sandbox", "--disable-setuid-sandbox"],
@@ -194,10 +203,8 @@ app.post("/generate-pdf", async (req, res) => {
 
     await browser.close();
 
-    // Track generation
-    await fetch(`http://localhost:${process.env.PORT || 5000}/api/increment-count`, { 
-      method: 'POST' 
-    }).catch(err => console.error('Tracking error:', err));
+    // === CHANGE 2: Call the increment function directly instead of fetching ===
+    incrementCount();
 
     res.set({
       "Content-Type": "application/pdf",
@@ -209,7 +216,7 @@ app.post("/generate-pdf", async (req, res) => {
   }
 });
 
-// PDF Merging Endpoint
+// === CHANGE 3: Update merging endpoint to use memory buffers ===
 app.post("/merge-auto", upload.fields([
   { name: "cover", maxCount: 1 },
   { name: "files", maxCount: 10 }
@@ -220,10 +227,10 @@ app.post("/merge-auto", upload.fields([
       return res.status(400).json({ error: "Cover and files required" });
     }
 
-    const [coverData, ...filesData] = await Promise.all([
-      fs.promises.readFile(cover[0].path),
-      ...files.map(file => fs.promises.readFile(file.path))
-    ]);
+    const [coverData, ...filesData] = [
+      cover[0].buffer,
+      ...files.map(file => file.buffer)
+    ];
 
     const [coverDoc, ...fileDocs] = await Promise.all([
       PDFDocument.load(coverData),
@@ -241,12 +248,6 @@ app.post("/merge-auto", upload.fields([
 
     const mergedPdfBytes = await mergedPdf.save();
     
-    // Cleanup
-    await Promise.all([
-      fs.promises.unlink(cover[0].path),
-      ...files.map(file => fs.promises.unlink(file.path))
-    ]);
-
     res.set({
       "Content-Type": "application/pdf",
       "Content-Disposition": "attachment; filename=merged.pdf",
@@ -274,4 +275,4 @@ app.listen(PORT, (req,res) => {
     initializeStats();
 }).on('error', err => {
   console.error('Server error:', err);
-}); 
+});

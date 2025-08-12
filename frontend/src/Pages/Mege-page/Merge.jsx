@@ -222,7 +222,7 @@ function Merge() {
         body: formData,
       });
 
-      // // sever 
+      // // sever
 
       // const res = await api.mergePdfs(coverBlob, uploadedFiles, fileName);
       if (!res.ok) {
