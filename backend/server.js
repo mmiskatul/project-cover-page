@@ -1,4 +1,4 @@
-// server.js
+// server.js (with fixes)
 
 require('dotenv').config();
 const express = require("express");
@@ -10,7 +10,7 @@ const path = require("path");
 const cors = require("cors");
 const mongoose = require('mongoose');
 const { body, validationResult } = require('express-validator');
-const fetch = require('node-fetch'); // Keep this for now, but the local call is removed
+const fetch = require('node-fetch'); 
 
 const app = express();
 
@@ -186,6 +186,7 @@ app.post("/generate-pdf", async (req, res) => {
 
     // Ensure Puppeteer can find a browser on the server
     const browser = await puppeteer.launch({
+      executablePath: process.env.PUPPETEER_EXECUTABLE_PATH,
       headless: "new",
       args: ["--no-sandbox", "--disable-setuid-sandbox"],
     });
