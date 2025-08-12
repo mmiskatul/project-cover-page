@@ -1,4 +1,4 @@
-// server.js (with fixes)
+// server.js (final fix)
 
 require('dotenv').config();
 const express = require("express");
@@ -186,7 +186,7 @@ app.post("/generate-pdf", async (req, res) => {
 
     // Ensure Puppeteer can find a browser on the server
     const browser = await puppeteer.launch({
-      executablePath: process.env.PUPPETEER_EXECUTABLE_PATH,
+      executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || puppeteer.executablePath(),
       headless: "new",
       args: ["--no-sandbox", "--disable-setuid-sandbox"],
     });

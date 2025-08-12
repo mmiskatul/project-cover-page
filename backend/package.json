@@ -12,7 +12,7 @@
     "build": "npm install",  
     "prod": "NODE_ENV=production node server.js",  
     "test": "echo \"Error: no test specified\" && exit 1",
-    "postinstall": "npm install puppeteer"
+    "predeploy": "rm -rf node_modules && npm cache clean --force"
   },
   "dependencies": {
     "cors": "^2.8.5",
