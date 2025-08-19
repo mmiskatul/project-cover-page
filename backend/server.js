@@ -1,5 +1,3 @@
-// server.js (fixed)
-
 require('dotenv').config();
 const express = require("express");
 const puppeteer = require("puppeteer");
@@ -36,8 +34,6 @@ connectDB()
     console.error('❌ MongoDB connection error:', err);
     process.exit(1);
   });
-
-// Stats Schema and related functions are now in stats-controller.js, so removed here
 
 // Stats Endpoint
 app.get('/api/stats', getStats);
