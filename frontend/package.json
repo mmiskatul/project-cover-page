@@ -12,7 +12,9 @@
   "dependencies": {
     "@tailwindcss/vite": "^4.1.11",
     "dotenv": "^17.2.1",
+    "html2canvas": "^1.4.1",
     "icons": "^1.0.0",
+    "jspdf": "^3.0.1",
     "pdf-lib": "^1.17.1",
     "pdfjs-dist": "^5.4.54",
     "react": "^19.1.0",

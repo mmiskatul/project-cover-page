@@ -10,11 +10,3 @@ body {
 .EB {
   font-family: "Gupter", serif;
 }
-.react-pdf__Page__textContent {
-  user-select: text;
-  pointer-events: auto;
-}
-
-.react-pdf__Page__annotations {
-  pointer-events: auto;
-}

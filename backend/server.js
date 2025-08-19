@@ -1,16 +1,13 @@
-// server.js (final fix)
+// server.js (clean fixed version)
 
 require('dotenv').config();
 const express = require("express");
-const puppeteer = require("puppeteer");
 const multer = require("multer");
-const { PDFDocument } = require("pdf-lib");
-const fs = require("fs");
-const path = require("path");
 const cors = require("cors");
 const mongoose = require('mongoose');
 const { body, validationResult } = require('express-validator');
-const fetch = require('node-fetch'); 
+const { generatePDF } = require('./controller/generate-pdf-controlller.js');
+const { mergePdf } = require('./controller/pdf-merge-controller.js');
 
 const app = express();
 
@@ -24,9 +21,15 @@ mongoose.connect(process.env.MONGODB_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true
 })
-.then(() => console.log('✅ Connected to MongoDB'))
-.catch(err => console.error('MongoDB connection error:', err));
-
+.then(async () => {
+  console.log('✅ Connected to MongoDB');
+  await initializeStats();
+  startServer();
+})
+.catch(err => {
+  console.error('❌ MongoDB connection error:', err);
+  process.exit(1);
+});
 
 // Feedback Schema
 const feedbackSchema = new mongoose.Schema({
@@ -50,26 +53,40 @@ const statsSchema = new mongoose.Schema({
 const Stats = mongoose.model('Stats', statsSchema);
 
 // Initialize Stats
-const initializeStats = async () => {
+async function initializeStats() {
   try {
     let stats = await Stats.findOne();
     if (!stats) {
-      stats = await Stats.create({});
+      await Stats.create({});
       console.log('✅ Initialized stats document');
     }
-    
-    const today = new Date().toDateString();
-    const lastUpdatedDate = stats.lastUpdated.toDateString();
-    if (today !== lastUpdatedDate) {
-      stats.dailyGenerations = { date: new Date(), count: 0 };
-      await stats.save();
-    }
+    await resetDailyIfNeeded();
   } catch (err) {
     console.error('Stats initialization error:', err);
   }
-};
+}
 
-// Stats Endpoints
+async function resetDailyIfNeeded() {
+  const stats = await Stats.findOne();
+  if (stats && new Date().toDateString() !== stats.lastUpdated.toDateString()) {
+    stats.dailyGenerations = { date: new Date(), count: 0 };
+    await stats.save();
+  }
+}
+
+// Increment stats counter
+async function incrementCount() {
+  try {
+    await Stats.updateOne({}, {
+      $inc: { totalCoverPages: 1, 'dailyGenerations.count': 1 },
+      $set: { lastUpdated: new Date(), 'dailyGenerations.date': new Date() }
+    });
+  } catch (error) {
+    console.error('Count increment error:', error);
+  }
+}
+
+// Stats Endpoint
 app.get('/api/stats', async (req, res) => {
   try {
     const stats = await Stats.findOne();
@@ -81,38 +98,10 @@ app.get('/api/stats', async (req, res) => {
     });
   } catch (error) {
     console.error('Stats fetch error:', error);
-    res.status(500).json({ 
+    res.status(500).json({
       error: 'Failed to fetch stats',
       fallback: { templates: 12, users: 1250, coverPagesGenerated: 3842 }
     });
-  }
-});
-
-// Refactored into a reusable function to avoid internal fetch calls
-const incrementCount = async () => {
-  try {
-    await Stats.updateOne({}, {
-      $inc: { 
-        totalCoverPages: 1,
-        'dailyGenerations.count': 1 
-      },
-      $set: { 
-        lastUpdated: new Date(),
-        'dailyGenerations.date': new Date()
-      }
-    });
-  } catch (error) {
-    console.error('Count increment error:', error);
-  }
-};
-
-app.post('/api/increment-count', async (req, res) => {
-  try {
-    await incrementCount();
-    res.status(200).send();
-  } catch (error) {
-    console.error('Count increment error:', error);
-    res.status(500).json({ error: 'Failed to update count' });
   }
 });
 
@@ -125,7 +114,7 @@ app.post('/api/feedback', [
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ 
+      return res.status(400).json({
         success: false,
         errors: errors.array().map(err => ({
           field: err.param,
@@ -135,145 +124,31 @@ app.post('/api/feedback', [
     }
 
     const { email, feedback } = req.body;
-    const newFeedback = await Feedback.create({
-      email: email || undefined,
-      feedback
-    });
+    const newFeedback = await Feedback.create({ email: email || undefined, feedback });
 
-    res.status(201).json({ 
+    res.status(201).json({
       success: true,
       message: 'Feedback submitted successfully',
-      data: {
-        id: newFeedback._id,
-        createdAt: newFeedback.createdAt
-      }
+      data: { id: newFeedback._id, createdAt: newFeedback.createdAt }
     });
 
   } catch (error) {
     console.error('Feedback submission error:', error);
-    
-    if (error.name === 'ValidationError') {
-      return res.status(400).json({ 
-        success: false,
-        error: 'Validation failed',
-        details: Object.values(error.errors).map(err => ({
-          field: err.path,
-          message: err.message
-        }))
-      });
-    }
-    
-    res.status(500).json({ 
-      success: false,
-      error: 'Failed to submit feedback',
-      message: process.env.NODE_ENV === 'development' ? error.message : 'Please try again later'
-    });
+    res.status(500).json({ success: false, error: 'Failed to submit feedback' });
   }
 });
 
-
-// === CHANGE 1: Use memory storage for Multer ===
-const upload = multer({ 
-  storage: multer.memoryStorage(),
-  limits: { fileSize: 50 * 1024 * 1024, files: 10 }
-});
+// Multer memory storage
+const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 50 * 1024 * 1024, files: 10 } });
 
 // PDF Generation Endpoint
-app.post("/generate-pdf", async (req, res) => {
-  try {
-    const { html } = req.body;
-    if (!html) return res.status(400).json({ error: "HTML content required" });
+app.post("/generate-pdf", generatePDF(incrementCount));
 
-    // Ensure Puppeteer can find a browser on the server
-    const browser = await puppeteer.launch({
-      executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || puppeteer.executablePath(),
-      headless: "new",
-      args: ["--no-sandbox", "--disable-setuid-sandbox"],
-    });
+// Merge PDFs Endpoint
+app.post("/merge-auto", upload.fields([{ name: "cover", maxCount: 1 }, { name: "files", maxCount: 10 }]), mergePdf);
 
-    const page = await browser.newPage();
-    await page.setViewport({ width: 794, height: 1123, deviceScaleFactor: 1 });
-    await page.setContent(html, { waitUntil: "networkidle0" });
-    await page.evaluateHandle("document.fonts.ready");
-
-    const pdfBuffer = await page.pdf({
-      format: "A4",
-      printBackground: true,
-      margin: { top: "20px", bottom: "20px", left: "20px", right: "20px" },
-    });
-
-    await browser.close();
-
-    // === CHANGE 2: Call the increment function directly instead of fetching ===
-    incrementCount();
-
-    res.set({
-      "Content-Type": "application/pdf",
-      "Content-Disposition": `inline; filename="cover-${Date.now()}.pdf"`,
-    }).send(pdfBuffer);
-  } catch (error) {
-    console.error("PDF Generation Error:", error);
-    res.status(500).json({ error: "Failed to generate PDF" });
-  }
-});
-
-// === CHANGE 3: Update merging endpoint to use memory buffers ===
-app.post("/merge-auto", upload.fields([
-  { name: "cover", maxCount: 1 },
-  { name: "files", maxCount: 10 }
-]), async (req, res) => {
-  try {
-    const { cover, files } = req.files;
-    if (!cover?.[0] || !files?.length) {
-      return res.status(400).json({ error: "Cover and files required" });
-    }
-
-    const [coverData, ...filesData] = [
-      cover[0].buffer,
-      ...files.map(file => file.buffer)
-    ];
-
-    const [coverDoc, ...fileDocs] = await Promise.all([
-      PDFDocument.load(coverData),
-      ...filesData.map(data => PDFDocument.load(data))
-    ]);
-
-    const mergedPdf = await PDFDocument.create();
-    const coverPages = await mergedPdf.copyPages(coverDoc, coverDoc.getPageIndices());
-    coverPages.forEach(page => mergedPdf.addPage(page));
-
-    for (const doc of fileDocs) {
-      const pages = await mergedPdf.copyPages(doc, doc.getPageIndices());
-      pages.forEach(page => mergedPdf.addPage(page));
-    }
-
-    const mergedPdfBytes = await mergedPdf.save();
-    
-    res.set({
-      "Content-Type": "application/pdf",
-      "Content-Disposition": "attachment; filename=merged.pdf",
-    }).send(Buffer.from(mergedPdfBytes));
-  } catch (err) {
-    console.error("Merge error:", err);
-    res.status(500).json({ error: err.message || "Merge failed" });
-  }
-});
-
-// Error Handling
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({ error: "Internal server error" });
-});
-
-// Start Server
-const PORT = process.env.PORT || 5000;
-
-app.get('/', (req, res) => {
-  res.send('API is working');
-});
-app.listen(PORT, (req,res) => {
-  console.log(`✅ Server running on http://localhost:${PORT}`);
-    initializeStats();
-}).on('error', err => {
-  console.error('Server error:', err);
-});
+function startServer() {
+  const PORT = process.env.PORT || 5000;
+  app.get('/', (req, res) => res.send('API is working'));
+  app.listen(PORT, () => console.log(`✅ Server running on http://localhost:${PORT}`));
+}
