@@ -20,6 +20,7 @@ function CourseType({inputData,handleChange}) {
           <option value="lab assignment">Lab Assignment</option>
           <option value="project">Project</option>
           <option value="lab report">lab Report</option>
+          <option value="lab final">Lab final </option>
 
         </select>
       </div>

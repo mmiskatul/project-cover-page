@@ -57,7 +57,9 @@ export default function PreviewPDF({ data }) {
             : data.courseType === "project"
             ? "Project Report"
             :data.courseType ==="lab report"
-            ? "Lab Report"            
+            ? "Lab Report"   
+            :data.courseType==="lab final" 
+            ? "Lab Final"       
             : "Select the type of report"
             }
         </h3>

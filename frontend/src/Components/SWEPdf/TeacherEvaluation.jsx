@@ -36,20 +36,25 @@ function TeacherEvaluation({ data }) {
             <td className="border border-black px-4 py-2">100%</td>
             <td className="border border-black px-4 py-2 font-semibold">
               {data.courseType === "theory" ? "5" : 
-              data.courseType=="lab report"
+              data.courseType==="lab report"
               ? "25" :
-              "10"}
+              data.courseType==="lab final" ?
+               "40"
+              
+              : "10"}
             </td>
           </tr>
 
           <tr>
             <td className="border border-black px-4 py-2">{
                 data.courseType=="lab report" ? `Problem underStanding  &  Analysis `:
+                data.courseType=="lab final" ? 'Problem Understanding':
                 "Clarity" 
               }</td>
             <td className="border border-black px-4 py-2">
               {data.courseType === "theory" ? "1" :
-              data.courseType ==="lab report" ? "5"
+              data.courseType ==="lab report" ? "5" :
+              data.courseType==="lab final"? '10'
                : "2"}
             </td>
             <td className="border border-black px-4 py-2"></td>
@@ -62,11 +67,13 @@ function TeacherEvaluation({ data }) {
           <tr>
             <td className="border border-black px-4 py-2">{
                 data.courseType=="lab report" ? `Implementation `:
+                data.courseType=='lab final'?"Analysis":
                 "Content Quality" 
               }</td>
             <td className="border border-black px-4 py-2">
               {data.courseType === "theory" ? "2" :
-              data.courseType ==="lab report" ? "10"
+              data.courseType ==="lab report" ? "10" :
+              data.courseType=='lab final'? '15'
                : "4"}
             </td>
             <td className="border border-black px-4 py-2"></td>
@@ -79,11 +86,13 @@ function TeacherEvaluation({ data }) {
           <tr>
              <td className="border border-black px-4 py-2">{
                 data.courseType=="lab report" ? `Report Writing `:
+                data.courseType=='lab final'?"Implementation":
                 "Spelling & Grammar" 
               }</td>
             <td className="border border-black px-4 py-2">
               {data.courseType === "theory" ? "1" :
-              data.courseType ==="lab report" ? "10"
+              data.courseType ==="lab report" ? "10":
+               data.courseType=='lab final'? '10'
                : "2"}
             </td>
            
@@ -97,9 +106,11 @@ function TeacherEvaluation({ data }) {
           {
             data.courseType !== "lab report" && 
             <tr>
-            <td className="border border-black px-4 py-2">Organization & Formatting</td>
+            <td className="border border-black px-4 py-2">{data.courseType === "lab final"?"Task Efficiency":"Organization & Formatting"}</td>
             <td className="border border-black px-4 py-2">
-              {data.courseType === "theory" ? "1" : "2"}
+              {data.courseType === "theory" ? "1" :
+              data.courseType=='lab final'?"5":
+               "2"}
             </td>
             <td className="border border-black px-4 py-2"></td>
             <td className="border border-black px-4 py-2"></td>
