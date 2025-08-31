@@ -149,7 +149,6 @@ function About() {
             <h3 className="text-2xl font-medium text-gray-800">
               Md. Miskatul Masabi
             </h3>
-            <p className="text-gray-600 mt-1">Software Engineer</p>
 
             <div className="mt-4 space-y-2">
               <p className="text-gray-700 flex items-center justify-center md:justify-start gap-2">
