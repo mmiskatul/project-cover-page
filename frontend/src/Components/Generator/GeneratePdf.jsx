@@ -21,6 +21,9 @@ const getHtmlFromPreview = () => {
 function GeneratePdf() {
   const { templateName } = useParams();
   const [inputData, setInputData] = useState({
+     teamName: [
+    { studentId: "", studentName: "" }
+  ],
     studentName: "",
     studentId: "",
     courseName: "",
@@ -75,7 +78,12 @@ function GeneratePdf() {
       return;
     }
 
-    const fileName = ` ${inputData.courseType} ${inputData.courseId}(${inputData.studentId})`.trim() || "document";
+    // Use team leader's ID for project or individual student ID
+    const studentIdForFileName = inputData.courseType === "project" 
+      ? inputData.teamName[0]?.studentId || "team" 
+      : inputData.studentId;
+
+    const fileName = ` ${inputData.courseType} ${inputData.courseId}(${studentIdForFileName})`.trim() || "document";
 
     try {
       // Track the PDF generation
@@ -101,6 +109,21 @@ function GeneratePdf() {
       alert("An error occurred while generating the PDF. Please try again.");
     } finally {
       setIsGenerating(false);
+    }
+  };
+
+  // Check if all required fields are filled
+  const isFormValid = () => {
+    if (!inputData.courseName) return false;
+    
+    if (inputData.courseType === "project") {
+      // For projects: check if all team members have both ID and name
+      return inputData.teamName && 
+             inputData.teamName.length > 0 && 
+             !inputData.teamName.some(member => !member.studentId || !member.studentName);
+    } else {
+      // For individual assignments: check student name
+      return !!inputData.studentName;
     }
   };
 
@@ -141,8 +164,6 @@ function GeneratePdf() {
                   {templateName ==='default' && <DefaultPreview data={inputData} />}
                   {templateName ==='eng' && <PreviewPDFENG data={inputData} />}
                   {templateName==='txt' && <PreviewPDFTxt data={inputData}/>}
-
-                  
                 </div>
               </div>
             </div>
@@ -151,11 +172,11 @@ function GeneratePdf() {
             <div className="mt-30 flex justify-center">
               <button 
                 onClick={handleGenerate}
-                disabled={isGenerating || !inputData.courseName || !inputData.studentName}
-                className={`px-8 py-3  rounded-lg shadow-md transition-all duration-200 flex items-center justify-center gap-2 w-full max-w-md ${
+                disabled={isGenerating || !isFormValid()}
+                className={`px-8 py-3 rounded-lg shadow-md transition-all duration-200 flex items-center justify-center gap-2 w-full max-w-md ${
                   isGenerating 
                     ? 'bg-blue-400 cursor-not-allowed' 
-                    : (!inputData.courseName || !inputData.studentName)
+                    : !isFormValid()
                       ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
                       : 'bg-gradient-to-r from-blue-600 to-indigo-700 text-white hover:shadow-lg hover:from-blue-700 hover:to-indigo-800'
                 }`}

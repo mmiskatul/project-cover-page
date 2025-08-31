@@ -42,7 +42,7 @@ export default function PreviewPDF({ data }) {
           src={data.logo}
           alt="DIU Logo"
           style={{
-            width: "240px",
+            width: "400px",
             height: "auto",
             objectFit: "contain",
             marginBottom: "20px",
@@ -56,9 +56,9 @@ export default function PreviewPDF({ data }) {
             ? "Lab Assignment Report"
             : data.courseType === "project"
             ? "Project Report"
-            :data.courseType ==="lab report"
+            : data.courseType === "lab report"
             ? "Lab Report"   
-            :data.courseType==="lab final" 
+            : data.courseType === "lab final" 
             ? "Lab Final"       
             : "Select the type of report"
             }
@@ -77,22 +77,58 @@ export default function PreviewPDF({ data }) {
               capitalizeEachWord(data.semester)
             )}
           </p>
-          <p>
-            <span className="font-bold">Student Name:</span>{" "}
-            {data.studentName === "" ? (
-              <Placeholder />
-            ) : (
-              capitalizeEachWord(data.studentName)
-            )}
-          </p>
-          <p>
-            <span className="font-bold">Student ID:</span>{" "}
-            {data.studentId === "" ? <Placeholder /> : data.studentId}
-          </p>
 
-          <div className="flex flex-row  gap-20">
+          {/* Student name/id section OR Team Members section */}
+          {data.courseType !== "project" ? (
+            <>
+              <p>
+                <span className="font-bold">Student Name:</span>{" "}
+                {data.studentName === "" ? (
+                  <Placeholder />
+                ) : (
+                  capitalizeEachWord(data.studentName)
+                )}
+              </p>
+              <p>
+                <span className="font-bold">Student ID:</span>{" "}
+                {data.studentId === "" ? <Placeholder /> : data.studentId}
+              </p>
+            </>
+          ) : (
+            <div className="mt-4">
+              <p className="font-bold text-center mb-2">Team Members</p>
+              {data.teamName && data.teamName.length > 0 ? (
+                <table className="w-full border-collapse border border-gray-400 mt-2">
+                  <thead>
+                    <tr className="">
+                      <th className="w-1/2 border border-gray-400 px-3 py-1 text-center font-bold">Student ID</th>
+                      <th className="w-1/2 border border-gray-400 px-3 py-1 text-center font-bold">Student Name</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {data.teamName.map((member, index) => (
+                      <tr key={index}>
+                        <td className="border border-gray-400 px-3 py-2">
+                          {member.studentId || <Placeholder />}
+                        </td>
+                        <td className="border border-gray-400 px-3 py-2">
+                          {member.studentName ? capitalizeEachWord(member.studentName) : <Placeholder />}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              ) : (
+                <div className="text-center py-4">
+                  <Placeholder />
+                </div>
+              )}
+            </div>
+          )}
+
+          <div className="flex flex-row gap-20">
             <p>
-              <span className="font-bold ">Batch:</span>
+              <span className="font-bold">Batch:</span>{" "}
               {data.batch === "" ? (
                 <Placeholder />
               ) : (
@@ -100,7 +136,7 @@ export default function PreviewPDF({ data }) {
               )}
             </p>
             <p>
-              <span className="font-bold">Section:</span>
+              <span className="font-bold">Section:</span>{" "}
               {data.section === "" ? (
                 <Placeholder />
               ) : (
@@ -110,18 +146,17 @@ export default function PreviewPDF({ data }) {
           </div>
 
           <div className="flex flex-row justify-between gap-4 items-start">
-            <p className="whitespace-nowrap flex items-center gap-1">
-              <span className="font-bold">Course Code:</span>
-              {data.courseId === "" ? <Placeholder /> : data.courseId}
-            </p>
-
-            <p>
+             <p>
               <span className="font-bold">Course Name:</span>{" "}
               {data.courseName === "" ? (
                 <Placeholder />
               ) : (
                 capitalizeEachWord(data.courseName)
               )}
+            </p>
+            <p className="whitespace-nowrap flex items-center gap-1">
+              <span className="font-bold">Course Code:</span>{" "}
+              {data.courseId === "" ? <Placeholder /> : data.courseId}
             </p>
           </div>
 
