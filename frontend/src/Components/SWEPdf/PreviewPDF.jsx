@@ -23,6 +23,13 @@ export default function PreviewPDF({ data }) {
       </h3>
     );
 
+  // Check if project is done by only one person
+  const isSinglePersonProject = data.courseType === "project" && 
+                               data.teamName && 
+                               data.teamName.length === 1 && 
+                               data.teamName[0].studentName && 
+                               data.teamName[0].studentId;
+
   return (
     <div
       id="cover-preview"
@@ -79,11 +86,13 @@ export default function PreviewPDF({ data }) {
           </p>
 
           {/* Student name/id section OR Team Members section */}
-          {data.courseType !== "project" ? (
+          {data.courseType !== "project" || isSinglePersonProject ? (
             <>
               <p>
                 <span className="font-bold">Student Name:</span>{" "}
-                {data.studentName === "" ? (
+                {isSinglePersonProject ? (
+                  capitalizeEachWord(data.teamName[0].studentName)
+                ) : data.studentName === "" ? (
                   <Placeholder />
                 ) : (
                   capitalizeEachWord(data.studentName)
@@ -91,7 +100,13 @@ export default function PreviewPDF({ data }) {
               </p>
               <p>
                 <span className="font-bold">Student ID:</span>{" "}
-                {data.studentId === "" ? <Placeholder /> : data.studentId}
+                {isSinglePersonProject ? (
+                  data.teamName[0].studentId
+                ) : data.studentId === "" ? (
+                  <Placeholder />
+                ) : (
+                  data.studentId
+                )}
               </p>
             </>
           ) : (
