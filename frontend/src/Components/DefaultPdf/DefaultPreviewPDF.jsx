@@ -22,10 +22,17 @@ export default function DefaultPreview({ data }) {
       </h3>
     );
 
+  // Check if project is done by only one person
+  const isSinglePersonProject = data.courseType === "project" && 
+                               data.teamName && 
+                               data.teamName.length === 1 && 
+                               data.teamName[0].studentName && 
+                               data.teamName[0].studentId;
+
   return (
     <div
       id="cover-preview"
-      className="flex EB justify-center items-center w-full min-h-screen bg-gray-100"
+      className="flex  justify-center items-center w-full min-h-screen bg-gray-100"
     >
       <div
         className="relative bg-white text-black shadow border border-gray-400"
@@ -88,14 +95,70 @@ export default function DefaultPreview({ data }) {
 
           {/* Submitted By */}
           <div className="w-full text-purple-900 text-left text-[18px] font-bold underline mb-2">Submitted By:</div>
-          <div className="w-full pl-32 text-left text-[16px] font-medium space-y-1 mb-6">
-            <p><span className="font-bold">Name:</span> {data.studentName ? capitalizeEachWord(data.studentName) : <Placeholder />}</p>
-            <p><span className="font-bold">ID:</span> {data.studentId ? data.studentId : <Placeholder />}</p>
-            <p><span className="font-bold">Section:</span> {data.section ? capitalizeEachWord(data.section) : <Placeholder />}</p>
-            <p><span className="font-bold">Semester:</span> {data.semester ? capitalizeEachWord(data.semester) : <Placeholder />}</p>
-            <p><span className="font-bold">Department:</span> {data.department ? capitalizeEachWord(data.department) : <Placeholder />}</p>
-            <p className="text-lg font-bold">Daffodil International University</p>
-          </div>
+          
+          {data.courseType === "project" && !isSinglePersonProject ? (
+            // Team Members Section - For projects with multiple people
+            <div className="w-full pl-32 text-left text-[16px] font-medium space-y-1 mb-6">
+              <div className="mb-2">
+                <span className="font-bold">Team Members:</span>
+              </div>
+              
+              {data.teamName && data.teamName.length > 0 ? (
+                <div className="space-y-2">
+                  {data.teamName.map((member, index) => (
+                    <p key={index}>
+                      {member.studentName && member.studentId ? (
+                        <span>
+                          {capitalizeEachWord(member.studentName)} ({member.studentId})
+                        </span>
+                      ) : member.studentName ? (
+                        <span>{capitalizeEachWord(member.studentName)}</span>
+                      ) : member.studentId ? (
+                        <span>({member.studentId})</span>
+                      ) : (
+                        <Placeholder />
+                      )}
+                    </p>
+                  ))}
+                </div>
+              ) : (
+                <Placeholder />
+              )}
+              
+              <div className="mt-4 space-y-1">
+                <p><span className="font-bold">Section:</span> {data.section ? capitalizeEachWord(data.section) : <Placeholder />}</p>
+                <p><span className="font-bold">Semester:</span> {data.semester ? capitalizeEachWord(data.semester) : <Placeholder />}</p>
+                <p><span className="font-bold">Department:</span> {data.department ? capitalizeEachWord(data.department) : <Placeholder />}</p>
+                <p className="text-lg font-bold">Daffodil International University</p>
+              </div>
+            </div>
+          ) : (
+            // Individual Student Section - For non-projects OR single-person projects
+            <div className="w-full pl-32 text-left text-[16px] font-medium space-y-1 mb-6">
+              <p>
+                <span className="font-bold">Name:</span>{" "}
+                {isSinglePersonProject 
+                  ? capitalizeEachWord(data.teamName[0].studentName) 
+                  : data.studentName 
+                    ? capitalizeEachWord(data.studentName) 
+                    : <Placeholder />
+                }
+              </p>
+              <p>
+                <span className="font-bold">ID:</span>{" "}
+                {isSinglePersonProject 
+                  ? data.teamName[0].studentId 
+                  : data.studentId 
+                    ? data.studentId 
+                    : <Placeholder />
+                }
+              </p>
+              <p><span className="font-bold">Section:</span> {data.section ? capitalizeEachWord(data.section) : <Placeholder />}</p>
+              <p><span className="font-bold">Semester:</span> {data.semester ? capitalizeEachWord(data.semester) : <Placeholder />}</p>
+              <p><span className="font-bold">Department:</span> {data.department ? capitalizeEachWord(data.department) : <Placeholder />}</p>
+              <p className="text-lg font-bold">Daffodil International University</p>
+            </div>
+          )}
 
           {/* Date */}
           <div className="w-full text-left text-purple-900 text-[16px] font-bold mt-20">
