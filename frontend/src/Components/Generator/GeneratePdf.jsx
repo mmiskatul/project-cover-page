@@ -41,6 +41,19 @@ function GeneratePdf() {
     logo: "",
     bglogo: "",
     level: "",
+    evaluationTitles: [
+      "Idea with Focus (1)",
+      "Organization (1)", 
+      "Content (2)",
+      "Time Management (1)"
+    ],
+    presentationTitles: [
+      "Content and Design (2)",
+      "Knowledge and Interaction (2)",
+      "Body language and Attire (1)",
+      "Fluency (2)",
+      "Time Management (1)"
+    ]
   });
   const [isGenerating, setIsGenerating] = useState(false);
   const navigate = useNavigate();
@@ -156,7 +169,7 @@ function GeneratePdf() {
                   <h2 className="text-xl font-semibold text-gray-800">Preview</h2>
                   <p className="text-gray-500 mt-1">Your assignment will appear here</p>
                 </div>
-                <div className="flex justify-center border border-gray-200 rounded-lg p-4 bg-gray-50 h-full">
+                <div className="flex justify-center border border-gray-200 rounded-lg p-4 bg-gray-200 ">
                   {templateName === "swe" && <PreviewPDF data={inputData} />}
                   {templateName === "bba" && <Default2PreviewPDF data={inputData} />}
                   {templateName === "nfe" && <PreviewPDFNFE data={inputData} />}

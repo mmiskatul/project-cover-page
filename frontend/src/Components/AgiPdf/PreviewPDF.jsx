@@ -16,6 +16,7 @@ function Placeholder() {
   );
 }
 
+
 export default function PreviewPDF({ data }) {
   if (!data)
     return (
@@ -23,6 +24,11 @@ export default function PreviewPDF({ data }) {
         No data submitted yet.
       </h3>
     );
+    const isSinglePersonProject = data.courseType === "project" && 
+                               data.teamName && 
+                               data.teamName.length === 1 && 
+                               data.teamName[0].studentName && 
+                               data.teamName[0].studentId;
 
   return (
     <div
@@ -58,10 +64,10 @@ export default function PreviewPDF({ data }) {
         <table className="table-auto w-full font-bold border border-black border-collapse mt-2">
           <thead>
             <tr>
-              <th className="border border-black px-4 py-2 text-left">
+              <th className="border border-black px-4 py-1 text-left">
                 Course Code: {data.courseId}
               </th>
-              <th className="border border-black px-4 py-2 text-left">
+              <th className="border border-black px-4 py-1 text-left">
                 Course Title: {capitalizeEachWord(data.courseName)}
               </th>
             </tr>
@@ -70,7 +76,7 @@ export default function PreviewPDF({ data }) {
             <tr>
               <td
                 colSpan="2"
-                className="border border-black px-4 py-2 text-left"
+                className="border border-black px-4 py-1 text-left"
               >
                 Title/Topic:{" "}
                 {data.topicname === "" ? (
@@ -84,7 +90,7 @@ export default function PreviewPDF({ data }) {
         </table>
 
         {/* Evaluation Table */}
-        <table className="table-fixed w-full border border-black border-collapse text-sm mt-2">
+        <table className="table-fixed w-full border border-black border-collapse text-sm mt-1">
           <thead>
             <tr>
               <th
@@ -137,25 +143,20 @@ export default function PreviewPDF({ data }) {
             <tr>
               <th
                 colSpan="10"
-                className="border border-black px-2 py-1 text-center bg-gray-200"
+                className="border border-black px-2 py-1 text-center "
               >
                 Assignment
               </th>
             </tr>
           </thead>
           <tbody>
-            {[
-              { sl: 1, criteria: "Idea with Focus (1)" },
-              { sl: 2, criteria: "Organization (1)" },
-              { sl: 3, criteria: "Content (2)" },
-              { sl: 4, criteria: "Time Management (1)" },
-            ].map((row) => (
-              <tr key={row.sl}>
+            {data.evaluationTitles?.map((criteria, index) => (
+              <tr key={index}>
                 <td className="border border-black px-2 py-1 text-center">
-                  {row.sl}
+                  {index + 1}
                 </td>
                 <td className="border border-black px-2 py-1">
-                  {row.criteria}
+                  {criteria}
                 </td>
                 {Array(5)
                   .fill(0)
@@ -186,27 +187,21 @@ export default function PreviewPDF({ data }) {
                 className="border border-black px-2 py-1 text-center"
               ></td>
             </tr>
-             <tr>
-                <th
+            <tr>
+              <th
                 colSpan="10"
-                className="border border-black px-2 py-1 text-center bg-gray-200"
+                className="border border-black px-2 py-1 text-center "
               >
                 Presentation
               </th>
             </tr>
-            {[
-              { sl: 1, criteria: "Content and Design (2)" },
-              { sl: 2, criteria: "Knowledge and Interaction (2)" },
-              { sl: 3, criteria: "Body language and Attire (1)" },
-              { sl: 4, criteria: "Fluency (2)" },
-              { sl: 5, criteria: "Time Management (1)"}
-            ].map((row) => (
-              <tr key={row.sl}>
+            {data.presentationTitles?.map((criteria, index) => (
+              <tr key={index}>
                 <td className="border border-black px-2 py-1 text-center">
-                  {row.sl}
+                  {index + 1}
                 </td>
                 <td className="border border-black px-2 py-1">
-                  {row.criteria}
+                  {criteria}
                 </td>
                 {Array(5)
                   .fill(0)
@@ -223,7 +218,7 @@ export default function PreviewPDF({ data }) {
                 ></td>
               </tr>
             ))}
-             <tr>
+            <tr>
               <td className="border border-black px-2 py-1 text-center"></td>
               <td
                 colSpan="6"
@@ -255,25 +250,24 @@ export default function PreviewPDF({ data }) {
                 Signature
               </td>
             </tr>
-           
           </tbody>
         </table>
 
         {/* Semester Info */}
-        <table className="table-auto w-full font-bold border border-black border-collapse mt-2">
+        <table className="table-auto w-full font-bold border border-black border-collapse mt-1">
           <thead>
             <tr>
-              <th className="border border-black px-4 py-2 text-left">
+              <th className="border border-black px-4 py-1 text-left">
                 Semester:{" "}
                 {capitalizeEachWord(data.semester?.split(" ")[0] || "")}
               </th>
-              <th className="border border-black px-4 py-2 text-left">
+              <th className="border border-black px-4 py-1 text-left">
                 Year: {data.semester?.split(" ")[1] || new Date().getFullYear()}
               </th>
-              <th className="border border-black px-4 py-2 text-left">
+              <th className="border border-black px-4 py-1 text-left">
                 Level-Term: {data.level}
               </th>
-              <th className="border border-black px-4 py-2 text-left">
+              <th className="border border-black px-4 py-1 text-left">
                 Section: {capitalizeEachWord(data.section)}
               </th>
             </tr>
@@ -281,34 +275,73 @@ export default function PreviewPDF({ data }) {
         </table>
 
         {/* Submission Info */}
-        <table className="table-auto w-full font-bold border border-black border-collapse mt-2">
+        <table className="table-auto w-full font-bold border border-black border-collapse mt-1">
           <thead>
             <tr>
-              <th className="border border-black px-4 py-2 text-left">
+              <th className="border border-black px-4 py-1 text-left">
                 Submitted by-
               </th>
-              <th className="border border-black px-4 py-2 text-left">
+              <th className="border border-black px-4 py-1 text-left">
                 Submitted to-
               </th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td className="border border-black px-4 py-2 text-left">
-                <p>
-                  <span className="font-bold">Name:</span>{" "}
-                  {data.studentName === "" ? (
-                    <Placeholder />
-                  ) : (
-                    capitalizeEachWord(data.studentName)
-                  )}
-                </p>
-                <p>
-                  <span className="font-bold">Student ID:</span>{" "}
-                  {data.studentId === "" ? <Placeholder /> : data.studentId}
-                </p>
+              <td className="border border-black px-4 py-1 text-left">
+                {data.courseType === "project" && !isSinglePersonProject ? (
+                  // Team Members Section
+                  <div>
+                    <p className="font-bold mb-2">Team Members:</p>
+                    {data.teamName && data.teamName.length > 0 ? (
+                      <div className="space-y-1">
+                        {data.teamName.map((member, index) => (
+                          <p key={index}>
+                            {member.studentName && member.studentId ? (
+                              <span>
+                                {capitalizeEachWord(member.studentName)} ({member.studentId})
+                              </span>
+                            ) : member.studentName ? (
+                              <span>{capitalizeEachWord(member.studentName)}</span>
+                            ) : member.studentId ? (
+                              <span>({member.studentId})</span>
+                            ) : (
+                              <Placeholder />
+                            )}
+                          </p>
+                        ))}
+                      </div>
+                    ) : (
+                      <Placeholder />
+                    )}
+                  </div>
+                ) : (
+                  // Individual Student Section
+                  <div>
+                    <p>
+                      <span className="font-bold">Name:</span>{" "}
+                      {isSinglePersonProject ? (
+                        capitalizeEachWord(data.teamName[0].studentName)
+                      ) : data.studentName === "" ? (
+                        <Placeholder />
+                      ) : (
+                        capitalizeEachWord(data.studentName)
+                      )}
+                    </p>
+                    <p>
+                      <span className="font-bold">Student ID:</span>{" "}
+                      {isSinglePersonProject ? (
+                        data.teamName[0].studentId
+                      ) : data.studentId === "" ? (
+                        <Placeholder />
+                      ) : (
+                        data.studentId
+                      )}
+                    </p>
+                  </div>
+                )}
               </td>
-              <td className="border border-black px-4 py-2 text-left">
+              <td className="border border-black px-4 py-1 text-left">
                 <p>
                   <span className="font-bold">Name:</span>{" "}
                   {data.teacherName === "" ? (

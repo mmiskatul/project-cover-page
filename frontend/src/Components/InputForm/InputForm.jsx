@@ -24,6 +24,13 @@ function InputForm({ inputData, setInputData }) {
     setInputData((prev) => ({ ...prev, teamName: updatedTeam }));
   };
 
+  const handleEvaluationTitleChange = (index, value, type = "assignment") => {
+    const key = type === "presentation" ? "presentationTitles" : "evaluationTitles";
+    const updatedTitles = [...inputData[key]];
+    updatedTitles[index] = value;
+    setInputData((prev) => ({ ...prev, [key]: updatedTitles }));
+  };
+
   const addTeamMember = () => {
     setInputData((prev) => ({
       ...prev,
@@ -31,10 +38,27 @@ function InputForm({ inputData, setInputData }) {
     }));
   };
 
+  const addEvaluationTitle = (type = "assignment") => {
+    const key = type === "presentation" ? "presentationTitles" : "evaluationTitles";
+    const defaultTitle = type === "presentation" ? "New Presentation Criteria (1)" : "New Criteria (1)";
+    
+    setInputData((prev) => ({
+      ...prev,
+      [key]: [...prev[key], defaultTitle]
+    }));
+  };
+
   const removeTeamMember = (index) => {
     if (inputData.teamName.length <= 1) return;
     const updatedTeam = inputData.teamName.filter((_, i) => i !== index);
     setInputData((prev) => ({ ...prev, teamName: updatedTeam }));
+  };
+
+  const removeEvaluationTitle = (index, type = "assignment") => {
+    const key = type === "presentation" ? "presentationTitles" : "evaluationTitles";
+    if (inputData[key].length <= 1) return;
+    const updatedTitles = inputData[key].filter((_, i) => i !== index);
+    setInputData((prev) => ({ ...prev, [key]: updatedTitles }));
   };
 
   // Initialize teamName if empty
@@ -76,7 +100,75 @@ function InputForm({ inputData, setInputData }) {
           url.includes("txt")) && <TopicName inputData={inputData} handleChange={handleChange} />}
 
         {/* Level */}
-        {(url.includes("nfe") || url.includes("txt")) && <Level inputData={inputData} handleChange={handleChange} />}
+        {(url.includes("nfe") || url.includes("txt")|| url.includes("agri")) && <Level inputData={inputData} handleChange={handleChange} />}
+
+        {/* Evaluation Criteria (for NFE template) */}
+        {(url.includes("nfe") || url.includes("txt") ||url.includes("agri")) && (
+          <div className="space-y-3">
+            <h2 className="font-semibold text-lg">Assignment Evaluation Criteria</h2>
+            {inputData.evaluationTitles?.map((title, index) => (
+              <div key={index} className="flex gap-2 items-center">
+                <input
+                  type="text"
+                  placeholder="Evaluation Criteria"
+                  value={title}
+                  onChange={(e) => handleEvaluationTitleChange(index, e.target.value, "assignment")}
+                  className="border p-2 rounded flex-1 text-sm"
+                />
+                {inputData.evaluationTitles.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={() => removeEvaluationTitle(index, "assignment")}
+                    className="px-2 py-1 bg-red-500 text-white rounded text-sm"
+                  >
+                    ×
+                  </button>
+                )}
+              </div>
+            ))}
+            <button
+              type="button"
+              onClick={() => addEvaluationTitle("assignment")}
+              className="px-3 py-2 bg-green-500 text-white rounded text-sm hover:bg-green-600"
+            >
+              + Add Assignment Criteria
+            </button>
+          </div>
+        )}
+
+        {/* Presentation Criteria (for Textile template) */}
+        {(url.includes("txt") ||url.includes("agri")) && (
+          <div className="space-y-3">
+            <h2 className="font-semibold text-lg">Presentation Evaluation Criteria</h2>
+            {inputData.presentationTitles?.map((title, index) => (
+              <div key={index} className="flex gap-2 items-center">
+                <input
+                  type="text"
+                  placeholder="Presentation Criteria"
+                  value={title}
+                  onChange={(e) => handleEvaluationTitleChange(index, e.target.value, "presentation")}
+                  className="border p-2 rounded flex-1 text-sm"
+                />
+                {inputData.presentationTitles.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={() => removeEvaluationTitle(index, "presentation")}
+                    className="px-2 py-1 bg-red-500 text-white rounded text-sm"
+                  >
+                    ×
+                  </button>
+                )}
+              </div>
+            ))}
+            <button
+              type="button"
+              onClick={() => addEvaluationTitle("presentation")}
+              className="px-3 py-2 bg-blue-500 text-white rounded text-sm hover:bg-blue-600"
+            >
+              + Add Presentation Criteria
+            </button>
+          </div>
+        )}
 
         {/* Student Info / Team Members */}
         {inputData.courseType === "project" ? (
