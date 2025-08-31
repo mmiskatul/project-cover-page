@@ -7,6 +7,7 @@ import nfetemplate from '../../assets/templateNFE.png'
 import agritemplete from '../../assets/templateAGI.png'
 import engtemplate from '../../assets/templateENG.png'
 import txttemplate from '../../assets/templateTxt.png'
+import civiltemplate from '../../assets/templateCivil.png'
 
 function Template() {
   const departments = [
@@ -16,7 +17,8 @@ function Template() {
     { name: 'nfe', id: 4, fullName: 'Nutrition and Food Engineering', tempLogo: nfetemplate },
     { name :'agri',id:5,fullName:'Agricultural Science' ,tempLogo:agritemplete},
     { name :'eng',id:6,fullName:'Department of English' ,tempLogo:engtemplate},
-    {name:'txt', id:7 ,fullName:'Department of Textile Engineering',tempLogo:txttemplate}
+    {name:'txt', id:7 ,fullName:'Department of Textile Engineering',tempLogo:txttemplate},
+    {name:'civil', id:8 ,fullName:'Department of Civil Engineering',tempLogo:civiltemplate },
 
 
   ];

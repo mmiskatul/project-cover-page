@@ -7,6 +7,7 @@ import DefaultPreview from "../DefaultPdf/DefaultPreviewPDF";
 import PreviewPDFAgri from '../AgiPdf/PreviewPDF'
 import PreviewPDFENG from "../ENGPdf/PreviewPDF";
 import PreviewPDFTxt from '../TextilePdf/PreviewPDF'
+import PreviewPDFCivil from '../CivilPdf/PreviewPDF'
 import BackButton from "../BackButton/BackButton";
 import Default2PreviewPDF from "../BBAPdf/Default2PreviewPDF";
 import diulogo from "../../assets/daffodil-international-university-seeklogo.png";
@@ -177,6 +178,7 @@ function GeneratePdf() {
                   {templateName ==='default' && <DefaultPreview data={inputData} />}
                   {templateName ==='eng' && <PreviewPDFENG data={inputData} />}
                   {templateName==='txt' && <PreviewPDFTxt data={inputData}/>}
+                  {templateName==='civil' && <PreviewPDFCivil data={inputData}/>}
                 </div>
               </div>
             </div>
@@ -217,7 +219,7 @@ function GeneratePdf() {
 
         {/* Footer Note */}
         <div className="mt-8 text-center text-sm text-gray-500">
-          <p>Your document will be generated as a high-quality PDF file ready for submission.</p>
+          <p>Your document will be generated as a high-quality PDF file ready for submission & it can be Edit by mircosoft word or any editor.</p>
         </div>
       </div>
     </div>

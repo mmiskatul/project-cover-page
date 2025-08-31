@@ -103,7 +103,7 @@ function InputForm({ inputData, setInputData }) {
         {(url.includes("nfe") || url.includes("txt")|| url.includes("agri")) && <Level inputData={inputData} handleChange={handleChange} />}
 
         {/* Evaluation Criteria (for NFE template) */}
-        {(url.includes("nfe") || url.includes("txt") ||url.includes("agri")) && (
+        {(url.includes("nfe") || url.includes("txt") ||url.includes("agri")|| url.includes("civil")) && (
           <div className="space-y-3">
             <h2 className="font-semibold text-lg">Assignment Evaluation Criteria</h2>
             {inputData.evaluationTitles?.map((title, index) => (
