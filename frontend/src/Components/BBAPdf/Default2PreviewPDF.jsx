@@ -26,6 +26,13 @@ export default function Default2PreviewPDF({ data }) {
     );
   }
 
+  // Check if project is done by only one person
+  const isSinglePersonProject = data.courseType === "project" && 
+                               data.teamName && 
+                               data.teamName.length === 1 && 
+                               data.teamName[0].studentName && 
+                               data.teamName[0].studentId;
+
   return (
     <div
       id="cover-preview"
@@ -45,7 +52,7 @@ export default function Default2PreviewPDF({ data }) {
         {/* Content Wrapper */}
         <div className="relative z-10 w-full h-full flex flex-col items-center">
           {/* Logo */}
-          <img src={data.logo} alt="DIU Logo" className="w-72 my-20" />
+          <img src={data.logo} alt="DIU Logo" className="w-96 my-20" />
 
           {/* Report Header */}
           <div className="w-full text-center text-2xl font-bold mb-6 bg-blue-600">
@@ -115,19 +122,63 @@ export default function Default2PreviewPDF({ data }) {
               </div>
 
               <div>
-                {/* Student Info */}
+                {/* Submitted By Header */}
                 <h1 className="text-center text-lg font-bold underline mb-4">
                   Submitted By:
                 </h1>
-                <div className="space-y-2 text-base font-medium z-10 relative">
-                  <InfoRow label="Name" value={data.studentName} />
-                  <InfoRow label="ID" value={data.studentId} />
-                  <InfoRow label="Section" value={data.section} />
-                  <InfoRow label="Department" value={data.department} />
-                  <p className="text-center font-bold">
-                    Daffodil International University
-                  </p>
-                </div>
+                
+                {data.courseType === "project" && !isSinglePersonProject ? (
+                  // Team Members Section
+                  <div className="space-y-3 text-base font-medium z-10 relative">
+                    <div className="text-center font-semibold mb-2">Team Members:</div>
+                    {data.teamName && data.teamName.length > 0 ? (
+                      <div className="space-y-1">
+                        {data.teamName.map((member, index) => (
+                          <p key={index} className="text-center">
+                            {member.studentName && member.studentId ? (
+                              <span>
+                                {capitalizeEachWord(member.studentName)} ({member.studentId})
+                              </span>
+                            ) : member.studentName ? (
+                              <span>{capitalizeEachWord(member.studentName)}</span>
+                            ) : member.studentId ? (
+                              <span>({member.studentId})</span>
+                            ) : (
+                              <span className="text-gray-600">-</span>
+                            )}
+                          </p>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-center text-gray-600">No team members</p>
+                    )}
+                    
+                    <div className="mt-4 space-y-1">
+                      <InfoRow label="Section" value={data.section} />
+                      <InfoRow label="Department" value={data.department} />
+                      <p className="text-center font-bold mt-2">
+                        Daffodil International University
+                      </p>
+                    </div>
+                  </div>
+                ) : (
+                  // Individual Student Section
+                  <div className="space-y-2 text-base font-medium z-10 relative">
+                    <InfoRow 
+                      label="Name" 
+                      value={isSinglePersonProject ? data.teamName[0].studentName : data.studentName} 
+                    />
+                    <InfoRow 
+                      label="ID" 
+                      value={isSinglePersonProject ? data.teamName[0].studentId : data.studentId} 
+                    />
+                    <InfoRow label="Section" value={data.section} />
+                    <InfoRow label="Department" value={data.department} />
+                    <p className="text-center font-bold">
+                      Daffodil International University
+                    </p>
+                  </div>
+                )}
 
                 {/* Submission Date */}
                 <p className="text-base text-center font-semibold mt-6 mb-25">
