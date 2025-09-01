@@ -87,17 +87,12 @@ function InputForm({ inputData, setInputData }) {
         )}
 
         {/* Departments */}
-        {(url.includes("default") || url.includes("bba") || url.includes("eng")) && (
+        {(url.includes("default") || url.includes("bba") || url.includes("eng") ||url.includes('thm')) && (
           <Departments inputData={inputData} handleChange={handleChange} />
         )}
 
         {/* Topic Name */}
-        {(url.includes("default") ||
-          url.includes("bba") ||
-          url.includes("nfe") ||
-          url.includes("agri") ||
-          url.includes("eng") ||
-          url.includes("txt")) && <TopicName inputData={inputData} handleChange={handleChange} />}
+        {(!url.includes("swe") ) && <TopicName inputData={inputData} handleChange={handleChange} />}
 
         {/* Level */}
         {(url.includes("nfe") || url.includes("txt")|| url.includes("agri")) && <Level inputData={inputData} handleChange={handleChange} />}

@@ -8,6 +8,7 @@ import PreviewPDFAgri from '../AgiPdf/PreviewPDF'
 import PreviewPDFENG from "../ENGPdf/PreviewPDF";
 import PreviewPDFTxt from '../TextilePdf/PreviewPDF'
 import PreviewPDFCivil from '../CivilPdf/PreviewPDF'
+import PreviewPDFTHM from "../THMPDF/PreviewPDF";
 import BackButton from "../BackButton/BackButton";
 import Default2PreviewPDF from "../BBAPdf/Default2PreviewPDF";
 import diulogo from "../../assets/daffodil-international-university-seeklogo.png";
@@ -179,6 +180,7 @@ function GeneratePdf() {
                   {templateName ==='eng' && <PreviewPDFENG data={inputData} />}
                   {templateName==='txt' && <PreviewPDFTxt data={inputData}/>}
                   {templateName==='civil' && <PreviewPDFCivil data={inputData}/>}
+                  {templateName==='thm' && <PreviewPDFTHM data={inputData}/>}
                 </div>
               </div>
             </div>
