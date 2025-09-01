@@ -131,6 +131,9 @@ export default function PreviewPDF({ data }) {
                         </td>
                       </tr>
                     ))}
+                    <tr>
+                      <td className="border border-gray-400 px-3 py-2 font-bold text-left" colSpan={2}>Section: {`${data.batch}(${data.section})`}</td>
+                    </tr>
                   </tbody>
                 </table>
               ) : (
@@ -141,7 +144,7 @@ export default function PreviewPDF({ data }) {
             </div>
           )}
 
-          <div className="flex flex-row gap-20">
+          {(data.courseType !== "project"|| isSinglePersonProject) && <div className="flex flex-row gap-20">
             <p>
               <span className="font-bold">Batch:</span>{" "}
               {data.batch === "" ? (
@@ -158,9 +161,9 @@ export default function PreviewPDF({ data }) {
                 capitalizeEachWord(data.section)
               )}
             </p>
-          </div>
+          </div>}
 
-          <div className="flex flex-row justify-between gap-4 items-start">
+          <div className="flex flex-row justify-between gap-3 items-start">
              <p>
               <span className="font-bold">Course Name:</span>{" "}
               {data.courseName === "" ? (
