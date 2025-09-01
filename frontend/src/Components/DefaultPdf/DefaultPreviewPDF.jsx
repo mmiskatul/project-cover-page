@@ -70,8 +70,12 @@ export default function DefaultPreview({ data }) {
           <h3 className="text-2xl font-bold underline mt-6 mb-8">
             {data.courseType === "theory"
               ? "ASSIGNMENT"
-              : data.courseType === "lab"
+              : data.courseType === "lab report"  
               ? "LAB REPORT"
+              : data.courseType === "lab assignment"
+              ? "LAB REPORT"
+              : data.courseType === "lab final"
+              ? "LAB FINAL "
               : data.courseType === "project"
               ? "PROJECT REPORT"
               : "SELECT THE TYPE OF REPORT"}
