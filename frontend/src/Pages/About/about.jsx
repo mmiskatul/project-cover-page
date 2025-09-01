@@ -174,7 +174,7 @@ function About() {
         </p>
         <p className="flex items-center gap-2">
           <FaBolt className="text-indigo-500" />
-          Current Projects: AI-powered web apps, Automation tools, Data Analysis
+          Current Projects: AI-powered website
         </p>
         <p className="flex items-center gap-2">
           <FaEnvelope className="text-indigo-500" />
