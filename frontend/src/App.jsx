@@ -12,6 +12,7 @@ import About from './Pages/About/about'
 import HistoryPreview from './Pages/HistoryPreview/HistoryPreview'
 
 function App() {
+  
   return (
     <div className=''>
       <NavBar/>

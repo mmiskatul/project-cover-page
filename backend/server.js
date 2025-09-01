@@ -8,7 +8,8 @@ const connectDB = require('./config/db.js');
 const { generatePDF } = require('./controller/generate-pdf-controlller.js');
 const { mergePdf } = require('./controller/pdf-merge-controller.js');
 const { submitFeedback, validateFeedback } = require('./controller/feedback-controller.js');
-const { initializeStats, incrementCount, getStats } = require('./controller/stats-controller.js'); // Import new stats controller
+const { initializeStats, incrementCount, getStats } = require('./controller/stats-controller.js'); 
+
 
 const app = express();
 
