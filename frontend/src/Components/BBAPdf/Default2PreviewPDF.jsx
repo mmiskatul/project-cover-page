@@ -57,9 +57,17 @@ export default function Default2PreviewPDF({ data }) {
           {/* Report Header */}
           <div className="w-full text-center text-2xl font-bold mb-6 bg-blue-600">
             <div className="w-1/2  text-white py-3 px-6 text-lg font-semibold text-center ">
-              {data.courseType
-                ? capitalizeEachWord(data.courseType) + " Report"
-                : "Report"}
+               {data.courseType === "theory"
+              ? "ASSIGNMENT"
+              : data.courseType === "lab report"  
+              ? "LAB REPORT"
+              : data.courseType === "lab assignment"
+              ? "LAB REPORT"
+              : data.courseType === "lab final"
+              ? "LAB FINAL "
+              : data.courseType === "project"
+              ? "PROJECT REPORT"
+              : "SELECT THE TYPE OF REPORT"}
             </div>
             <div className="w-1/2 text-white  px-6 text-lg font-semibold text-center"></div>
           </div>

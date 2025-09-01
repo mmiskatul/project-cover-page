@@ -129,87 +129,102 @@ function About() {
       </div>
 
       {/* Developer Section */}
-      <div className="mt-32">
-        <h2 className="text-3xl font-semibold text-center mb-12">
-          Developed By
-        </h2>
+     {/* Developer Section */}
+<div className="mt-32 relative">
+  <h2 className="text-3xl font-bold text-center mb-16 text-gray-800">
+    Developed By
+  </h2>
 
-        <div className="flex flex-col md:flex-row items-center justify-center gap-8 max-w-4xl mx-auto">
-          {/* Developer Photo */}
-          <div className="flex-shrink-0">
-            <img
-              src={devPic}
-              alt="Md. Miskatul Masabi"
-              className="w-40 h-40 rounded-full object-cover border-4 border-indigo-100 shadow-sm"
-            />
-          </div>
+  <div className="bg-white/60 backdrop-blur-md shadow-xl rounded-2xl p-10 flex flex-col md:flex-row items-center justify-center gap-10 max-w-4xl mx-auto border border-indigo-100">
+    {/* Developer Photo */}
+    <div className="relative group">
+      <img
+        src={devPic}
+        alt="Md. Miskatul Masabi"
+        className="w-40 h-40 rounded-full object-cover border-4 border-indigo-100 shadow-lg transition-transform duration-300 group-hover:scale-105"
+      />
+      <span className="absolute inset-0 rounded-full border-2 border-indigo-400/50 animate-pulse"></span>
+    </div>
 
-          {/* Developer Info */}
-          <div className="text-center md:text-left">
-            <h3 className="text-2xl font-medium text-gray-800">
-              Md. Miskatul Masabi
-            </h3>
+    {/* Developer Info */}
+    <div className="text-center md:text-left">
+      <h3 className="text-2xl font-semibold text-gray-800">
+        Md. <span className="text-indigo-600">Miskatul Masabi</span>
+      </h3>
+      <p className="text-indigo-500 font-medium mt-1">
+        Full Stack Developer | AI Enthusiast
+      </p>
 
-            <div className="mt-4 space-y-2">
-              <p className="text-gray-700 flex items-center justify-center md:justify-start gap-2">
-                <FaBook className="text-indigo-500" />
-                BSc in Software Engineering, Daffodil International University
-              </p>
+      <p className="mt-4 text-gray-700 max-w-md">
+        Passionate software engineer with hands-on experience in web and AI development, building smart applications and solving real-world problems with code.
+      </p>
 
-              <p className="text-gray-700 flex items-center justify-center md:justify-start gap-2">
-                <FaBox className="text-indigo-500" />
-                Full Stack Development | Web Applications
-              </p>
-
-              <p className="text-gray-700 flex items-center justify-center md:justify-start gap-2">
-                <FaBrain className="text-indigo-500" />
-                Machine Learning & AI Enthusiast
-              </p>
-
-              <p className="text-gray-700 flex items-center justify-center md:justify-start gap-2">
-                <FaEnvelope className="text-indigo-500" />
-                <a
-                  href="mailto:masabimiskat@gmail.com"
-                  className="hover:underline hover:text-indigo-600 transition-colors"
-                >
-                  masabimiskat@gmail.com
-                </a>
-              </p>
-            </div>
-
-            {/* Social Links */}
-            <div className="flex justify-center md:justify-start gap-4 mt-6 text-xl">
-              <a
-                href="https://github.com/mmiskatul"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-gray-600 hover:text-gray-900 transition-colors"
-                aria-label="GitHub Profile"
-              >
-                <FaGithub />
-              </a>
-              <a
-                href="https://www.linkedin.com/in/md-mishkatul-masabi-b55b76292/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-600 hover:text-blue-800 transition-colors"
-                aria-label="LinkedIn Profile"
-              >
-                <FaLinkedin />
-              </a>
-              <a
-                href="https://codeforces.com/profile/Miskatul_Masabi"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-gray-700 hover:text-gray-900 transition-colors"
-                aria-label="Codeforces Profile"
-              >
-                <FaCode />
-              </a>
-            </div>
-          </div>
-        </div>
+      <div className="mt-6 space-y-3 text-gray-700">
+        <p className="flex items-center gap-2">
+          <FaBook className="text-indigo-500" />
+          BSc in Software Engineering, Daffodil International University
+        </p>
+        <p className="flex items-center gap-2">
+          <FaBox className="text-indigo-500" />
+          Specializes in Full Stack Web Applications (React, Node.js, Express, MongoDB)
+        </p>
+        <p className="flex items-center gap-2">
+          <FaBrain className="text-indigo-500" />
+          Machine Learning & AI Enthusiast (Basic knowledge of Python)
+        </p>
+        <p className="flex items-center gap-2">
+          <FaBolt className="text-indigo-500" />
+          Current Projects: AI-powered web apps, Automation tools, Data Analysis
+        </p>
+        <p className="flex items-center gap-2">
+          <FaEnvelope className="text-indigo-500" />
+          <a
+            href="mailto:masabimiskat@gmail.com"
+            className="hover:underline hover:text-indigo-600 transition-colors"
+          >
+            masabimiskat@gmail.com
+          </a>
+        </p>
+        <p className="flex items-center gap-2">
+          <FaPuzzlePiece className="text-indigo-500" />
+          Achievements: Codeforces Rated, Completed multiple professional certifications
+        </p>
       </div>
+
+      {/* Social Links */}
+      <div className="flex justify-center md:justify-start gap-4 mt-6">
+        <a
+          href="https://github.com/mmiskatul"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 text-gray-600 hover:text-black shadow transition"
+          aria-label="GitHub Profile"
+        >
+          <FaGithub />
+        </a>
+        <a
+          href="https://www.linkedin.com/in/md-mishkatul-masabi-b55b76292/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="w-10 h-10 flex items-center justify-center rounded-full bg-blue-100 hover:bg-blue-200 text-blue-600 hover:text-blue-800 shadow transition"
+          aria-label="LinkedIn Profile"
+        >
+          <FaLinkedin />
+        </a>
+        <a
+          href="https://codeforces.com/profile/Miskatul_Masabi"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 text-gray-700 hover:text-black shadow transition"
+          aria-label="Codeforces Profile"
+        >
+          <FaCode />
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
     </div>
   );
 }
