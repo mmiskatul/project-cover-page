@@ -44,8 +44,9 @@ function GeneratePdf() {
     date: "",
     department: "",
     topicname: "",
-    logo: "",
-    bglogo: "",
+    // Keep non-empty defaults to avoid empty <img src=""> during first render.
+    logo: diulogo,
+    bglogo: bglogo,
     level: "",
     evaluationTitles: [
       "Idea with Focus (1)",
