@@ -1,6 +1,6 @@
 "use client";
 
-import HistoryPreview from "@/Pages/HistoryPreview/HistoryPreview";
+import HistoryPreview from "@/views/HistoryPreview/HistoryPreview";
 
 export default function RecentScreenClient() {
   return <HistoryPreview />;

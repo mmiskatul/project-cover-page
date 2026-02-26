@@ -28,7 +28,7 @@ const CardTemplate = ({ data }) => {
                 <div className="mt-3 flex items-center justify-between">
                     <span className="text-xs text-gray-500">Template</span>
                     <span className="text-sm font-medium text-blue-600 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-                        Select →
+                        Select â†’
                     </span>
                 </div>
             </div>

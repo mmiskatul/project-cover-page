@@ -45,7 +45,7 @@ export default function DefaultPreview({ data }) {
           fontFamily: "Gupter, sans-serif",
         }}
       >
-        {/* ✅ Background Watermark */}
+        {/* âœ… Background Watermark */}
         <div
           className="absolute top-1/2 left-1/2 pointer-events-none mt-10 ml-"
           style={{
@@ -61,7 +61,7 @@ export default function DefaultPreview({ data }) {
           }}
         ></div>
 
-        {/* ✅ Foreground Content */}
+        {/* âœ… Foreground Content */}
         <div className="relative p-5 px-10 z-10 w-full h-full flex flex-col items-center">
           {/* Logo */}
           <img src={data.logo} alt="DIU Logo" style={{ width: "300px", marginTop: "10px" }} />

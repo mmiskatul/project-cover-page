@@ -11,7 +11,6 @@ function CourseType({inputData,handleChange}) {
           name="courseType"
           value={inputData.courseType}
           onChange={handleChange}
-          placeholder="Select course type"
           className="h-full px-2 w-full outline-none bg-transparent"
           required
         >

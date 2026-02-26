@@ -16,7 +16,6 @@ function Placeholder() {
   );
 }
 
-
 export default function PreviewPDF({ data }) {
   if (!data)
     return (
@@ -24,7 +23,9 @@ export default function PreviewPDF({ data }) {
         No data submitted yet.
       </h3>
     );
-    const isSinglePersonProject = data.courseType === "project" && 
+
+  // Check if project is done by only one person
+  const isSinglePersonProject = data.courseType === "project" && 
                                data.teamName && 
                                data.teamName.length === 1 && 
                                data.teamName[0].studentName && 
@@ -33,7 +34,7 @@ export default function PreviewPDF({ data }) {
   return (
     <div
       id="cover-preview"
-      className="gupter mx-auto bg-white text-black"
+      className="EB mx-auto bg-white text-black"
       style={{
         width: "794px", // A4 width
         minHeight: "1123px", // A4 height
@@ -43,25 +44,35 @@ export default function PreviewPDF({ data }) {
       }}
     >
       {/* Header */}
-      <div className="EB flex flex-col items-center w-full">
-            <h1 className="w-full text-center border-b-2 border-black text-base font-bold mb-1 ">Department of Agricultural Science</h1>
+      <div className="flex flex-col items-center w-full">
+
         <img
           src={data.logo}
           alt="DIU Logo"
           style={{
-            width: "240px",
+            width: "340px",
             height: "auto",
             objectFit: "contain",
             marginBottom: "20px",
           }}
         />
 
-        <h3 className="text-xl font-bold mb-2 text-center border-b-2 border-black">
-          Assignment and Presentation
+        <h3 className="text-3xl font-bold mb-3 text-center">
+          {data.courseType === "theory"
+            ? "Assignment"
+            : data.courseType === "lab assignment"
+            ? "Assignment "
+            : data.courseType === "lab report"
+            ? "Lab Report"
+            : data.courseType === "lab final"
+            ? "Lab Final "
+            : data.courseType === "project"
+            ? "Project Report"
+            : "Select the type of report"}
         </h3>
 
         {/* Course Info Table */}
-        <table className="table-auto w-full font-bold border border-black border-collapse mt-2">
+        <table className="table-auto w-full font-bold border border-black border-collapse mt-5">
           <thead>
             <tr>
               <th className="border border-black px-4 py-1 text-left">
@@ -75,7 +86,7 @@ export default function PreviewPDF({ data }) {
           <tbody>
             <tr>
               <td
-                colSpan="2"
+                colSpan={2}
                 className="border border-black px-4 py-1 text-left"
               >
                 Title/Topic:{" "}
@@ -90,36 +101,36 @@ export default function PreviewPDF({ data }) {
         </table>
 
         {/* Evaluation Table */}
-        <table className="table-fixed w-full border border-black border-collapse text-sm mt-1">
+        <table className="table-fixed w-full border border-black border-collapse text-sm mt-5">
           <thead>
             <tr>
               <th
-                rowSpan="2"
+                rowSpan={2}
                 className="border border-black px-2 py-1 text-center w-10"
               >
                 SL
               </th>
               <th
-                rowSpan="2"
+                rowSpan={2}
                 className="border border-black px-2 py-1 text-center w-64"
               >
                 Evaluation criteria with marks
               </th>
               <th
-                colSpan="5"
+                colSpan={5}
                 className="border border-black px-2 py-1 text-center"
               >
-                Put Tick (✓) Mark
+                Put Tick (âœ“) Mark
               </th>
               <th
-                rowSpan="2"
+                rowSpan={2}
                 className="border border-black px-2 py-1 text-center w-24"
               >
                 Mark Obtained
               </th>
               <th
-                rowSpan="2"
-                colSpan="2"
+                rowSpan={2}
+                colSpan={2}
                 className="border border-black px-2 py-1 text-center w-40"
               >
                 Remarks
@@ -142,8 +153,8 @@ export default function PreviewPDF({ data }) {
             </tr>
             <tr>
               <th
-                colSpan="10"
-                className="border border-black px-2 py-1 text-center "
+                colSpan={10}
+                className="border border-black px-2 py-1 text-center bg-gray-200"
               >
                 Assignment
               </th>
@@ -168,7 +179,7 @@ export default function PreviewPDF({ data }) {
                   ))}
                 <td className="border border-black px-2 py-1 text-center"></td>
                 <td
-                  colSpan="2"
+                  colSpan={2}
                   className="border border-black px-2 py-1 text-center"
                 ></td>
               </tr>
@@ -176,77 +187,31 @@ export default function PreviewPDF({ data }) {
             <tr>
               <td className="border border-black px-2 py-1 text-center"></td>
               <td
-                colSpan="6"
+                colSpan={6}
                 className="border border-black px-2 py-1 text-right font-semibold"
               >
                 Total
               </td>
               <td className="border border-black px-2 py-1 text-center"></td>
               <td
-                colSpan="2"
+                colSpan={2}
                 className="border border-black px-2 py-1 text-center"
               ></td>
             </tr>
             <tr>
-              <th
-                colSpan="10"
-                className="border border-black px-2 py-1 text-center "
-              >
-                Presentation
-              </th>
-            </tr>
-            {data.presentationTitles?.map((criteria, index) => (
-              <tr key={index}>
-                <td className="border border-black px-2 py-1 text-center">
-                  {index + 1}
-                </td>
-                <td className="border border-black px-2 py-1">
-                  {criteria}
-                </td>
-                {Array(5)
-                  .fill(0)
-                  .map((_, i) => (
-                    <td
-                      key={i}
-                      className="border border-black px-2 py-1 text-center"
-                    ></td>
-                  ))}
-                <td className="border border-black px-2 py-1 text-center"></td>
-                <td
-                  colSpan="2"
-                  className="border border-black px-2 py-1 text-center"
-                ></td>
-              </tr>
-            ))}
-            <tr>
-              <td className="border border-black px-2 py-1 text-center"></td>
-              <td
-                colSpan="6"
-                className="border border-black px-2 py-1 text-right font-semibold"
-              >
-                Total
-              </td>
-              <td className="border border-black px-2 py-1 text-center"></td>
-              <td
-                colSpan="2"
-                className="border border-black px-2 py-1 text-center"
-              ></td>
-            </tr>
-            <tr>
-              <td colSpan="8" className="border border-black px-2 py-1">
+              <td colSpan={8} className="border border-black px-2 py-1">
                 <span className="font-bold">Date of Submission:</span>{" "}
                 {data.date === "" ? <Placeholder /> : data.date}
               </td>
               <td
-                colSpan="2"
+                colSpan={2}
                 className="border border-black px-2 py-3 text-left font-bold"
               >
                 <br />
                 <span>.........................</span>
-                <br />
                 <span>..............</span>
                 <br />
-                Teacher <br />
+                Teacher 
                 Signature
               </td>
             </tr>
@@ -254,7 +219,7 @@ export default function PreviewPDF({ data }) {
         </table>
 
         {/* Semester Info */}
-        <table className="table-auto w-full font-bold border border-black border-collapse mt-1">
+        <table className="table-auto w-full font-bold border border-black border-collapse mt-5">
           <thead>
             <tr>
               <th className="border border-black px-4 py-1 text-left">
@@ -275,7 +240,7 @@ export default function PreviewPDF({ data }) {
         </table>
 
         {/* Submission Info */}
-        <table className="table-auto w-full font-bold border border-black border-collapse mt-1">
+        <table className="table-auto w-full font-bold border border-black border-collapse mt-5">
           <thead>
             <tr>
               <th className="border border-black px-4 py-1 text-left">

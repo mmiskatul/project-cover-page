@@ -1,24 +1,10 @@
 import Link from "next/link";
-import BackButton from '../../components/BackButton/BackButton';
+import BackButton from "../../components/BackButton/BackButton";
+import { TEMPLATE_CATALOG } from "@/lib/template-config";
 
 function Template() {
-  const departments = [
-    { name: 'swe', id: 1, fullName: 'Software Engineering', tempLogo: "/assets/templateSWE.png" },
-    { name: 'default', id: 2, fullName: 'Default Template', tempLogo: "/assets/template1.png" },
-    { name: 'bba', id: 3, fullName: 'Default Template', tempLogo: "/assets/template2.png" },
-    { name: 'nfe', id: 4, fullName: 'Nutrition and Food Engineering', tempLogo: "/assets/templateNFE.png" },
-    { name :'agri',id:5,fullName:'Agricultural Science' ,tempLogo:"/assets/templateAGI.png"},
-    { name :'eng',id:6,fullName:'Department of English' ,tempLogo:"/assets/templateENG.png"},
-    {name:'txt', id:7 ,fullName:'Department of Textile Engineering',tempLogo:"/assets/templateTxt.png"},
-    {name:'civil', id:8 ,fullName:'Department of Civil Engineering',tempLogo:"/assets/templateCivil.png" },
-    {name:'thm', id:9 ,fullName:'Tourism and Hospitality Management',tempLogo:"/assets/templateTHM.png" },
-    
-
-
-  ];
-
   return (
-    <div className="min-h-screen pt-20 bg-gray-50 mb-20  py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen pt-20 bg-gray-50 mb-20 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         {/* Back Button */}
         <div className="mb-8">
@@ -37,7 +23,7 @@ function Template() {
 
         {/* Department Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {departments.map((department) => (
+          {TEMPLATE_CATALOG.map((department) => (
             <Link
               key={department.id}
               href={`/template/${department.name}`}
@@ -45,9 +31,9 @@ function Template() {
             >
               <div className="p-1 bg-gradient-to-r from-indigo-50 to-blue-50">
                 <div className="h-48 overflow-hidden flex items-center justify-center bg-white p-4">
-                  <img 
-                    src={department.tempLogo} 
-                    alt={department.fullName} 
+                  <img
+                    src={department.tempLogo}
+                    alt={department.fullName}
                     className="object-contain h-full w-full transition-transform duration-300 group-hover:scale-105"
                   />
                 </div>
@@ -61,7 +47,7 @@ function Template() {
                     Template #{department.id}
                   </span>
                   <span className="text-sm text-gray-500 group-hover:text-indigo-600 transition-colors">
-                    Select →
+                    Select {"->"}
                   </span>
                 </div>
               </div>

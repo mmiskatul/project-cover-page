@@ -3,16 +3,9 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import InputForm from "../InputForm/InputForm";
-import PreviewPDF from "../SWEPdf/PreviewPDF";
-import PreviewPDFNFE from "../NFEPdf/PreviewPDF";
-import DefaultPreview from "../DefaultPdf/DefaultPreviewPDF";
-import PreviewPDFAgri from '../AgiPdf/PreviewPDF'
-import PreviewPDFENG from "../ENGPdf/PreviewPDF";
-import PreviewPDFTxt from '../TextilePdf/PreviewPDF'
-import PreviewPDFCivil from '../CivilPdf/PreviewPDF'
-import PreviewPDFTHM from "../THMPDF/PreviewPDF";
 import BackButton from "../BackButton/BackButton";
-import Default2PreviewPDF from "../BBAPdf/Default2PreviewPDF";
+import { TEMPLATE_PREVIEW_COMPONENTS } from "./template-preview-map";
+import { getTemplateByName } from "@/lib/template-config";
 
 const diulogo = "/assets/daffodil-international-university-seeklogo.png";
 const bglogo = "/assets/BgImage.png";
@@ -25,6 +18,15 @@ const getHtmlFromPreview = () => {
 
 function GeneratePdf() {
   const { templateName } = useParams();
+  const activeTemplateName = Array.isArray(templateName)
+    ? templateName[0]
+    : templateName;
+  const selectedTemplate =
+    getTemplateByName(activeTemplateName) || getTemplateByName("default");
+  const PreviewComponent =
+    TEMPLATE_PREVIEW_COMPONENTS[selectedTemplate?.name] ||
+    TEMPLATE_PREVIEW_COMPONENTS.default;
+
   const [inputData, setInputData] = useState({
      teamName: [
     { studentId: "", studentName: "" }
@@ -68,7 +70,7 @@ function GeneratePdf() {
       try {
         const response = await fetch(imgPath);
         const blob = await response.blob();
-        return new Promise((resolve) => {
+        return new Promise<void>((resolve) => {
           const reader = new FileReader();
           reader.onloadend = () => {
             setInputData((prev) => ({ ...prev, [key]: reader.result }));
@@ -163,7 +165,11 @@ function GeneratePdf() {
                   <h2 className="text-xl font-semibold text-gray-800">Assignment Details</h2>
                   <p className="text-gray-500 mt-1">Fill in your assignment information</p>
                 </div>
-                <InputForm inputData={inputData} setInputData={setInputData} templateName={templateName} />
+                <InputForm
+                  inputData={inputData}
+                  setInputData={setInputData}
+                  templateName={selectedTemplate?.name}
+                />
               </div>
 
               {/* Preview Section - 65% width */}
@@ -173,15 +179,7 @@ function GeneratePdf() {
                   <p className="text-gray-500 mt-1">Your assignment will appear here</p>
                 </div>
                 <div className="flex justify-center border border-gray-200 rounded-lg p-4 bg-gray-200 ">
-                  {templateName === "swe" && <PreviewPDF data={inputData} />}
-                  {templateName === "bba" && <Default2PreviewPDF data={inputData} />}
-                  {templateName === "nfe" && <PreviewPDFNFE data={inputData} />}
-                  {templateName==='agri' && <PreviewPDFAgri data={inputData}/>}
-                  {templateName ==='default' && <DefaultPreview data={inputData} />}
-                  {templateName ==='eng' && <PreviewPDFENG data={inputData} />}
-                  {templateName==='txt' && <PreviewPDFTxt data={inputData}/>}
-                  {templateName==='civil' && <PreviewPDFCivil data={inputData}/>}
-                  {templateName==='thm' && <PreviewPDFTHM data={inputData}/>}
+                  {PreviewComponent && <PreviewComponent data={inputData} />}
                 </div>
               </div>
             </div>

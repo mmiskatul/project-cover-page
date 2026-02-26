@@ -90,7 +90,7 @@ export default function PreviewPDF({ data }) {
         </h1>
         
         {/* Submitted by */}
-        <h3 style={{ marginTop: "4.5rem", fontSize: "1.25rem", fontWeight: "400" }}>Submitted by–</h3>
+        <h3 style={{ marginTop: "4.5rem", fontSize: "1.25rem", fontWeight: "400" }}>Submitted byâ€“</h3>
         
         {data.courseType === "project" && !isSinglePersonProject ? (
           // Team Members Section
@@ -131,7 +131,7 @@ export default function PreviewPDF({ data }) {
         <h5 style={{ fontSize: "1.125rem", fontWeight: "600" }}>Section: {data.batch}({data.section})</h5>
         
         {/* Submitted to */}
-        <h3 style={{ fontSize: "1.25rem", fontWeight: "500", textAlign: "center", marginTop: "3.25rem" }}>Submitted to –</h3>
+        <h3 style={{ fontSize: "1.25rem", fontWeight: "500", textAlign: "center", marginTop: "3.25rem" }}>Submitted to â€“</h3>
         <h5 style={{ fontSize: "1.125rem", fontWeight: "700" }}>{data.teacherName}</h5>
         <h5 style={{ fontSize: "1.125rem", fontWeight: "600" }}>ID: {data.courseTeacherId}</h5>
         <h2 style={{ fontSize: "1.125rem", fontWeight: "600" }}>{data.teacherDesignation} , {data.department}</h2>

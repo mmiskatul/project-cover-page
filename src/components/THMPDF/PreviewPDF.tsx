@@ -23,8 +23,8 @@ function Placeholder() {
 }
 
 // Convert image to Base64
-function getBase64Image(imgSrc) {
-  return new Promise((resolve) => {
+function getBase64Image(imgSrc: string) {
+  return new Promise<string>((resolve, reject) => {
     const img = new Image();
     img.src = imgSrc;
     img.crossOrigin = "anonymous";
@@ -33,14 +33,19 @@ function getBase64Image(imgSrc) {
       canvas.width = img.width;
       canvas.height = img.height;
       const ctx = canvas.getContext("2d");
+      if (!ctx) {
+        reject(new Error("Canvas context is unavailable"));
+        return;
+      }
       ctx.drawImage(img, 0, 0);
       resolve(canvas.toDataURL("image/png"));
     };
+    img.onerror = () => reject(new Error("Failed to load image"));
   });
 }
 
 export default function PreviewPDF({ data }) {
-  const [iconBase64, setIconBase64] = useState(null);
+  const [iconBase64, setIconBase64] = useState<string | null>(null);
 
   useEffect(() => {
     getBase64Image(iconPng).then(setIconBase64);

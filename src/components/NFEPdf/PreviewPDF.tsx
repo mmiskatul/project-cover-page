@@ -87,7 +87,7 @@ export default function PreviewPDF({ data }) {
           <tbody>
             <tr>
               <td
-                colSpan="2"
+                colSpan={2}
                 className="border border-black px-4 py-1 text-left"
               >
                 Title/Topic:{" "}
@@ -106,32 +106,32 @@ export default function PreviewPDF({ data }) {
           <thead>
             <tr>
               <th
-                rowSpan="2"
+                rowSpan={2}
                 className="border border-black px-2 py-1 text-center w-10"
               >
                 SL
               </th>
               <th
-                rowSpan="2"
+                rowSpan={2}
                 className="border border-black px-2 py-1 text-center w-64"
               >
                 Evaluation criteria with marks
               </th>
               <th
-                colSpan="5"
+                colSpan={5}
                 className="border border-black px-2 py-1 text-center"
               >
-                Put Tick (✓) Mark
+                Put Tick (âœ“) Mark
               </th>
               <th
-                rowSpan="2"
+                rowSpan={2}
                 className="border border-black px-2 py-1 text-center w-24"
               >
                 Mark Obtained
               </th>
               <th
-                rowSpan="2"
-                colSpan="2"
+                rowSpan={2}
+                colSpan={2}
                 className="border border-black px-2 py-1 text-center w-40"
               >
                 Remarks
@@ -154,7 +154,7 @@ export default function PreviewPDF({ data }) {
             </tr>
             <tr>
               <th
-                colSpan="10"
+                colSpan={10}
                 className="border border-black px-2 py-1 text-center bg-gray-200"
               >
                 Assignment
@@ -180,7 +180,7 @@ export default function PreviewPDF({ data }) {
                   ))}
                 <td className="border border-black px-2 py-1 text-center"></td>
                 <td
-                  colSpan="2"
+                  colSpan={2}
                   className="border border-black px-2 py-1 text-center"
                 ></td>
               </tr>
@@ -188,24 +188,24 @@ export default function PreviewPDF({ data }) {
             <tr>
               <td className="border border-black px-2 py-1 text-center"></td>
               <td
-                colSpan="6"
+                colSpan={6}
                 className="border border-black px-2 py-1 text-right font-semibold"
               >
                 Total
               </td>
               <td className="border border-black px-2 py-1 text-center"></td>
               <td
-                colSpan="2"
+                colSpan={2}
                 className="border border-black px-2 py-1 text-center"
               ></td>
             </tr>
             <tr>
-              <td colSpan="8" className="border border-black px-2 py-1">
+              <td colSpan={8} className="border border-black px-2 py-1">
                 <span className="font-bold">Date of Submission:</span>{" "}
                 {data.date === "" ? <Placeholder /> : data.date}
               </td>
               <td
-                colSpan="2"
+                colSpan={2}
                 className="border border-black px-2 py-6 text-left font-bold"
               >
                 <br />

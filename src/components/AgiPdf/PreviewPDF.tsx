@@ -16,6 +16,7 @@ function Placeholder() {
   );
 }
 
+
 export default function PreviewPDF({ data }) {
   if (!data)
     return (
@@ -23,9 +24,7 @@ export default function PreviewPDF({ data }) {
         No data submitted yet.
       </h3>
     );
-
-  // Check if project is done by only one person
-  const isSinglePersonProject = data.courseType === "project" && 
+    const isSinglePersonProject = data.courseType === "project" && 
                                data.teamName && 
                                data.teamName.length === 1 && 
                                data.teamName[0].studentName && 
@@ -45,7 +44,7 @@ export default function PreviewPDF({ data }) {
     >
       {/* Header */}
       <div className="EB flex flex-col items-center w-full">
-        <h1 className="w-full italic text-center border-b-2 border-black text-lg text-gray-500 font-bold mb-1">Department of Textile Engineering</h1>
+            <h1 className="w-full text-center border-b-2 border-black text-base font-bold mb-1 ">Department of Agricultural Science</h1>
         <img
           src={data.logo}
           alt="DIU Logo"
@@ -53,11 +52,11 @@ export default function PreviewPDF({ data }) {
             width: "240px",
             height: "auto",
             objectFit: "contain",
-            marginBottom: "16px",
+            marginBottom: "20px",
           }}
         />
 
-        <h3 className="text-xl font-bold mb-1 text-center border-b-2 border-black">
+        <h3 className="text-xl font-bold mb-2 text-center border-b-2 border-black">
           Assignment and Presentation
         </h3>
 
@@ -65,10 +64,10 @@ export default function PreviewPDF({ data }) {
         <table className="table-auto w-full font-bold border border-black border-collapse mt-2">
           <thead>
             <tr>
-              <th className="w-1/2 border border-black px-4 py-1 text-left">
+              <th className="border border-black px-4 py-1 text-left">
                 Course Code: {data.courseId}
               </th>
-              <th className="w-1/2 border border-black px-4 py-1 text-left">
+              <th className="border border-black px-4 py-1 text-left">
                 Course Title: {capitalizeEachWord(data.courseName)}
               </th>
             </tr>
@@ -76,7 +75,7 @@ export default function PreviewPDF({ data }) {
           <tbody>
             <tr>
               <td
-                colSpan="2"
+                colSpan={2}
                 className="border border-black px-4 py-1 text-left"
               >
                 Title/Topic:{" "}
@@ -95,32 +94,32 @@ export default function PreviewPDF({ data }) {
           <thead>
             <tr>
               <th
-                rowSpan="2"
+                rowSpan={2}
                 className="border border-black px-2 py-1 text-center w-10"
               >
                 SL
               </th>
               <th
-                rowSpan="2"
+                rowSpan={2}
                 className="border border-black px-2 py-1 text-center w-64"
               >
                 Evaluation criteria with marks
               </th>
               <th
-                colSpan="5"
+                colSpan={5}
                 className="border border-black px-2 py-1 text-center"
               >
-                Put Tick (✓) Mark
+                Put Tick (âœ“) Mark
               </th>
               <th
-                rowSpan="2"
+                rowSpan={2}
                 className="border border-black px-2 py-1 text-center w-24"
               >
                 Mark Obtained
               </th>
               <th
-                rowSpan="2"
-                colSpan="2"
+                rowSpan={2}
+                colSpan={2}
                 className="border border-black px-2 py-1 text-center w-40"
               >
                 Remarks
@@ -143,8 +142,8 @@ export default function PreviewPDF({ data }) {
             </tr>
             <tr>
               <th
-                colSpan="10"
-                className="border border-black px-2 py-1 text-center bg-green-600"
+                colSpan={10}
+                className="border border-black px-2 py-1 text-center "
               >
                 Assignment
               </th>
@@ -169,7 +168,7 @@ export default function PreviewPDF({ data }) {
                   ))}
                 <td className="border border-black px-2 py-1 text-center"></td>
                 <td
-                  colSpan="2"
+                  colSpan={2}
                   className="border border-black px-2 py-1 text-center"
                 ></td>
               </tr>
@@ -177,21 +176,21 @@ export default function PreviewPDF({ data }) {
             <tr>
               <td className="border border-black px-2 py-1 text-center"></td>
               <td
-                colSpan="6"
+                colSpan={6}
                 className="border border-black px-2 py-1 text-right font-semibold"
               >
                 Total
               </td>
               <td className="border border-black px-2 py-1 text-center"></td>
               <td
-                colSpan="2"
+                colSpan={2}
                 className="border border-black px-2 py-1 text-center"
               ></td>
             </tr>
             <tr>
               <th
-                colSpan="10"
-                className="border border-black px-2 py-1 text-center bg-green-600"
+                colSpan={10}
+                className="border border-black px-2 py-1 text-center "
               >
                 Presentation
               </th>
@@ -214,7 +213,7 @@ export default function PreviewPDF({ data }) {
                   ))}
                 <td className="border border-black px-2 py-1 text-center"></td>
                 <td
-                  colSpan="2"
+                  colSpan={2}
                   className="border border-black px-2 py-1 text-center"
                 ></td>
               </tr>
@@ -222,30 +221,32 @@ export default function PreviewPDF({ data }) {
             <tr>
               <td className="border border-black px-2 py-1 text-center"></td>
               <td
-                colSpan="6"
+                colSpan={6}
                 className="border border-black px-2 py-1 text-right font-semibold"
               >
                 Total
               </td>
               <td className="border border-black px-2 py-1 text-center"></td>
               <td
-                colSpan="2"
+                colSpan={2}
                 className="border border-black px-2 py-1 text-center"
               ></td>
             </tr>
             <tr>
-              <td colSpan="8" className="border border-black px-2 py-1">
+              <td colSpan={8} className="border border-black px-2 py-1">
                 <span className="font-bold">Date of Submission:</span>{" "}
                 {data.date === "" ? <Placeholder /> : data.date}
               </td>
               <td
-                colSpan="2"
+                colSpan={2}
                 className="border border-black px-2 py-3 text-left font-bold"
               >
+                <br />
                 <span>.........................</span>
+                <br />
                 <span>..............</span>
                 <br />
-                Teacher 
+                Teacher <br />
                 Signature
               </td>
             </tr>
@@ -287,13 +288,13 @@ export default function PreviewPDF({ data }) {
           </thead>
           <tbody>
             <tr>
-              <td className="w-1/2 border border-black px-4 py-1 text-left">
+              <td className="border border-black px-4 py-1 text-left">
                 {data.courseType === "project" && !isSinglePersonProject ? (
                   // Team Members Section
                   <div>
-                    <p className="font-bold mb-1">Team Members:</p>
+                    <p className="font-bold mb-2">Team Members:</p>
                     {data.teamName && data.teamName.length > 0 ? (
-                      <div className="">
+                      <div className="space-y-1">
                         {data.teamName.map((member, index) => (
                           <p key={index}>
                             {member.studentName && member.studentId ? (
@@ -340,7 +341,7 @@ export default function PreviewPDF({ data }) {
                   </div>
                 )}
               </td>
-              <td className="w-1/2 border border-black px-4 py-1 text-left">
+              <td className="border border-black px-4 py-1 text-left">
                 <p>
                   <span className="font-bold">Name:</span>{" "}
                   {data.teacherName === "" ? (

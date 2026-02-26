@@ -85,7 +85,7 @@ const Footer = () => {
         <div className="mt-12 pt-8 border-t border-slate-800">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <p className="text-xs text-gray-500">
-              © {new Date().getFullYear()} DIU PageCrafter. All rights reserved.
+              Â© {new Date().getFullYear()} DIU PageCrafter. All rights reserved.
             </p>
             <div className="mt-4 md:mt-0">
               <a

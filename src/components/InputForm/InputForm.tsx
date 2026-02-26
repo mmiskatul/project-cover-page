@@ -120,7 +120,7 @@ function InputForm({ inputData, setInputData, templateName }) {
                     onClick={() => removeEvaluationTitle(index, "assignment")}
                     className="px-2 py-1 bg-red-500 text-white rounded text-sm"
                   >
-                    ×
+                    Ã—
                   </button>
                 )}
               </div>
@@ -154,7 +154,7 @@ function InputForm({ inputData, setInputData, templateName }) {
                     onClick={() => removeEvaluationTitle(index, "presentation")}
                     className="px-2 py-1 bg-red-500 text-white rounded text-sm"
                   >
-                    ×
+                    Ã—
                   </button>
                 )}
               </div>
@@ -195,7 +195,7 @@ function InputForm({ inputData, setInputData, templateName }) {
                     onClick={() => removeTeamMember(index)}
                     className="px-2 py-1 bg-red-500 text-white rounded text-sm"
                   >
-                    ×
+                    Ã—
                   </button>
                 )}
               </div>

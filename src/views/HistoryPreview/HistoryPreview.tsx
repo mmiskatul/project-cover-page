@@ -6,15 +6,22 @@ import { FiFile, FiTrash2, FiDownload, FiSearch, FiX } from "react-icons/fi";
 import { AiOutlineMergeCells, AiOutlineFilePdf } from "react-icons/ai";
 import BackButton from "../../components/BackButton/BackButton";
 
+type HistoryItem = {
+  id: string | number;
+  html?: string;
+  fileName?: string;
+  timestamp?: string | number;
+};
+
 function HistoryPreview() {
   const router = useRouter();
-  const [history, setHistory] = React.useState([]);
+  const [history, setHistory] = React.useState<HistoryItem[]>([]);
   const [searchTerm, setSearchTerm] = React.useState("");
-  const [filteredHistory, setFilteredHistory] = React.useState([]);
-  const [selectedItem, setSelectedItem] = React.useState(null);
-  const [coverURL, setCoverURL] = React.useState(null);
+  const [filteredHistory, setFilteredHistory] = React.useState<HistoryItem[]>([]);
+  const [selectedItem, setSelectedItem] = React.useState<HistoryItem | null>(null);
+  const [coverURL, setCoverURL] = React.useState<string | null>(null);
 
-  const openDocumentAction = (path, item) => {
+  const openDocumentAction = (path: string, item: HistoryItem | null) => {
     try {
       sessionStorage.setItem(
         "pendingDocument",
@@ -28,7 +35,9 @@ function HistoryPreview() {
 
   // Load history from localStorage
   React.useEffect(() => {
-    const savedHistory = JSON.parse(localStorage.getItem("coverHistory") || "[]");
+    const savedHistory = JSON.parse(
+      localStorage.getItem("coverHistory") || "[]"
+    ) as HistoryItem[];
     setHistory(savedHistory);
     setFilteredHistory(savedHistory);
   }, []);
@@ -74,7 +83,7 @@ function HistoryPreview() {
   };
 
   // Delete one item
-  const deleteItem = (id) => {
+  const deleteItem = (id: string | number) => {
     if (window.confirm("Delete this item?")) {
       const updatedHistory = history.filter((item) => item.id !== id);
       localStorage.setItem("coverHistory", JSON.stringify(updatedHistory));
@@ -171,7 +180,9 @@ function HistoryPreview() {
                       )}
                     </div>
                     <p className="text-sm text-gray-500 mt-1">
-                      {new Date(item.timestamp).toLocaleString()}
+                      {item.timestamp
+                        ? new Date(item.timestamp).toLocaleString()
+                        : "Unknown date"}
                     </p>
                   </div>
 
