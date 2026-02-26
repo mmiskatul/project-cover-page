@@ -1,26 +1,15 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import Placeholder from "@/components/pdf/common/Placeholder";
+import {
+  capitalizeEachWord,
+  getUppercaseReportTitle,
+  isSinglePersonProject,
+} from "@/components/pdf/common/format";
+import type { CoverTemplateData } from "@/components/pdf/common/types";
 
 const iconPng = "/assets/tourisomlogo.png";
-
-// Capitalize first letter of each word
-function capitalizeEachWord(str) {
-  if (!str) return "";
-  return str
-    .split(" ")
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(" ");
-}
-
-// Placeholder component
-function Placeholder() {
-  return (
-    <span style={{ fontSize: "1.5rem", fontWeight: "bold", color: "#ccc" }}>
-      ........................
-    </span>
-  );
-}
 
 // Convert image to Base64
 function getBase64Image(imgSrc: string) {
@@ -44,7 +33,7 @@ function getBase64Image(imgSrc: string) {
   });
 }
 
-export default function PreviewPDF({ data }) {
+export default function PreviewPDF({ data }: { data?: CoverTemplateData }) {
   const [iconBase64, setIconBase64] = useState<string | null>(null);
 
   useEffect(() => {
@@ -52,12 +41,6 @@ export default function PreviewPDF({ data }) {
   }, []);
 
   // Check if project is done by only one person
-  const isSinglePersonProject = data.courseType === "project" && 
-                               data.teamName && 
-                               data.teamName.length === 1 && 
-                               data.teamName[0].studentName && 
-                               data.teamName[0].studentId;
-
   if (!data)
     return (
       <h3
@@ -73,6 +56,9 @@ export default function PreviewPDF({ data }) {
         No data submitted yet.
       </h3>
     );
+
+  const singlePersonProject = isSinglePersonProject(data);
+  const singleProjectMember = data.teamName?.[0];
 
   return (
     <div
@@ -128,17 +114,7 @@ export default function PreviewPDF({ data }) {
             letterSpacing: "1px",
           }}
         >
-          {data.courseType === "theory"
-            ? "ASSIGNMENT"
-            : data.courseType === "lab report"
-            ? "LAB REPORT"
-            : data.courseType === "lab assignment"
-            ? "LAB REPORT"
-            : data.courseType === "lab final"
-            ? "LAB FINAL"
-            : data.courseType === "project"
-            ? "PROJECT REPORT"
-            : "SELECT THE TYPE OF REPORT"}
+          {getUppercaseReportTitle(data.courseType)}
         </h3>
 
         {/* Topic of the assignment */}
@@ -218,7 +194,7 @@ export default function PreviewPDF({ data }) {
                   </div>
                 </td>
                 <td style={{ border: "2px solid #1a3a6c", padding: "15px", verticalAlign: "top" }}>
-                  {data.courseType === "project" && !isSinglePersonProject ? (
+                  {data.courseType === "project" && !singlePersonProject ? (
                     // Team Members Section
                     <>
                       <div style={{ marginBottom: "6px" }}>
@@ -251,15 +227,15 @@ export default function PreviewPDF({ data }) {
                     <>
                       <div style={{ marginBottom: "6px" }}>
                         <strong>Name:</strong>{" "}
-                        {isSinglePersonProject 
-                          ? data.teamName[0].studentName || <Placeholder />
+                        {singlePersonProject 
+                          ? singleProjectMember?.studentName || <Placeholder />
                           : data.studentName || <Placeholder />
                         }
                       </div>
                       <div style={{ marginBottom: "6px" }}>
                         <strong>ID:</strong>{" "}
-                        {isSinglePersonProject 
-                          ? data.teamName[0].studentId || <Placeholder />
+                        {singlePersonProject 
+                          ? singleProjectMember?.studentId || <Placeholder />
                           : data.studentId || <Placeholder />
                         }
                       </div>

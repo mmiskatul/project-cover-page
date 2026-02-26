@@ -1,4 +1,6 @@
-function TeacherEvaluation({ data }) {
+import type { CoverTemplateData } from "@/components/pdf/common/types";
+
+function SweTeacherEvaluation({ data }: { data: CoverTemplateData }) {
   return (
     <div className="w-full -ml-10  px-6 text-black font-bold bg-white">
 
@@ -142,4 +144,4 @@ function TeacherEvaluation({ data }) {
   );
 }
 
-export default TeacherEvaluation;
+export default SweTeacherEvaluation;

@@ -18,6 +18,39 @@ export function isSinglePersonProject(data: CoverTemplateData) {
   );
 }
 
+export function getSentenceCaseReportTitle(courseType?: string | null) {
+  switch (courseType) {
+    case "theory":
+      return "Theory Assignment Report";
+    case "lab assignment":
+      return "Lab Assignment Report";
+    case "lab report":
+      return "Lab Report";
+    case "lab final":
+      return "Lab Final";
+    case "project":
+      return "Project Report";
+    default:
+      return "Select the type of report";
+  }
+}
+
+export function getUppercaseReportTitle(courseType?: string | null) {
+  switch (courseType) {
+    case "theory":
+      return "ASSIGNMENT";
+    case "lab assignment":
+    case "lab report":
+      return "LAB REPORT";
+    case "lab final":
+      return "LAB FINAL";
+    case "project":
+      return "PROJECT REPORT";
+    default:
+      return "SELECT THE TYPE OF REPORT";
+  }
+}
+
 export function getSemesterPart(
   semester: string | undefined,
   index: number,
