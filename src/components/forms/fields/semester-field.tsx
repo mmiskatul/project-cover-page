@@ -1,21 +1,18 @@
-import React from "react";
-import { MdDateRange } from "react-icons/md"; // Icon for semester (calendar/date)
+import { MdDateRange } from "react-icons/md";
+import type { BasicFieldProps } from "@/components/forms/types";
+import { FieldControl, FieldGroup } from "./field-primitives";
 
-function Semester({ inputData, handleChange }) {
+export function SemesterField({ inputData, onChange }: BasicFieldProps) {
   const currentYear = new Date().getFullYear();
 
- 
-
   return (
-    <div>
-      <label htmlFor="semester" className="font-medium">Semester</label>
-      <div className="flex items-center mt-2 mb-4 h-10 pl-3 pr-2 border border-slate-300 rounded-full focus-within:ring-2 focus-within:ring-indigo-400 transition-all overflow-hidden">
-        <MdDateRange className="text-gray-500" />
+    <FieldGroup label="Semester" htmlFor="semester">
+      <FieldControl icon={<MdDateRange />}>
         <select
           id="semester"
           name="semester"
           value={inputData.semester}
-          onChange={handleChange}
+          onChange={onChange}
           className="h-full px-2 w-full outline-none bg-transparent"
           required
         >
@@ -24,9 +21,7 @@ function Semester({ inputData, handleChange }) {
           <option value={`Summer ${currentYear}`}>Summer {currentYear}</option>
           <option value={`Fall ${currentYear}`}>Fall {currentYear}</option>
         </select>
-      </div>
-    </div>
+      </FieldControl>
+    </FieldGroup>
   );
 }
-
-export default Semester;

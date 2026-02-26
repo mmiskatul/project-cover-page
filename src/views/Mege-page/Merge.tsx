@@ -11,13 +11,28 @@ import {
 } from "react-icons/ai";
 import { FiUpload, FiDownload } from "react-icons/fi";
 
+type PendingDocument = {
+  html: string;
+  fileName: string;
+};
+
+type UploadedFile = {
+  file: File;
+  previewURL: string;
+  name: string;
+  id: string;
+};
+
 function Merge() {
-  const [pendingDocument, setPendingDocument] = useState({ html: "", fileName: "" });
+  const [pendingDocument, setPendingDocument] = useState<PendingDocument>({
+    html: "",
+    fileName: "",
+  });
   const { html, fileName } = pendingDocument;
 
-  const [coverBlob, setCoverBlob] = useState(null);
-  const [coverURL, setCoverURL] = useState(null);
-  const [uploadedFiles, setUploadedFiles] = useState([]);
+  const [coverBlob, setCoverBlob] = useState<Blob | null>(null);
+  const [coverURL, setCoverURL] = useState<string | null>(null);
+  const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
   const [isMerging, setIsMerging] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [showDropZone, setShowDropZone] = useState(false);
@@ -138,7 +153,7 @@ function Merge() {
   }, [html]);
 
   // Handle file processing
-  const processFiles = useCallback((files) => {
+  const processFiles = useCallback((files: FileList | File[]) => {
     const validFiles = Array.from(files).filter(
       (file) => file.type === "application/pdf"
     );
@@ -164,43 +179,44 @@ function Merge() {
   }, []);
 
   // Handle file input change
-  const handleFileChange = (e) => {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files) return;
     processFiles(e.target.files);
     e.target.value = "";
   };
 
   // Global drag event handlers
   useEffect(() => {
-    const handleGlobalDragEnter = (e) => {
+    const handleGlobalDragEnter = (e: DragEvent) => {
       e.preventDefault();
       e.stopPropagation();
-      if (e.dataTransfer.items && e.dataTransfer.items.length > 0) {
+      if (e.dataTransfer?.items && e.dataTransfer.items.length > 0) {
         setIsDragging(true);
         setShowDropZone(true);
       }
     };
 
-    const handleGlobalDragOver = (e) => {
+    const handleGlobalDragOver = (e: DragEvent) => {
       e.preventDefault();
       e.stopPropagation();
     };
 
-    const handleGlobalDragLeave = (e) => {
+    const handleGlobalDragLeave = (e: DragEvent) => {
       e.preventDefault();
       e.stopPropagation();
-      if (!e.relatedTarget || e.relatedTarget.nodeName === "HTML") {
+      if (!e.relatedTarget || (e.relatedTarget as Element).nodeName === "HTML") {
         setIsDragging(false);
         setShowDropZone(false);
       }
     };
 
-    const handleGlobalDrop = (e) => {
+    const handleGlobalDrop = (e: DragEvent) => {
       e.preventDefault();
       e.stopPropagation();
       setIsDragging(false);
       setShowDropZone(false);
 
-      if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      if (e.dataTransfer?.files && e.dataTransfer.files.length > 0) {
         processFiles(e.dataTransfer.files);
         e.dataTransfer.clearData();
       }
@@ -220,7 +236,7 @@ function Merge() {
   }, [processFiles]);
 
   // Remove file
-  const removeFile = (id) => {
+  const removeFile = (id: string) => {
     setUploadedFiles((prev) => {
       const fileToRemove = prev.find((f) => f.id === id);
       if (fileToRemove && fileToRemove.previewURL) {
@@ -318,6 +334,7 @@ function Merge() {
       });
     } catch (err) {
       console.error(err);
+      const errorMessage = err instanceof Error ? err.message : "Merge failed";
       toast.update(toastId, {
         render: (
           <div className="flex items-center">
@@ -335,7 +352,7 @@ function Merge() {
                 d="M6 18L18 6M6 6l12 12"
               />
             </svg>
-            <span>{err.message}</span>
+            <span>{errorMessage}</span>
           </div>
         ),
         type: "error",

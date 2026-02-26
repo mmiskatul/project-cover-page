@@ -2,7 +2,8 @@
 
 import React, { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import InputForm from "../InputForm/InputForm";
+import AssignmentInputForm from "@/components/forms/AssignmentInputForm";
+import type { AssignmentFormData } from "@/components/forms/types";
 import BackButton from "../BackButton/BackButton";
 import { TEMPLATE_PREVIEW_COMPONENTS } from "./template-preview-map";
 import { getTemplateByName } from "@/lib/template-config";
@@ -27,10 +28,8 @@ function GeneratePdf() {
     TEMPLATE_PREVIEW_COMPONENTS[selectedTemplate?.name] ||
     TEMPLATE_PREVIEW_COMPONENTS.default;
 
-  const [inputData, setInputData] = useState({
-     teamName: [
-    { studentId: "", studentName: "" }
-  ],
+  const [inputData, setInputData] = useState<AssignmentFormData>({
+    teamName: [{ studentId: "", studentName: "" }],
     studentName: "",
     studentId: "",
     courseName: "",
@@ -50,23 +49,23 @@ function GeneratePdf() {
     level: "",
     evaluationTitles: [
       "Idea with Focus (1)",
-      "Organization (1)", 
+      "Organization (1)",
       "Content (2)",
-      "Time Management (1)"
+      "Time Management (1)",
     ],
     presentationTitles: [
       "Content and Design (2)",
       "Knowledge and Interaction (2)",
       "Body language and Attire (1)",
       "Fluency (2)",
-      "Time Management (1)"
-    ]
+      "Time Management (1)",
+    ],
   });
   const [isGenerating, setIsGenerating] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
-    const convertToBase64 = async (imgPath, key) => {
+    const convertToBase64 = async (imgPath: string, key: "logo" | "bglogo") => {
       try {
         const response = await fetch(imgPath);
         const blob = await response.blob();
@@ -165,7 +164,7 @@ function GeneratePdf() {
                   <h2 className="text-xl font-semibold text-gray-800">Assignment Details</h2>
                   <p className="text-gray-500 mt-1">Fill in your assignment information</p>
                 </div>
-                <InputForm
+                <AssignmentInputForm
                   inputData={inputData}
                   setInputData={setInputData}
                   templateName={selectedTemplate?.name}
