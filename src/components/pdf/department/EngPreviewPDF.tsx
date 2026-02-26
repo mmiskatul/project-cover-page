@@ -1,4 +1,5 @@
 import Placeholder from "@/components/pdf/common/Placeholder";
+import NoDataMessage from "@/components/pdf/common/NoDataMessage";
 import {
   capitalizeEachWord,
   getUppercaseReportTitle,
@@ -8,18 +9,7 @@ import type { CoverTemplateData } from "@/components/pdf/common/types";
 
 export default function PreviewPDF({ data }: { data?: CoverTemplateData }) {
   if (!data) {
-    return (
-      <h3
-        style={{
-          textAlign: "center",
-          fontSize: "1.125rem",
-          fontWeight: "600",
-          marginTop: "1.25rem",
-        }}
-      >
-        No data submitted yet.
-      </h3>
-    );
+    return <NoDataMessage />;
   }
 
   const singlePersonProject = isSinglePersonProject(data);

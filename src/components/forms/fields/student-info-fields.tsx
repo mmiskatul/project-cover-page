@@ -1,40 +1,32 @@
 import { FaIdCard } from "react-icons/fa";
 import { BsPersonFill } from "react-icons/bs";
 import type { BasicFieldProps } from "@/components/forms/types";
-import { FieldControl, FieldGroup } from "./field-primitives";
+import { TextInputField } from "./field-primitives";
 
 export function StudentInfoFields({ inputData, onChange }: BasicFieldProps) {
   return (
     <div>
-      <FieldGroup label="Full Name" htmlFor="studentName">
-        <FieldControl icon={<BsPersonFill />}>
-          <input
-            type="text"
-            id="studentName"
-            name="studentName"
-            value={inputData.studentName}
-            onChange={onChange}
-            className="h-full px-2 w-full outline-none bg-transparent"
-            placeholder="Enter your full name"
-            required
-          />
-        </FieldControl>
-      </FieldGroup>
+      <TextInputField
+        label="Full Name"
+        htmlFor="studentName"
+        name="studentName"
+        value={inputData.studentName}
+        onChange={onChange}
+        icon={<BsPersonFill />}
+        placeholder="Enter your full name"
+        required
+      />
 
-      <FieldGroup label="Student ID" htmlFor="studentId">
-        <FieldControl icon={<FaIdCard />}>
-          <input
-            type="text"
-            id="studentId"
-            name="studentId"
-            value={inputData.studentId}
-            onChange={onChange}
-            className="h-full px-2 w-full outline-none bg-transparent"
-            placeholder="Enter your ID"
-            required
-          />
-        </FieldControl>
-      </FieldGroup>
+      <TextInputField
+        label="Student ID"
+        htmlFor="studentId"
+        name="studentId"
+        value={inputData.studentId}
+        onChange={onChange}
+        icon={<FaIdCard />}
+        placeholder="Enter your ID"
+        required
+      />
     </div>
   );
 }

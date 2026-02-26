@@ -1,4 +1,5 @@
 import Placeholder from "@/components/pdf/common/Placeholder";
+import NoDataMessage from "@/components/pdf/common/NoDataMessage";
 import {
   capitalizeEachWord,
   getSemesterPart,
@@ -43,11 +44,7 @@ export default function DepartmentEvaluationTemplate({
   config,
 }: DepartmentEvaluationTemplateProps) {
   if (!data) {
-    return (
-      <h3 className="text-center text-lg font-semibold mt-5">
-        No data submitted yet.
-      </h3>
-    );
+    return <NoDataMessage />;
   }
 
   const singlePersonProject = isSinglePersonProject(data);

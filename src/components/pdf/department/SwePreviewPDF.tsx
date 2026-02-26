@@ -1,5 +1,6 @@
 import SweTeacherEvaluation from "./SweTeacherEvaluation";
 import Placeholder from "@/components/pdf/common/Placeholder";
+import NoDataMessage from "@/components/pdf/common/NoDataMessage";
 import {
   capitalizeEachWord,
   getSentenceCaseReportTitle,
@@ -8,12 +9,7 @@ import {
 import type { CoverTemplateData } from "@/components/pdf/common/types";
 
 export default function PreviewPDF({ data }: { data?: CoverTemplateData }) {
-  if (!data)
-    return (
-      <h3 className="text-center text-lg font-semibold mt-5">
-        No data submitted yet.
-      </h3>
-    );
+  if (!data) return <NoDataMessage />;
 
   const singlePersonProject = isSinglePersonProject(data);
   const singleProjectMember = data.teamName?.[0];

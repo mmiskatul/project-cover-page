@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import Placeholder from "@/components/pdf/common/Placeholder";
+import NoDataMessage from "@/components/pdf/common/NoDataMessage";
 import {
   capitalizeEachWord,
   getUppercaseReportTitle,
@@ -43,18 +44,12 @@ export default function PreviewPDF({ data }: { data?: CoverTemplateData }) {
   // Check if project is done by only one person
   if (!data)
     return (
-      <h3
+      <NoDataMessage
         style={{
-          textAlign: "center",
-          fontSize: "1.125rem",
-          fontWeight: "600",
-          marginTop: "1.25rem",
           color: "#666",
           fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
         }}
-      >
-        No data submitted yet.
-      </h3>
+      />
     );
 
   const singlePersonProject = isSinglePersonProject(data);

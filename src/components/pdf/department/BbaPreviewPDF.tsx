@@ -1,4 +1,5 @@
 import Placeholder from "@/components/pdf/common/Placeholder";
+import NoDataMessage from "@/components/pdf/common/NoDataMessage";
 import {
   capitalizeEachWord,
   getUppercaseReportTitle,
@@ -22,11 +23,7 @@ function InfoRow({ label, value }: InfoRowProps) {
 
 export default function Default2PreviewPDF({ data }: { data?: CoverTemplateData }) {
   if (!data) {
-    return (
-      <h3 className="text-center text-base font-semibold mt-5">
-        No data submitted yet.
-      </h3>
-    );
+    return <NoDataMessage className="text-center text-base font-semibold mt-5" />;
   }
 
   const singlePersonProject = isSinglePersonProject(data);

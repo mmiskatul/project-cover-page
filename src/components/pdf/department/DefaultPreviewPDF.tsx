@@ -1,4 +1,5 @@
 import Placeholder from "@/components/pdf/common/Placeholder";
+import NoDataMessage from "@/components/pdf/common/NoDataMessage";
 import {
   capitalizeEachWord,
   getUppercaseReportTitle,
@@ -17,11 +18,7 @@ function LongPlaceholder() {
 
 export default function DefaultPreview({ data }: { data?: CoverTemplateData }) {
   if (!data) {
-    return (
-      <h3 className="text-center text-lg font-semibold mt-5">
-        No data submitted yet.
-      </h3>
-    );
+    return <NoDataMessage />;
   }
 
   const singlePersonProject = isSinglePersonProject(data);
