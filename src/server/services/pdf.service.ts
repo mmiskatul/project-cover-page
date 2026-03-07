@@ -1,6 +1,8 @@
 import chromium from "@sparticuz/chromium";
 import puppeteer from "puppeteer-core";
 import { PDFDocument } from "pdf-lib";
+import { existsSync } from "node:fs";
+import path from "node:path";
 
 type GeneratePdfPayload = {
   html?: string;
@@ -17,8 +19,17 @@ export async function generateCoverPdf(payload: GeneratePdfPayload) {
   try {
     chromium.setGraphicsMode = false;
     const headlessMode = customExecutablePath ? true : "shell";
+    const bundledChromiumBinPath = path.join(
+      process.cwd(),
+      "node_modules",
+      "@sparticuz",
+      "chromium",
+      "bin"
+    );
     const executablePath = customExecutablePath
       ? customExecutablePath
+      : existsSync(bundledChromiumBinPath)
+      ? await chromium.executablePath(bundledChromiumBinPath)
       : await chromium.executablePath();
 
     browser = await puppeteer.launch({
