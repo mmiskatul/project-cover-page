@@ -50,7 +50,7 @@ export default function PreviewPDF({ data }: { data?: CoverTemplateData }) {
       style={{
         width: "794px", // A4 width in px at 96 DPI
         minHeight: "1123px", // A4 height in px at 96 DPI
-        padding: "40px", // Inner padding
+        padding: "72px 40px 40px", // Inner padding
         boxSizing: "border-box",
         fontFamily: "Gupter, sans-serif",
       }}
@@ -62,14 +62,14 @@ export default function PreviewPDF({ data }: { data?: CoverTemplateData }) {
           src={data.logo}
           alt="DIU Logo"
           style={{
-            width: "400px",
+            width: "320px",
             height: "auto",
             objectFit: "contain",
-            marginBottom: "20px",
+            marginBottom: "24px",
           }}
         />
 
-        <h3 className="text-3xl font-bold mb-6 text-center">
+        <h3 className="text-3xl font-bold mb-8 text-center">
           {reportTitle}
         </h3>
 
