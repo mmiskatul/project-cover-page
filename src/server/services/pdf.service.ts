@@ -1,10 +1,9 @@
-import chromium from "@sparticuz/chromium-min";
+import chromium from "@sparticuz/chromium";
 import puppeteer from "puppeteer-core";
 import { PDFDocument } from "pdf-lib";
 
 type GeneratePdfPayload = {
   html?: string;
-  chromiumPackUrl?: string;
 };
 
 export async function generateCoverPdf(payload: GeneratePdfPayload) {
@@ -14,18 +13,13 @@ export async function generateCoverPdf(payload: GeneratePdfPayload) {
   }
 
   const customExecutablePath = process.env.PUPPETEER_EXECUTABLE_PATH;
-  const chromiumPackUrl = payload.chromiumPackUrl;
-  if (!customExecutablePath && !chromiumPackUrl) {
-    throw new Error("Chromium pack URL required");
-  }
-
   let browser;
   try {
     chromium.setGraphicsMode = false;
     const headlessMode = customExecutablePath ? true : "shell";
     const executablePath = customExecutablePath
       ? customExecutablePath
-      : await chromium.executablePath(chromiumPackUrl);
+      : await chromium.executablePath();
 
     browser = await puppeteer.launch({
       executablePath,
@@ -67,11 +61,8 @@ export async function generateCoverPdf(payload: GeneratePdfPayload) {
     const message = error instanceof Error ? error.message : "";
     if (/Could not find Chrome|Browser was not found|executable/i.test(message)) {
       throw new Error(
-        "Chromium is not available on the server. Set PUPPETEER_EXECUTABLE_PATH for local Chrome or make sure chromium-pack.tar is deployed."
+        "Chromium is not available on the server. Set PUPPETEER_EXECUTABLE_PATH for local Chrome or make sure the Vercel bundle includes @sparticuz/chromium."
       );
-    }
-    if (/Chromium pack URL required/i.test(message)) {
-      throw new Error("Chromium pack URL was not provided to the PDF service.");
     }
 
     throw error;

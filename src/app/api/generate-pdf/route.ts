@@ -9,11 +9,7 @@ export const maxDuration = 60;
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const chromiumPackUrl = new URL("/chromium-pack.tar", request.url).toString();
-    const pdfBuffer = await generateCoverPdf({
-      html: body?.html,
-      chromiumPackUrl,
-    });
+    const pdfBuffer = await generateCoverPdf({ html: body?.html });
 
     await incrementCoverCount();
 
