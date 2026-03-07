@@ -41,3 +41,10 @@ PUPPETEER_EXECUTABLE_PATH=optional_custom_chrome_path
 ```
 
 If `MONGODB_URI` is missing, stats fall back and feedback persistence is disabled.
+
+## Vercel PDF Runtime
+
+- `npm install` now generates `public/chromium-pack.tar` during `postinstall`.
+- `/api/generate-pdf` uses `puppeteer-core` with `@sparticuz/chromium-min`.
+- On Vercel, the route downloads the Chromium pack from the deployed `/chromium-pack.tar` asset.
+- For local development, set `PUPPETEER_EXECUTABLE_PATH` if you want to use an installed Chrome/Chromium binary instead of the packaged serverless runtime.

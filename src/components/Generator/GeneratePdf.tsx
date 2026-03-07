@@ -11,10 +11,40 @@ import { getTemplateByName } from "@/lib/template-config";
 const diulogo = "/assets/daffodil-international-university-seeklogo.png";
 const bglogo = "/assets/BgImage.png";
 
+const getInlineStyles = () => {
+  const collectedStyles: string[] = [];
+
+  for (const sheet of Array.from(document.styleSheets)) {
+    try {
+      const rules = Array.from(sheet.cssRules || []).map((rule) => rule.cssText);
+      if (rules.length > 0) {
+        collectedStyles.push(rules.join("\n"));
+      }
+    } catch (error) {
+      console.warn("Skipping inaccessible stylesheet while preparing PDF:", error);
+    }
+  }
+
+  return collectedStyles.join("\n");
+};
+
 const getHtmlFromPreview = () => {
   const preview = document.getElementById("cover-preview");
   if (!preview) return null;
-  return preview.outerHTML;
+
+  const inlineStyles = getInlineStyles();
+
+  return `<!DOCTYPE html><html><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>${inlineStyles}</style>
+    <style>
+      * { box-sizing: border-box; }
+      html, body { margin: 0; padding: 0; background: #ffffff; }
+      @page { size: A4; margin: 0; }
+      body { display: flex; justify-content: center; align-items: flex-start; }
+    </style>
+  </head><body>${preview.outerHTML}</body></html>`;
 };
 
 function GeneratePdf() {
@@ -63,12 +93,16 @@ function GeneratePdf() {
     ],
   });
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isAssetPreparationComplete, setIsAssetPreparationComplete] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
     const convertToBase64 = async (imgPath: string, key: "logo" | "bglogo") => {
       try {
         const response = await fetch(imgPath);
+        if (!response.ok) {
+          throw new Error(`Failed to load ${imgPath}`);
+        }
         const blob = await response.blob();
         return new Promise<void>((resolve) => {
           const reader = new FileReader();
@@ -83,10 +117,20 @@ function GeneratePdf() {
       }
     };
 
+    let isMounted = true;
+
     Promise.all([
       convertToBase64(diulogo, "logo"),
       convertToBase64(bglogo, "bglogo")
-    ]);
+    ]).finally(() => {
+      if (isMounted) {
+        setIsAssetPreparationComplete(true);
+      }
+    });
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const handleGenerate = async () => {
@@ -107,16 +151,7 @@ function GeneratePdf() {
 
     try {
       const pendingDocument = {
-        html: `<!DOCTYPE html><html><head>
-          <meta charset="UTF-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-          <style>
-            * { box-sizing: border-box; }
-            html, body { margin: 0; padding: 0; width: 794px; height: 1123px; }
-            @page { size: A4; margin: 0; }
-          </style>
-        </head><body>${html}</body></html>`,
+        html,
         fileName,
       };
 
@@ -188,11 +223,11 @@ function GeneratePdf() {
             <div className="mt-30 flex justify-center">
               <button 
                 onClick={handleGenerate}
-                disabled={isGenerating || !isFormValid()}
+                disabled={isGenerating || !isFormValid() || !isAssetPreparationComplete}
                 className={`px-8 py-3 rounded-lg shadow-md transition-all duration-200 flex items-center justify-center gap-2 w-full max-w-md ${
                   isGenerating 
                     ? 'bg-blue-400 cursor-not-allowed' 
-                    : !isFormValid()
+                    : !isFormValid() || !isAssetPreparationComplete
                       ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
                       : 'bg-gradient-to-r from-blue-600 to-indigo-700 text-white hover:shadow-lg hover:from-blue-700 hover:to-indigo-800'
                 }`}
@@ -210,7 +245,7 @@ function GeneratePdf() {
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                       <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd" />
                     </svg>
-                    <span>Generate PDF</span>
+                    <span>{isAssetPreparationComplete ? "Generate PDF" : "Preparing assets..."}</span>
                   </>
                 )}
               </button>

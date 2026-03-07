@@ -49,8 +49,6 @@ function Download() {
       return;
     }
 
-    if (fileName) saveToHistory(html, fileName);
-
     const loadingToastId = toast.loading("Preparing your PDF...", {
       position: "top-center",
     });
@@ -63,11 +61,22 @@ function Download() {
       });
 
       if (!res.ok) {
-        throw new Error(`Server error: ${res.status}`);
+        let errorMessage = `Server error: ${res.status}`;
+
+        try {
+          const errorPayload = await res.json();
+          if (errorPayload?.error) {
+            errorMessage = errorPayload.error;
+          }
+        } catch {}
+
+        throw new Error(errorMessage);
       }
 
       const blob = await res.blob();
       const url = window.URL.createObjectURL(blob);
+
+      if (fileName) saveToHistory(html, fileName);
 
       const link = document.createElement("a");
       link.href = url;
@@ -86,7 +95,7 @@ function Download() {
     } catch (err) {
       console.error("Download error:", err);
       toast.update(loadingToastId, {
-        render: err.message || "Failed to generate PDF",
+        render: err instanceof Error ? err.message : "Failed to generate PDF",
         type: "error",
         isLoading: false,
         autoClose: 3000,

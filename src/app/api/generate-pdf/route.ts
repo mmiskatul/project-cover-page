@@ -1,14 +1,19 @@
-import { NextResponse } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
 import { generateCoverPdf } from "@/server/services/pdf.service";
 import { incrementCoverCount } from "@/server/services/stats.service";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+export const maxDuration = 60;
 
-export async function POST(request) {
+export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const pdfBuffer = await generateCoverPdf({ html: body?.html });
+    const chromiumPackUrl = new URL("/chromium-pack.tar", request.url).toString();
+    const pdfBuffer = await generateCoverPdf({
+      html: body?.html,
+      chromiumPackUrl,
+    });
 
     await incrementCoverCount();
 
