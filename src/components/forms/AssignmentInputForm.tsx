@@ -18,8 +18,13 @@ import {
 import type {
   AssignmentFormData,
   FormInputChangeEvent,
+  SweCriteriaRow,
   TeamMember,
 } from "@/components/forms/types";
+import {
+  createEmptySweCriteriaRows,
+  getDefaultSweEvaluation,
+} from "@/components/pdf/department/swe-evaluation-config";
 
 type CriteriaKey = "evaluationTitles" | "presentationTitles";
 type StringFieldKey = Exclude<
@@ -51,10 +56,73 @@ type TeamMemberEditorProps = {
   onRemove: (index: number) => void;
 };
 
+type SweCriteriaEditorProps = {
+  rows: SweCriteriaRow[];
+  defaultRows: SweCriteriaRow[];
+  onChange: (index: number, field: keyof SweCriteriaRow, value: string) => void;
+};
+
 const DEPARTMENT_TEMPLATES = new Set(["default", "bba", "eng", "thm"]);
 const LEVEL_TERM_TEMPLATES = new Set(["nfe", "txt", "agri"]);
 const EVALUATION_CRITERIA_TEMPLATES = new Set(["nfe", "txt", "agri", "civil"]);
 const PRESENTATION_CRITERIA_TEMPLATES = new Set(["txt", "agri"]);
+const CUSTOM_TEXT_TEMPLATES = new Set(["nfe", "txt", "agri", "civil"]);
+
+const CUSTOM_TEXT_FIELDS: Array<{
+  key: StringFieldKey;
+  label: string;
+  placeholder: string;
+}> = [
+  { key: "assignmentSectionTitle", label: "Assignment Section Title", placeholder: "Assignment" },
+  { key: "presentationSectionTitle", label: "Presentation Section Title", placeholder: "Presentation" },
+];
+
+const TEMPLATE_CUSTOM_TEXT_FIELDS: Partial<Record<string, StringFieldKey[]>> = {
+  nfe: ["assignmentSectionTitle"],
+  txt: ["assignmentSectionTitle", "presentationSectionTitle"],
+  agri: ["assignmentSectionTitle", "presentationSectionTitle"],
+  civil: ["assignmentSectionTitle"],
+};
+
+function getVisibleCustomTextFields(templateName: string) {
+  const allowedKeys = TEMPLATE_CUSTOM_TEXT_FIELDS[templateName] || [];
+  return CUSTOM_TEXT_FIELDS.filter((field) => allowedKeys.includes(field.key));
+}
+
+function CustomTextEditor({
+  inputData,
+  onChange,
+  fields,
+}: {
+  inputData: AssignmentFormData;
+  onChange: (event: FormInputChangeEvent) => void;
+  fields: typeof CUSTOM_TEXT_FIELDS;
+}) {
+  return (
+    <details className="rounded-lg border border-slate-300 bg-slate-50">
+      <summary className="cursor-pointer list-none px-4 py-3 font-semibold text-sm text-slate-800">
+        Custom Text
+      </summary>
+      <div className="space-y-3 border-t border-slate-200 px-4 py-4">
+        <p className="text-xs text-slate-500">
+          Leave any field empty to keep the default template text.
+        </p>
+        {fields.map((field) => (
+          <input
+            key={field.key}
+            type="text"
+            name={field.key}
+            aria-label={field.label}
+            placeholder={field.placeholder}
+            value={inputData[field.key] as string}
+            onChange={onChange}
+            className="border p-2 rounded w-full text-sm bg-white"
+          />
+        ))}
+      </div>
+    </details>
+  );
+}
 
 function resolveTemplateName(templateName?: string, pathname?: string) {
   if (templateName) return templateName.toLowerCase();
@@ -155,6 +223,55 @@ function TeamMemberEditor({
   );
 }
 
+function SweCriteriaEditor({ rows, defaultRows, onChange }: SweCriteriaEditorProps) {
+  const effectiveRows = defaultRows.map((defaultRow, index) => ({
+    label: rows[index]?.label?.trim() ? rows[index].label : defaultRow.label,
+    mark: rows[index]?.mark?.trim() ? rows[index].mark : defaultRow.mark,
+  }));
+
+  return (
+    <details className="rounded-lg border border-slate-300 bg-slate-50">
+      <summary className="cursor-pointer list-none px-4 py-3 font-semibold text-sm text-slate-800">
+        SWE Table Data
+      </summary>
+      <div className="space-y-3 border-t border-slate-200 px-4 py-4">
+        <p className="text-xs text-slate-500">
+          Current table rows:
+        </p>
+        <div className="space-y-1 rounded border border-slate-200 bg-white p-3 text-sm text-slate-700">
+          {effectiveRows.map((row, index) => (
+            <p key={`swe-row-preview-${index}`}>
+              {index + 1}. {row.label || "Untitled"} ({row.mark || "0"})
+            </p>
+          ))}
+        </div>
+        <p className="text-xs text-slate-500">
+          Click into the fields below to edit the selected course type table.
+        </p>
+        {rows.map((row, index) => (
+          <div key={`swe-row-${index}`} className="flex gap-2 items-center">
+            <input
+              type="text"
+              placeholder={defaultRows[index]?.label || "Row title"}
+              value={row.label}
+              onChange={(event) => onChange(index, "label", event.target.value)}
+              className="border p-2 rounded flex-1 text-sm bg-white"
+            />
+            <input
+              type="text"
+              inputMode="numeric"
+              placeholder={defaultRows[index]?.mark || "Mark"}
+              value={row.mark}
+              onChange={(event) => onChange(index, "mark", event.target.value)}
+              className="border p-2 rounded w-24 text-sm bg-white"
+            />
+          </div>
+        ))}
+      </div>
+    </details>
+  );
+}
+
 export default function AssignmentInputForm({
   inputData,
   setInputData,
@@ -174,6 +291,10 @@ export default function AssignmentInputForm({
   const showEvaluationCriteria = EVALUATION_CRITERIA_TEMPLATES.has(activeTemplate);
   const showPresentationCriteria =
     PRESENTATION_CRITERIA_TEMPLATES.has(activeTemplate);
+  const showCustomText = CUSTOM_TEXT_TEMPLATES.has(activeTemplate);
+  const showSweCriteriaEditor = activeTemplate === "swe";
+  const defaultSweCriteriaRows = getDefaultSweEvaluation(inputData.courseType).rows;
+  const visibleCustomTextFields = getVisibleCustomTextFields(activeTemplate);
 
   const handleChange = (event: FormInputChangeEvent) => {
     const key = event.target.name as StringFieldKey;
@@ -240,6 +361,18 @@ export default function AssignmentInputForm({
     });
   };
 
+  const updateSweCriteriaRow = (
+    index: number,
+    field: keyof SweCriteriaRow,
+    value: string
+  ) => {
+    setInputData((prev) => {
+      const nextRows = [...prev.sweCriteriaRows];
+      nextRows[index] = { ...nextRows[index], [field]: value };
+      return { ...prev, sweCriteriaRows: nextRows };
+    });
+  };
+
   useEffect(() => {
     if (!inputData.teamName || inputData.teamName.length === 0) {
       setInputData((prev) => ({
@@ -249,6 +382,33 @@ export default function AssignmentInputForm({
     }
   }, [inputData.teamName, setInputData]);
 
+  useEffect(() => {
+    if (!showSweCriteriaEditor) return;
+
+    const defaultRows = createEmptySweCriteriaRows(
+      getDefaultSweEvaluation(inputData.courseType).rows
+    );
+
+    setInputData((prev) => {
+      const alreadyMatchesShape =
+        prev.sweCriteriaRows.length === defaultRows.length &&
+        prev.sweCriteriaRows.every(
+          (row, index) =>
+            row.label === defaultRows[index]?.label &&
+            row.mark === defaultRows[index]?.mark
+        );
+
+      if (alreadyMatchesShape) {
+        return prev;
+      }
+
+      return {
+        ...prev,
+        sweCriteriaRows: defaultRows,
+      };
+    });
+  }, [inputData.courseType, setInputData, showSweCriteriaEditor]);
+
   return (
     <form className="flex flex-col items-center text-sm text-slate-800">
       <h1 className="text-xl font-bold mb-4">Fill up the form</h1>
@@ -256,6 +416,14 @@ export default function AssignmentInputForm({
       <div className="max-w-96 w-full px-4 space-y-4">
         {showCourseType && (
           <CourseTypeField inputData={inputData} onChange={handleChange} />
+        )}
+
+        {showSweCriteriaEditor && (
+          <SweCriteriaEditor
+            rows={inputData.sweCriteriaRows}
+            defaultRows={defaultSweCriteriaRows}
+            onChange={updateSweCriteriaRow}
+          />
         )}
 
         {showSemester && (
@@ -270,6 +438,14 @@ export default function AssignmentInputForm({
 
         {showLevelTerm && (
           <LevelTermField inputData={inputData} onChange={handleChange} />
+        )}
+
+        {showCustomText && (
+          <CustomTextEditor
+            inputData={inputData}
+            onChange={handleChange}
+            fields={visibleCustomTextFields}
+          />
         )}
 
         {showEvaluationCriteria && (

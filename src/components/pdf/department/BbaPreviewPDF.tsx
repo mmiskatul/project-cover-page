@@ -5,6 +5,7 @@ import {
   getUppercaseReportTitle,
   isSinglePersonProject,
 } from "@/components/pdf/common/format";
+import { getCustomText } from "@/components/pdf/common/custom-text";
 import type { CoverTemplateData } from "@/components/pdf/common/types";
 
 type InfoRowProps = {
@@ -28,6 +29,31 @@ export default function Default2PreviewPDF({ data }: { data?: CoverTemplateData 
 
   const singlePersonProject = isSinglePersonProject(data);
   const singleProjectMember = data.teamName?.[0];
+  const reportTitle = getCustomText(
+    data,
+    "reportTitleText",
+    getUppercaseReportTitle(data.courseType)
+  );
+  const courseNameLabel = getCustomText(data, "courseTitleLabelText", "Course Name");
+  const courseCodeLabel = getCustomText(data, "courseCodeLabelText", "Course Code");
+  const submittedToTitle = getCustomText(data, "submittedToTitleText", "Submitted To:");
+  const submittedByTitle = getCustomText(data, "submittedByTitleText", "Submitted By:");
+  const teacherNameLabel = getCustomText(data, "teacherNameLabelText", "Name");
+  const teamMembersLabel = getCustomText(data, "teamMembersLabelText", "Team Members:");
+  const sectionLabel = getCustomText(data, "sectionLabelText", "Section");
+  const departmentLabel = getCustomText(data, "departmentLabelText", "Department");
+  const studentNameLabel = getCustomText(data, "studentNameLabelText", "Name");
+  const studentIdLabel = getCustomText(data, "studentIdLabelText", "ID");
+  const submissionDateLabel = getCustomText(
+    data,
+    "submissionDateLabelText",
+    "Submission Date"
+  );
+  const universityName = getCustomText(
+    data,
+    "universityNameText",
+    "Daffodil International University"
+  );
 
   return (
     <div
@@ -49,7 +75,7 @@ export default function Default2PreviewPDF({ data }: { data?: CoverTemplateData 
 
           <div className="w-full text-center text-2xl font-bold mb-6 bg-blue-600">
             <div className="w-1/2 text-white py-3 px-6 text-lg font-semibold text-center">
-              {getUppercaseReportTitle(data.courseType)}
+              {reportTitle}
             </div>
             <div className="w-1/2 text-white px-6 text-lg font-semibold text-center"></div>
           </div>
@@ -58,8 +84,8 @@ export default function Default2PreviewPDF({ data }: { data?: CoverTemplateData 
             <div className="w-1/2 px-4">
               <h1 className="text-center mt-8 text-lg font-bold underline mb-3">COURSE</h1>
               <div className="space-y-2 text-sm font-medium">
-                <InfoRow label="Course Name" value={data.courseName} />
-                <InfoRow label="Course Code" value={data.courseId} />
+                <InfoRow label={courseNameLabel} value={data.courseName} />
+                <InfoRow label={courseCodeLabel} value={data.courseId} />
               </div>
 
               <h1 className="text-center text-lg font-bold underline mt-6 mb-3">TOPIC</h1>
@@ -72,12 +98,12 @@ export default function Default2PreviewPDF({ data }: { data?: CoverTemplateData 
               </p>
 
               <h1 className="text-center text-lg font-bold underline mb-10 mt-5">
-                Submitted To:
+                {submittedToTitle}
               </h1>
               <div className="ml-4 space-y-1 text-base font-medium">
-                <InfoRow label="Name" value={data.teacherName} />
+                <InfoRow label={teacherNameLabel} value={data.teacherName} />
                 <p className="text-base text-center font-bold mt-4">
-                  Daffodil International University
+                  {universityName}
                 </p>
               </div>
             </div>
@@ -108,11 +134,11 @@ export default function Default2PreviewPDF({ data }: { data?: CoverTemplateData 
               </div>
 
               <div>
-                <h1 className="text-center text-lg font-bold underline mb-4">Submitted By:</h1>
+                <h1 className="text-center text-lg font-bold underline mb-4">{submittedByTitle}</h1>
 
                 {data.courseType === "project" && !singlePersonProject ? (
                   <div className="space-y-3 text-base font-medium z-10 relative">
-                    <div className="text-center font-semibold mb-2">Team Members:</div>
+                    <div className="text-center font-semibold mb-2">{teamMembersLabel}</div>
                     {data.teamName && data.teamName.length > 0 ? (
                       <div className="space-y-1">
                         {data.teamName.map((member, index) => (
@@ -136,31 +162,31 @@ export default function Default2PreviewPDF({ data }: { data?: CoverTemplateData 
                     )}
 
                     <div className="mt-4 space-y-1">
-                      <InfoRow label="Section" value={data.section} />
-                      <InfoRow label="Department" value={data.department} />
+                      <InfoRow label={sectionLabel} value={data.section} />
+                      <InfoRow label={departmentLabel} value={data.department} />
                       <p className="text-center font-bold mt-2">
-                        Daffodil International University
+                        {universityName}
                       </p>
                     </div>
                   </div>
                 ) : (
                   <div className="space-y-2 text-base font-medium z-10 relative">
                     <InfoRow
-                      label="Name"
+                      label={studentNameLabel}
                       value={singlePersonProject ? singleProjectMember?.studentName : data.studentName}
                     />
                     <InfoRow
-                      label="ID"
+                      label={studentIdLabel}
                       value={singlePersonProject ? singleProjectMember?.studentId : data.studentId}
                     />
-                    <InfoRow label="Section" value={data.section} />
-                    <InfoRow label="Department" value={data.department} />
-                    <p className="text-center font-bold">Daffodil International University</p>
+                    <InfoRow label={sectionLabel} value={data.section} />
+                    <InfoRow label={departmentLabel} value={data.department} />
+                    <p className="text-center font-bold">{universityName}</p>
                   </div>
                 )}
 
                 <p className="text-base text-center font-semibold mt-6 mb-25">
-                  <span className="underline">Submission Date:</span>{" "}
+                  <span className="underline">{submissionDateLabel}:</span>{" "}
                   {data.date ? (
                     capitalizeEachWord(data.date)
                   ) : (

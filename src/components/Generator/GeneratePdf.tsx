@@ -7,9 +7,75 @@ import type { AssignmentFormData } from "@/components/forms/types";
 import BackButton from "../BackButton/BackButton";
 import { TEMPLATE_PREVIEW_COMPONENTS } from "./template-preview-map";
 import { getTemplateByName } from "@/lib/template-config";
+import {
+  createEmptySweCriteriaRows,
+  getDefaultSweEvaluation,
+} from "@/components/pdf/department/swe-evaluation-config";
 
 const diulogo = "/assets/daffodil-international-university-seeklogo.png";
 const bglogo = "/assets/BgImage.png";
+const GENERATOR_DRAFT_STORAGE_KEY_PREFIX = "generatorDraft:";
+
+function createInitialInputData(): AssignmentFormData {
+  const defaultSweEvaluation = getDefaultSweEvaluation("theory");
+
+  return {
+    teamName: [{ studentId: "", studentName: "" }],
+    studentName: "",
+    studentId: "",
+    courseName: "",
+    courseId: "",
+    teacherName: "",
+    teacherDesignation: "",
+    courseTeacherId: "",
+    semester: "",
+    batch: "",
+    section: "",
+    courseType: "",
+    date: "",
+    department: "",
+    topicname: "",
+    logo: diulogo,
+    bglogo: bglogo,
+    level: "",
+    evaluationTitles: [
+      "Idea with Focus (1)",
+      "Organization (1)",
+      "Content (2)",
+      "Time Management (1)",
+    ],
+    presentationTitles: [
+      "Content and Design (2)",
+      "Knowledge and Interaction (2)",
+      "Body language and Attire (1)",
+      "Fluency (2)",
+      "Time Management (1)",
+    ],
+    sweCriteriaRows: createEmptySweCriteriaRows(defaultSweEvaluation.rows),
+    departmentHeadingText: "",
+    reportTitleText: "",
+    assignmentSectionTitle: "",
+    presentationSectionTitle: "",
+    courseCodeLabelText: "",
+    courseTitleLabelText: "",
+    topicLabelText: "",
+    submittedToTitleText: "",
+    submittedByTitleText: "",
+    teacherNameLabelText: "",
+    teacherDesignationLabelText: "",
+    studentNameLabelText: "",
+    studentIdLabelText: "",
+    batchLabelText: "",
+    sectionLabelText: "",
+    semesterLabelText: "",
+    yearLabelText: "",
+    levelTermLabelText: "",
+    departmentLabelText: "",
+    teamMembersLabelText: "",
+    submissionDateLabelText: "",
+    universityNameText: "",
+  };
+}
 
 const getInlineStyles = () => {
   const collectedStyles: string[] = [];
@@ -57,44 +123,66 @@ function GeneratePdf() {
   const PreviewComponent =
     TEMPLATE_PREVIEW_COMPONENTS[selectedTemplate?.name] ||
     TEMPLATE_PREVIEW_COMPONENTS.default;
+  const storageKey = `${GENERATOR_DRAFT_STORAGE_KEY_PREFIX}${selectedTemplate?.name || "default"}`;
 
-  const [inputData, setInputData] = useState<AssignmentFormData>({
-    teamName: [{ studentId: "", studentName: "" }],
-    studentName: "",
-    studentId: "",
-    courseName: "",
-    courseId: "",
-    teacherName: "",
-    teacherDesignation: "",
-    courseTeacherId: "",
-    semester: "",
-    batch: "",
-    section: "",
-    courseType: "",
-    date: "",
-    department: "",
-    topicname: "",
-    // Keep non-empty defaults to avoid empty <img src=""> during first render.
-    logo: diulogo,
-    bglogo: bglogo,
-    level: "",
-    evaluationTitles: [
-      "Idea with Focus (1)",
-      "Organization (1)",
-      "Content (2)",
-      "Time Management (1)",
-    ],
-    presentationTitles: [
-      "Content and Design (2)",
-      "Knowledge and Interaction (2)",
-      "Body language and Attire (1)",
-      "Fluency (2)",
-      "Time Management (1)",
-    ],
-  });
+  const [inputData, setInputData] = useState<AssignmentFormData>(createInitialInputData);
   const [isGenerating, setIsGenerating] = useState(false);
   const [isAssetPreparationComplete, setIsAssetPreparationComplete] = useState(false);
+  const [hasLoadedDraft, setHasLoadedDraft] = useState(false);
   const router = useRouter();
+
+  useEffect(() => {
+    const baseInputData = createInitialInputData();
+
+    try {
+      const savedDraft = sessionStorage.getItem(storageKey);
+      if (savedDraft) {
+        const parsedDraft = JSON.parse(savedDraft);
+        setInputData({
+          ...baseInputData,
+          ...parsedDraft,
+          logo: parsedDraft?.logo || baseInputData.logo,
+          bglogo: parsedDraft?.bglogo || baseInputData.bglogo,
+          teamName:
+            Array.isArray(parsedDraft?.teamName) && parsedDraft.teamName.length > 0
+              ? parsedDraft.teamName
+              : baseInputData.teamName,
+          evaluationTitles:
+            Array.isArray(parsedDraft?.evaluationTitles) &&
+            parsedDraft.evaluationTitles.length > 0
+              ? parsedDraft.evaluationTitles
+              : baseInputData.evaluationTitles,
+          presentationTitles:
+            Array.isArray(parsedDraft?.presentationTitles) &&
+            parsedDraft.presentationTitles.length > 0
+              ? parsedDraft.presentationTitles
+              : baseInputData.presentationTitles,
+          sweCriteriaRows:
+            Array.isArray(parsedDraft?.sweCriteriaRows) &&
+            parsedDraft.sweCriteriaRows.length > 0
+              ? parsedDraft.sweCriteriaRows
+              : baseInputData.sweCriteriaRows,
+        });
+      } else {
+        setInputData(baseInputData);
+      }
+    } catch (error) {
+      console.error("Failed to restore generator draft:", error);
+      setInputData(baseInputData);
+    } finally {
+      setHasLoadedDraft(true);
+    }
+  }, [storageKey]);
+
+  useEffect(() => {
+    if (!hasLoadedDraft) return;
+
+    try {
+      sessionStorage.setItem(storageKey, JSON.stringify(inputData));
+    } catch (error) {
+      console.error("Failed to persist generator draft:", error);
+    }
+  }, [hasLoadedDraft, inputData, storageKey]);
 
   useEffect(() => {
     const convertToBase64 = async (imgPath: string, key: "logo" | "bglogo") => {

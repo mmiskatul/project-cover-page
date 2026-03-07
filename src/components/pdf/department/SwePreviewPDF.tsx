@@ -6,6 +6,7 @@ import {
   getSentenceCaseReportTitle,
   isSinglePersonProject,
 } from "@/components/pdf/common/format";
+import { getCustomText } from "@/components/pdf/common/custom-text";
 import type { CoverTemplateData } from "@/components/pdf/common/types";
 
 export default function PreviewPDF({ data }: { data?: CoverTemplateData }) {
@@ -13,6 +14,34 @@ export default function PreviewPDF({ data }: { data?: CoverTemplateData }) {
 
   const singlePersonProject = isSinglePersonProject(data);
   const singleProjectMember = data.teamName?.[0];
+  const reportTitle = getCustomText(
+    data,
+    "reportTitleText",
+    getSentenceCaseReportTitle(data.courseType)
+  );
+  const semesterLabel = getCustomText(data, "semesterLabelText", "Semester");
+  const studentNameLabel = getCustomText(data, "studentNameLabelText", "Student Name");
+  const studentIdLabel = getCustomText(data, "studentIdLabelText", "Student ID");
+  const teamMembersLabel = getCustomText(data, "teamMembersLabelText", "Team Members");
+  const batchLabel = getCustomText(data, "batchLabelText", "Batch");
+  const sectionLabel = getCustomText(data, "sectionLabelText", "Section");
+  const courseNameLabel = getCustomText(data, "courseTitleLabelText", "Course Name");
+  const courseCodeLabel = getCustomText(data, "courseCodeLabelText", "Course Code");
+  const teacherNameLabel = getCustomText(
+    data,
+    "teacherNameLabelText",
+    "Course Teacher Name"
+  );
+  const teacherDesignationLabel = getCustomText(
+    data,
+    "teacherDesignationLabelText",
+    "Designation"
+  );
+  const submissionDateLabel = getCustomText(
+    data,
+    "submissionDateLabelText",
+    "Submission Date"
+  );
 
   return (
     <div
@@ -41,16 +70,16 @@ export default function PreviewPDF({ data }: { data?: CoverTemplateData }) {
         />
 
         <h3 className="text-3xl font-bold mb-6 text-center">
-          {getSentenceCaseReportTitle(data.courseType)}
+          {reportTitle}
         </h3>
 
         {/* Mark Distribution Table */}
         <SweTeacherEvaluation data={data} />
 
         {/* Metadata Section */}
-        <div className="w-full mt-6 space-y-3 text-left text-xl font-medium">
+        <div className="w-full mt-6 pl-8 space-y-2 text-left text-base font-medium">
           <p>
-            <span className="font-bold">Semester:</span>{" "}
+            <span className="font-bold">{semesterLabel}:</span>{" "}
             {data.semester ? (
               capitalizeEachWord(data.semester)
             ) : (
@@ -62,7 +91,7 @@ export default function PreviewPDF({ data }: { data?: CoverTemplateData }) {
           {data.courseType !== "project" || singlePersonProject ? (
             <>
               <p>
-                <span className="font-bold">Student Name:</span>{" "}
+                <span className="font-bold">{studentNameLabel}:</span>{" "}
                 {singlePersonProject ? (
                   singleProjectMember?.studentName ? (
                     capitalizeEachWord(singleProjectMember.studentName)
@@ -76,7 +105,7 @@ export default function PreviewPDF({ data }: { data?: CoverTemplateData }) {
                 )}
               </p>
               <p>
-                <span className="font-bold">Student ID:</span>{" "}
+                <span className="font-bold">{studentIdLabel}:</span>{" "}
                 {singlePersonProject ? (
                   singleProjectMember?.studentId || <Placeholder />
                 ) : data.studentId ? (
@@ -88,7 +117,7 @@ export default function PreviewPDF({ data }: { data?: CoverTemplateData }) {
             </>
           ) : (
             <div className="mt-4">
-              <p className="font-bold text-center mb-2">Team Members</p>
+              <p className="font-bold text-center mb-2">{teamMembersLabel}</p>
               {data.teamName && data.teamName.length > 0 ? (
                 <table className="w-full border-collapse border border-gray-400 mt-2">
                   <thead>
@@ -110,6 +139,7 @@ export default function PreviewPDF({ data }: { data?: CoverTemplateData }) {
                     ))}
                     <tr>
                       <td className="border border-gray-400 px-3 py-2 font-bold text-left" colSpan={2}>Section: {`${data.batch}(${data.section})`}</td>
+                      
                     </tr>
                   </tbody>
                 </table>
@@ -121,9 +151,9 @@ export default function PreviewPDF({ data }: { data?: CoverTemplateData }) {
             </div>
           )}
 
-          {(data.courseType !== "project" || singlePersonProject) && <div className="flex flex-row gap-20">
+          {(data.courseType !== "project" || singlePersonProject) && <div className="flex flex-row gap-12">
             <p>
-              <span className="font-bold">Batch:</span>{" "}
+              <span className="font-bold">{batchLabel}:</span>{" "}
               {data.batch ? (
                 capitalizeEachWord(data.batch)
               ) : (
@@ -131,7 +161,7 @@ export default function PreviewPDF({ data }: { data?: CoverTemplateData }) {
               )}
             </p>
             <p>
-              <span className="font-bold">Section:</span>{" "}
+              <span className="font-bold">{sectionLabel}:</span>{" "}
               {data.section ? (
                 capitalizeEachWord(data.section)
               ) : (
@@ -141,22 +171,22 @@ export default function PreviewPDF({ data }: { data?: CoverTemplateData }) {
           </div>}
 
           <div className="flex flex-row justify-between gap-3 items-start">
+            <p className="whitespace-nowrap flex items-center gap-1">
+              <span className="font-bold">{courseCodeLabel}:</span>{" "}
+              {data.courseId ? data.courseId : <Placeholder />}
+            </p>
              <p>
-              <span className="font-bold">Course Name:</span>{" "}
+              <span className="font-bold">{courseNameLabel}:</span>{" "}
               {data.courseName ? (
                 capitalizeEachWord(data.courseName)
               ) : (
                 <Placeholder />
               )}
             </p>
-            <p className="whitespace-nowrap flex items-center gap-1">
-              <span className="font-bold">Course Code:</span>{" "}
-              {data.courseId ? data.courseId : <Placeholder />}
-            </p>
           </div>
 
           <p>
-            <span className="font-bold">Teacher Name:</span>{" "}
+            <span className="font-bold">{teacherNameLabel}:</span>{" "}
             {data.teacherName ? (
               capitalizeEachWord(data.teacherName)
             ) : (
@@ -164,7 +194,7 @@ export default function PreviewPDF({ data }: { data?: CoverTemplateData }) {
             )}
           </p>
           <p>
-            <span className="font-bold">Designation:</span>{" "}
+            <span className="font-bold">{teacherDesignationLabel}:</span>{" "}
             {data.teacherDesignation ? (
               capitalizeEachWord(data.teacherDesignation)
             ) : (
@@ -172,7 +202,7 @@ export default function PreviewPDF({ data }: { data?: CoverTemplateData }) {
             )}
           </p>
           <p>
-            <span className="font-bold">Date:</span>{" "}
+            <span className="font-bold">{submissionDateLabel}:</span>{" "}
             {data.date ? data.date : <Placeholder />}
           </p>
         </div>

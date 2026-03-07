@@ -27,7 +27,7 @@ export function getSentenceCaseReportTitle(courseType?: string | null) {
     case "lab report":
       return "Lab Report";
     case "lab final":
-      return "Lab Final";
+      return "Lab Final Report";
     case "project":
       return "Project Report";
     default:

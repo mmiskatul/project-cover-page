@@ -5,6 +5,7 @@ import {
   getUppercaseReportTitle,
   isSinglePersonProject,
 } from "@/components/pdf/common/format";
+import { getCustomText } from "@/components/pdf/common/custom-text";
 import type { CoverTemplateData } from "@/components/pdf/common/types";
 
 export default function PreviewPDF({ data }: { data?: CoverTemplateData }) {
@@ -13,6 +14,32 @@ export default function PreviewPDF({ data }: { data?: CoverTemplateData }) {
   }
 
   const singlePersonProject = isSinglePersonProject(data);
+  const reportTitle = getCustomText(
+    data,
+    "reportTitleText",
+    getUppercaseReportTitle(data.courseType)
+  );
+  const topicLabel = getCustomText(
+    data,
+    "topicLabelText",
+    `Title of the ${data.courseType === "project" ? "Project" : "Assignment"}`
+  );
+  const submittedByTitle = getCustomText(data, "submittedByTitleText", "Submitted by-");
+  const submittedToTitle = getCustomText(data, "submittedToTitleText", "Submitted to -");
+  const teamMembersLabel = getCustomText(data, "teamMembersLabelText", "Team Members:");
+  const studentNameLabel = getCustomText(data, "studentNameLabelText", "Name");
+  const studentIdLabel = getCustomText(data, "studentIdLabelText", "ID No");
+  const sectionLabel = getCustomText(data, "sectionLabelText", "Section");
+  const teacherDesignationLabel = getCustomText(
+    data,
+    "teacherDesignationLabelText",
+    "ID"
+  );
+  const universityName = getCustomText(
+    data,
+    "universityNameText",
+    "Daffodil International University"
+  );
 
   return (
     <div
@@ -69,7 +96,7 @@ export default function PreviewPDF({ data }: { data?: CoverTemplateData }) {
             marginBottom: "1rem",
           }}
         >
-          {getUppercaseReportTitle(data.courseType)}
+          {reportTitle}
         </h1>
 
         <h2
@@ -92,7 +119,7 @@ export default function PreviewPDF({ data }: { data?: CoverTemplateData }) {
             marginTop: "3.25rem",
           }}
         >
-          Title of the {data.courseType === "project" ? "Project" : "Assignment"}
+          {topicLabel}
         </h3>
         <h1
           style={{
@@ -106,7 +133,7 @@ export default function PreviewPDF({ data }: { data?: CoverTemplateData }) {
         </h1>
 
         <h3 style={{ marginTop: "4.5rem", fontSize: "1.25rem", fontWeight: "400" }}>
-          Submitted by-
+          {submittedByTitle}
         </h3>
 
         {data.courseType === "project" && !singlePersonProject ? (
@@ -118,7 +145,7 @@ export default function PreviewPDF({ data }: { data?: CoverTemplateData }) {
                 marginBottom: "0.5rem",
               }}
             >
-              Team Members:
+              {teamMembersLabel}
             </h4>
             {data.teamName && data.teamName.length > 0 ? (
               data.teamName.map((member, index) => (
@@ -148,18 +175,18 @@ export default function PreviewPDF({ data }: { data?: CoverTemplateData }) {
         ) : (
           <>
             <h5 style={{ fontSize: "1.125rem", fontWeight: "700" }}>
-              Name:{" "}
+              {studentNameLabel}:{" "}
               {singlePersonProject ? data.teamName?.[0]?.studentName : data.studentName}
             </h5>
             <h5 style={{ fontSize: "1.125rem", fontWeight: "600" }}>
-              ID No:{" "}
+              {studentIdLabel}:{" "}
               {singlePersonProject ? data.teamName?.[0]?.studentId : data.studentId}
             </h5>
           </>
         )}
 
         <h5 style={{ fontSize: "1.125rem", fontWeight: "600" }}>
-          Section: {data.batch}({data.section})
+          {sectionLabel}: {data.batch}({data.section})
         </h5>
 
         <h3
@@ -170,17 +197,17 @@ export default function PreviewPDF({ data }: { data?: CoverTemplateData }) {
             marginTop: "3.25rem",
           }}
         >
-          Submitted to -
+          {submittedToTitle}
         </h3>
         <h5 style={{ fontSize: "1.125rem", fontWeight: "700" }}>{data.teacherName}</h5>
         <h5 style={{ fontSize: "1.125rem", fontWeight: "600" }}>
-          ID: {data.courseTeacherId || <Placeholder className="text-xl font-bold" />}
+          {teacherDesignationLabel}: {data.courseTeacherId || <Placeholder className="text-xl font-bold" />}
         </h5>
         <h2 style={{ fontSize: "1.125rem", fontWeight: "600" }}>
           {data.teacherDesignation} , {data.department}
         </h2>
         <h2 style={{ marginBottom: "2rem", fontSize: "1.25rem" }}>
-          Daffodil International University
+          {universityName}
         </h2>
 
         <h1 style={{ marginBottom: "2rem", fontSize: "1.25rem" }}>{data.date}</h1>

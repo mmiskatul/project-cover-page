@@ -5,6 +5,7 @@ import {
   getSemesterPart,
   isSinglePersonProject,
 } from "@/components/pdf/common/format";
+import { getCustomText } from "@/components/pdf/common/custom-text";
 import type { CoverTemplateData } from "@/components/pdf/common/types";
 
 type DepartmentHeadingConfig = {
@@ -48,7 +49,49 @@ export default function DepartmentEvaluationTemplate({
   }
 
   const singlePersonProject = isSinglePersonProject(data);
-  const reportTitle = config.resolveReportTitle(data.courseType || "");
+  const departmentHeadingText = getCustomText(
+    data,
+    "departmentHeadingText",
+    config.departmentHeading?.text || ""
+  );
+  const reportTitle = getCustomText(
+    data,
+    "reportTitleText",
+    config.resolveReportTitle(data.courseType || "")
+  );
+  const courseCodeLabel = getCustomText(data, "courseCodeLabelText", "Course Code");
+  const courseTitleLabel = getCustomText(data, "courseTitleLabelText", "Course Title");
+  const topicLabel = getCustomText(data, "topicLabelText", "Title/Topic");
+  const assignmentSectionTitle = getCustomText(
+    data,
+    "assignmentSectionTitle",
+    "Assignment"
+  );
+  const presentationSectionTitle = getCustomText(
+    data,
+    "presentationSectionTitle",
+    "Presentation"
+  );
+  const submissionDateLabel = getCustomText(
+    data,
+    "submissionDateLabelText",
+    "Date of Submission"
+  );
+  const semesterLabel = getCustomText(data, "semesterLabelText", "Semester");
+  const yearLabel = getCustomText(data, "yearLabelText", "Year");
+  const levelTermLabel = getCustomText(data, "levelTermLabelText", "Level-Term");
+  const sectionLabel = getCustomText(data, "sectionLabelText", "Section");
+  const submittedByTitle = getCustomText(data, "submittedByTitleText", "Submitted by-");
+  const submittedToTitle = getCustomText(data, "submittedToTitleText", "Submitted to-");
+  const teamMembersLabel = getCustomText(data, "teamMembersLabelText", "Team Members:");
+  const studentNameLabel = getCustomText(data, "studentNameLabelText", "Name");
+  const studentIdLabel = getCustomText(data, "studentIdLabelText", "Student ID");
+  const teacherNameLabel = getCustomText(data, "teacherNameLabelText", "Name");
+  const teacherDesignationLabel = getCustomText(
+    data,
+    "teacherDesignationLabelText",
+    "Designation"
+  );
   const submittedByCellClassName =
     config.submittedByCellClassName || "border border-black px-4 py-1 text-left";
   const submittedToCellClassName =
@@ -69,7 +112,7 @@ export default function DepartmentEvaluationTemplate({
       <div className={config.wrapperClassName || "flex flex-col items-center w-full"}>
         {config.departmentHeading && (
           <h1 className={config.departmentHeading.className}>
-            {config.departmentHeading.text}
+            {departmentHeadingText}
           </h1>
         )}
 
@@ -94,19 +137,19 @@ export default function DepartmentEvaluationTemplate({
               <th
                 className={`${config.courseHeaderCellClassName || ""} border border-black px-4 py-1 text-left`}
               >
-                Course Code: {data.courseId}
+                {courseCodeLabel}: {data.courseId}
               </th>
               <th
                 className={`${config.courseHeaderCellClassName || ""} border border-black px-4 py-1 text-left`}
               >
-                Course Title: {capitalizeEachWord(data.courseName)}
+                {courseTitleLabel}: {capitalizeEachWord(data.courseName)}
               </th>
             </tr>
           </thead>
           <tbody>
             <tr>
               <td colSpan={2} className="border border-black px-4 py-1 text-left">
-                Title/Topic:{" "}
+                {topicLabel}:{" "}
                 {data.topicname ? (
                   capitalizeEachWord(data.topicname)
                 ) : (
@@ -168,7 +211,7 @@ export default function DepartmentEvaluationTemplate({
             </tr>
             <tr>
               <th colSpan={10} className={config.assignmentHeaderClassName}>
-                Assignment
+                {assignmentSectionTitle}
               </th>
             </tr>
           </thead>
@@ -212,7 +255,7 @@ export default function DepartmentEvaluationTemplate({
                       config.assignmentHeaderClassName
                     }
                   >
-                    Presentation
+                    {presentationSectionTitle}
                   </th>
                 </tr>
                 {(data.presentationTitles || []).map((criteria, index) => (
@@ -253,7 +296,7 @@ export default function DepartmentEvaluationTemplate({
 
             <tr>
               <td colSpan={8} className="border border-black px-2 py-1">
-                <span className="font-bold">Date of Submission:</span>{" "}
+                <span className="font-bold">{submissionDateLabel}:</span>{" "}
                 {data.date || <Placeholder />}
               </td>
               <td colSpan={2} className={config.dateSignatureCellClassName}>
@@ -275,16 +318,16 @@ export default function DepartmentEvaluationTemplate({
           <thead>
             <tr>
               <th className="border border-black px-4 py-1 text-left">
-                Semester: {capitalizeEachWord(getSemesterPart(data.semester, 0))}
+                {semesterLabel}: {capitalizeEachWord(getSemesterPart(data.semester, 0))}
               </th>
               <th className="border border-black px-4 py-1 text-left">
-                Year: {getSemesterPart(data.semester, 1, `${new Date().getFullYear()}`)}
+                {yearLabel}: {getSemesterPart(data.semester, 1, `${new Date().getFullYear()}`)}
               </th>
               <th className="border border-black px-4 py-1 text-left">
-                Level-Term: {data.level}
+                {levelTermLabel}: {data.level}
               </th>
               <th className="border border-black px-4 py-1 text-left">
-                Section: {capitalizeEachWord(data.section)}
+                {sectionLabel}: {capitalizeEachWord(data.section)}
               </th>
             </tr>
           </thead>
@@ -295,8 +338,8 @@ export default function DepartmentEvaluationTemplate({
         >
           <thead>
             <tr>
-              <th className="border border-black px-4 py-1 text-left">Submitted by-</th>
-              <th className="border border-black px-4 py-1 text-left">Submitted to-</th>
+              <th className="border border-black px-4 py-1 text-left">{submittedByTitle}</th>
+              <th className="border border-black px-4 py-1 text-left">{submittedToTitle}</th>
             </tr>
           </thead>
           <tbody>
@@ -304,7 +347,7 @@ export default function DepartmentEvaluationTemplate({
               <td className={submittedByCellClassName}>
                 {data.courseType === "project" && !singlePersonProject ? (
                   <div>
-                    <p className="font-bold mb-2">Team Members:</p>
+                    <p className="font-bold mb-2">{teamMembersLabel}</p>
                     {data.teamName && data.teamName.length > 0 ? (
                       <div className="space-y-1">
                         {data.teamName.map((member, index) => (
@@ -330,7 +373,7 @@ export default function DepartmentEvaluationTemplate({
                 ) : (
                   <div>
                     <p>
-                      <span className="font-bold">Name:</span>{" "}
+                      <span className="font-bold">{studentNameLabel}:</span>{" "}
                       {singlePersonProject
                         ? capitalizeEachWord(data.teamName?.[0]?.studentName)
                         : data.studentName
@@ -338,7 +381,7 @@ export default function DepartmentEvaluationTemplate({
                         : <Placeholder />}
                     </p>
                     <p>
-                      <span className="font-bold">Student ID:</span>{" "}
+                      <span className="font-bold">{studentIdLabel}:</span>{" "}
                       {singlePersonProject
                         ? data.teamName?.[0]?.studentId
                         : data.studentId || <Placeholder />}
@@ -349,11 +392,11 @@ export default function DepartmentEvaluationTemplate({
 
               <td className={submittedToCellClassName}>
                 <p>
-                  <span className="font-bold">Name:</span>{" "}
+                  <span className="font-bold">{teacherNameLabel}:</span>{" "}
                   {data.teacherName ? capitalizeEachWord(data.teacherName) : <Placeholder />}
                 </p>
                 <p>
-                  <span className="font-bold">Designation:</span>{" "}
+                  <span className="font-bold">{teacherDesignationLabel}:</span>{" "}
                   {data.teacherDesignation ? (
                     capitalizeEachWord(data.teacherDesignation)
                   ) : (

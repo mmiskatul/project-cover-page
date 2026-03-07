@@ -5,6 +5,7 @@ import {
   getUppercaseReportTitle,
   isSinglePersonProject,
 } from "@/components/pdf/common/format";
+import { getCustomText } from "@/components/pdf/common/custom-text";
 import type { CoverTemplateData } from "@/components/pdf/common/types";
 
 function LongPlaceholder() {
@@ -23,6 +24,38 @@ export default function DefaultPreview({ data }: { data?: CoverTemplateData }) {
 
   const singlePersonProject = isSinglePersonProject(data);
   const singleProjectMember = data.teamName?.[0];
+  const reportTitle = getCustomText(
+    data,
+    "reportTitleText",
+    getUppercaseReportTitle(data.courseType)
+  );
+  const courseCodeLabel = getCustomText(data, "courseCodeLabelText", "Course Code");
+  const courseTitleLabel = getCustomText(data, "courseTitleLabelText", "Course Title");
+  const topicLabel = getCustomText(data, "topicLabelText", "Topic Name");
+  const submittedToTitle = getCustomText(data, "submittedToTitleText", "Submitted To:");
+  const submittedByTitle = getCustomText(data, "submittedByTitleText", "Submitted By:");
+  const teacherNameLabel = getCustomText(data, "teacherNameLabelText", "Name");
+  const teacherDesignationLabel = getCustomText(
+    data,
+    "teacherDesignationLabelText",
+    "Designation"
+  );
+  const departmentLabel = getCustomText(data, "departmentLabelText", "Department");
+  const teamMembersLabel = getCustomText(data, "teamMembersLabelText", "Team Members:");
+  const studentNameLabel = getCustomText(data, "studentNameLabelText", "Name");
+  const studentIdLabel = getCustomText(data, "studentIdLabelText", "ID");
+  const sectionLabel = getCustomText(data, "sectionLabelText", "Section");
+  const semesterLabel = getCustomText(data, "semesterLabelText", "Semester");
+  const submissionDateLabel = getCustomText(
+    data,
+    "submissionDateLabelText",
+    "Submission Date"
+  );
+  const universityName = getCustomText(
+    data,
+    "universityNameText",
+    "Daffodil International University"
+  );
 
   return (
     <div
@@ -59,34 +92,34 @@ export default function DefaultPreview({ data }: { data?: CoverTemplateData }) {
           <img src={data.logo} alt="DIU Logo" style={{ width: "300px", marginTop: "10px" }} />
 
           <h3 className="text-2xl font-bold underline mt-6 mb-8">
-            {getUppercaseReportTitle(data.courseType)}
+            {reportTitle}
           </h3>
 
           <div className="w-full text-left text-[17px] font-medium space-y-2 mb-6">
             <p>
-              <span className="font-bold">Course Code:</span>{" "}
+              <span className="font-bold">{courseCodeLabel}:</span>{" "}
               {data.courseId ? capitalizeEachWord(data.courseId) : <LongPlaceholder />}
             </p>
             <p>
-              <span className="font-bold">Course Title:</span>{" "}
+              <span className="font-bold">{courseTitleLabel}:</span>{" "}
               {data.courseName ? capitalizeEachWord(data.courseName) : <LongPlaceholder />}
             </p>
             <p>
-              <span className="font-bold">Topic Name:</span>{" "}
+              <span className="font-bold">{topicLabel}:</span>{" "}
               {data.topicname ? capitalizeEachWord(data.topicname) : <LongPlaceholder />}
             </p>
           </div>
 
           <div className="w-full text-purple-900 text-left text-[18px] font-bold underline mb-2">
-            Submitted To:
+            {submittedToTitle}
           </div>
           <div className="w-full pl-32 text-left text-[16px] font-medium space-y-1 mb-6">
             <p>
-              <span className="font-bold">Name:</span>{" "}
+              <span className="font-bold">{teacherNameLabel}:</span>{" "}
               {data.teacherName ? capitalizeEachWord(data.teacherName) : <LongPlaceholder />}
             </p>
             <p>
-              <span className="font-bold">Designation:</span>{" "}
+              <span className="font-bold">{teacherDesignationLabel}:</span>{" "}
               {data.teacherDesignation ? (
                 capitalizeEachWord(data.teacherDesignation)
               ) : (
@@ -94,20 +127,20 @@ export default function DefaultPreview({ data }: { data?: CoverTemplateData }) {
               )}
             </p>
             <p>
-              <span className="font-bold">Department:</span>{" "}
+              <span className="font-bold">{departmentLabel}:</span>{" "}
               {data.department ? capitalizeEachWord(data.department) : <LongPlaceholder />}
             </p>
-            <p className="text-lg font-bold">Daffodil International University</p>
+            <p className="text-lg font-bold">{universityName}</p>
           </div>
 
           <div className="w-full text-purple-900 text-left text-[18px] font-bold underline mb-2">
-            Submitted By:
+            {submittedByTitle}
           </div>
 
           {data.courseType === "project" && !singlePersonProject ? (
             <div className="w-full pl-32 text-left text-[16px] font-medium space-y-1 mb-6">
               <div className="mb-2">
-                <span className="font-bold">Team Members:</span>
+                <span className="font-bold">{teamMembersLabel}</span>
               </div>
 
               {data.teamName && data.teamName.length > 0 ? (
@@ -134,24 +167,24 @@ export default function DefaultPreview({ data }: { data?: CoverTemplateData }) {
 
               <div className="mt-4 space-y-1">
                 <p>
-                  <span className="font-bold">Section:</span>{" "}
+                  <span className="font-bold">{sectionLabel}:</span>{" "}
                   {data.section ? capitalizeEachWord(data.section) : <LongPlaceholder />}
                 </p>
                 <p>
-                  <span className="font-bold">Semester:</span>{" "}
+                  <span className="font-bold">{semesterLabel}:</span>{" "}
                   {data.semester ? capitalizeEachWord(data.semester) : <LongPlaceholder />}
                 </p>
                 <p>
-                  <span className="font-bold">Department:</span>{" "}
+                  <span className="font-bold">{departmentLabel}:</span>{" "}
                   {data.department ? capitalizeEachWord(data.department) : <LongPlaceholder />}
                 </p>
-                <p className="text-lg font-bold">Daffodil International University</p>
+                <p className="text-lg font-bold">{universityName}</p>
               </div>
             </div>
           ) : (
             <div className="w-full pl-32 text-left text-[16px] font-medium space-y-1 mb-6">
               <p>
-                <span className="font-bold">Name:</span>{" "}
+                <span className="font-bold">{studentNameLabel}:</span>{" "}
                 {singlePersonProject ? (
                   singleProjectMember?.studentName ? (
                     capitalizeEachWord(singleProjectMember.studentName)
@@ -165,29 +198,29 @@ export default function DefaultPreview({ data }: { data?: CoverTemplateData }) {
                 )}
               </p>
               <p>
-                <span className="font-bold">ID:</span>{" "}
+                <span className="font-bold">{studentIdLabel}:</span>{" "}
                 {singlePersonProject
                   ? singleProjectMember?.studentId || <LongPlaceholder />
                   : data.studentId || <LongPlaceholder />}
               </p>
               <p>
-                <span className="font-bold">Section:</span>{" "}
+                <span className="font-bold">{sectionLabel}:</span>{" "}
                 {data.section ? capitalizeEachWord(data.section) : <LongPlaceholder />}
               </p>
               <p>
-                <span className="font-bold">Semester:</span>{" "}
+                <span className="font-bold">{semesterLabel}:</span>{" "}
                 {data.semester ? capitalizeEachWord(data.semester) : <LongPlaceholder />}
               </p>
               <p>
-                <span className="font-bold">Department:</span>{" "}
+                <span className="font-bold">{departmentLabel}:</span>{" "}
                 {data.department ? capitalizeEachWord(data.department) : <LongPlaceholder />}
               </p>
-              <p className="text-lg font-bold">Daffodil International University</p>
+              <p className="text-lg font-bold">{universityName}</p>
             </div>
           )}
 
           <div className="w-full text-left text-purple-900 text-[16px] font-bold mt-20">
-            <span className="underline text-lg">Submission Date:</span>{" "}
+            <span className="underline text-lg">{submissionDateLabel}:</span>{" "}
             {data.date || <LongPlaceholder />}
           </div>
         </div>

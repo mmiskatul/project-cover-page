@@ -8,6 +8,7 @@ import {
   getUppercaseReportTitle,
   isSinglePersonProject,
 } from "@/components/pdf/common/format";
+import { getCustomText } from "@/components/pdf/common/custom-text";
 import type { CoverTemplateData } from "@/components/pdf/common/types";
 
 const iconPng = "/assets/tourisomlogo.png";
@@ -54,6 +55,38 @@ export default function PreviewPDF({ data }: { data?: CoverTemplateData }) {
 
   const singlePersonProject = isSinglePersonProject(data);
   const singleProjectMember = data.teamName?.[0];
+  const reportTitle = getCustomText(
+    data,
+    "reportTitleText",
+    getUppercaseReportTitle(data.courseType)
+  );
+  const topicLabel = getCustomText(data, "topicLabelText", "Assignment Topic");
+  const courseCodeLabel = getCustomText(data, "courseCodeLabelText", "Course Code");
+  const courseTitleLabel = getCustomText(data, "courseTitleLabelText", "Course Title");
+  const submittedToTitle = getCustomText(data, "submittedToTitleText", "Submitted To");
+  const submittedByTitle = getCustomText(data, "submittedByTitleText", "Submitted By");
+  const teacherNameLabel = getCustomText(data, "teacherNameLabelText", "Name");
+  const teacherDesignationLabel = getCustomText(
+    data,
+    "teacherDesignationLabelText",
+    "Designation"
+  );
+  const departmentLabel = getCustomText(data, "departmentLabelText", "Department");
+  const teamMembersLabel = getCustomText(data, "teamMembersLabelText", "Team Members:");
+  const studentNameLabel = getCustomText(data, "studentNameLabelText", "Name");
+  const studentIdLabel = getCustomText(data, "studentIdLabelText", "ID");
+  const batchLabel = getCustomText(data, "batchLabelText", "Batch");
+  const sectionLabel = getCustomText(data, "sectionLabelText", "Section");
+  const submissionDateLabel = getCustomText(
+    data,
+    "submissionDateLabelText",
+    "Date of Submission"
+  );
+  const universityName = getCustomText(
+    data,
+    "universityNameText",
+    "Daffodil International University"
+  );
 
   return (
     <div
@@ -109,25 +142,25 @@ export default function PreviewPDF({ data }: { data?: CoverTemplateData }) {
             letterSpacing: "1px",
           }}
         >
-          {getUppercaseReportTitle(data.courseType)}
+          {reportTitle}
         </h3>
 
         {/* Topic of the assignment */}
         <div style={{ textAlign: "left", width: "100%", marginBottom: "20px" }}>
           <h3 style={{ fontSize: "20px", fontWeight: "bold", margin: "15px 0" }}>
-            Assignment Topic:{" "}
+            {topicLabel}:{" "}
             <span style={{ fontWeight: "600", color: "#1a3a6c" }}>
               {data.topicname ? capitalizeEachWord(data.topicname) : <Placeholder />}
             </span>
           </h3>
           <h3 style={{ fontSize: "20px", fontWeight: "bold", margin: "15px 0" }}>
-            Course Code:{" "}
+            {courseCodeLabel}:{" "}
             <span style={{ fontWeight: "600", color: "#1a3a6c" }}>
               {data.courseId ? capitalizeEachWord(data.courseId) : <Placeholder />}
             </span>
           </h3>
           <h3 style={{ fontSize: "20px", fontWeight: "bold", margin: "15px 0" }}>
-            Course Title:{" "}
+            {courseTitleLabel}:{" "}
             <span style={{ fontWeight: "600", color: "#1a3a6c" }}>
               {data.courseName ? capitalizeEachWord(data.courseName) : <Placeholder />}
             </span>
@@ -156,7 +189,7 @@ export default function PreviewPDF({ data }: { data?: CoverTemplateData }) {
                     fontSize: "20px",
                   }}
                 >
-                  Submitted To
+                  {submittedToTitle}
                 </th>
                 <th
                   style={{
@@ -168,7 +201,7 @@ export default function PreviewPDF({ data }: { data?: CoverTemplateData }) {
                     fontSize: "20px",
                   }}
                 >
-                  Submitted By
+                  {submittedByTitle}
                 </th>
               </tr>
             </thead>
@@ -176,16 +209,16 @@ export default function PreviewPDF({ data }: { data?: CoverTemplateData }) {
               <tr>
                 <td style={{ border: "2px solid #1a3a6c", padding: "15px", verticalAlign: "top" }}>
                   <div style={{ marginBottom: "6px" }}>
-                    <strong>Name:</strong> {data.teacherName || <Placeholder />}
+                    <strong>{teacherNameLabel}:</strong> {data.teacherName || <Placeholder />}
                   </div>
                   <div style={{ marginBottom: "6px" }}>
-                    <strong>Designation:</strong> {data.teacherDesignation || <Placeholder />}
+                    <strong>{teacherDesignationLabel}:</strong> {data.teacherDesignation || <Placeholder />}
                   </div>
                   <div style={{ marginBottom: "6px" }}>
-                    <strong>Department of {data.department || <Placeholder />}</strong>
+                    <strong>{departmentLabel} of {data.department || <Placeholder />}</strong>
                   </div>
                   <div style={{ marginTop: "12px", fontWeight: "bold", color: "#1a3a6c" }}>
-                    Daffodil International University
+                    {universityName}
                   </div>
                 </td>
                 <td style={{ border: "2px solid #1a3a6c", padding: "15px", verticalAlign: "top" }}>
@@ -193,7 +226,7 @@ export default function PreviewPDF({ data }: { data?: CoverTemplateData }) {
                     // Team Members Section
                     <>
                       <div style={{ marginBottom: "6px" }}>
-                        <strong>Team Members:</strong>
+                        <strong>{teamMembersLabel}</strong>
                       </div>
                       {data.teamName && data.teamName.length > 0 ? (
                         <div style={{ marginBottom: "10px" }}>
@@ -221,14 +254,14 @@ export default function PreviewPDF({ data }: { data?: CoverTemplateData }) {
                     // Individual Student Section
                     <>
                       <div style={{ marginBottom: "6px" }}>
-                        <strong>Name:</strong>{" "}
+                        <strong>{studentNameLabel}:</strong>{" "}
                         {singlePersonProject 
                           ? singleProjectMember?.studentName || <Placeholder />
                           : data.studentName || <Placeholder />
                         }
                       </div>
                       <div style={{ marginBottom: "6px" }}>
-                        <strong>ID:</strong>{" "}
+                        <strong>{studentIdLabel}:</strong>{" "}
                         {singlePersonProject 
                           ? singleProjectMember?.studentId || <Placeholder />
                           : data.studentId || <Placeholder />
@@ -238,14 +271,14 @@ export default function PreviewPDF({ data }: { data?: CoverTemplateData }) {
                   )}
                   
                   <div style={{ marginBottom: "6px" }}>
-                    <strong>Batch:</strong> {data.batch || <Placeholder />}
+                    <strong>{batchLabel}:</strong> {data.batch || <Placeholder />}
                   </div>
                   <div style={{ marginBottom: "6px" }}>
-                    <strong>Section:</strong> {data.section || <Placeholder />}
+                    <strong>{sectionLabel}:</strong> {data.section || <Placeholder />}
                   </div>
-                  <strong>Department of {data.department || <Placeholder />}</strong>
+                  <strong>{departmentLabel} of {data.department || <Placeholder />}</strong>
                   <div style={{ marginTop: "12px", fontWeight: "bold", color: "#1a3a6c" }}>
-                    Daffodil International University
+                    {universityName}
                   </div>
                 </td>
               </tr>
@@ -263,7 +296,7 @@ export default function PreviewPDF({ data }: { data?: CoverTemplateData }) {
             fontWeight: "600",
           }}
         >
-          Date of Submission: {data.date || <Placeholder />}
+          {submissionDateLabel}: {data.date || <Placeholder />}
         </p>
 
         {/* Bottom image */}

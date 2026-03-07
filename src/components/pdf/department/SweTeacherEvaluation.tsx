@@ -1,6 +1,29 @@
 import type { CoverTemplateData } from "@/components/pdf/common/types";
+import { getDefaultSweEvaluation } from "./swe-evaluation-config";
 
 function SweTeacherEvaluation({ data }: { data: CoverTemplateData }) {
+  const defaultEvaluation = getDefaultSweEvaluation(data.courseType);
+  const evaluationRows = defaultEvaluation.rows.map((defaultRow, index) => {
+    const customRow = data.sweCriteriaRows?.[index];
+    const customLabel =
+      typeof customRow?.label === "string" && customRow.label.trim()
+        ? customRow.label.trim()
+        : defaultRow.label;
+    const customMark =
+      typeof customRow?.mark === "string" && customRow.mark.trim()
+        ? customRow.mark.trim()
+        : defaultRow.mark;
+
+    return {
+      label: customLabel,
+      mark: customMark,
+    };
+  });
+  const totalMark = evaluationRows.reduce((sum, row) => {
+    const parsedMark = Number.parseInt(row.mark, 10);
+    return Number.isFinite(parsedMark) ? sum + parsedMark : sum;
+  }, 0);
+
   return (
     <div className="w-full -ml-10  px-6 text-black font-bold bg-white">
 
@@ -11,125 +34,52 @@ function SweTeacherEvaluation({ data }: { data: CoverTemplateData }) {
               className="border border-black px-5 py-1 text-center font-semibold"
               colSpan={7}
             >
-              Only for Course Teacher
+              Only for course Teacher
             </td>
           </tr>
         </thead>
 
         <tbody>
           <tr>
-            <th className="border border-black px-5 py-1 text-left" colSpan={2}></th>
-            <th className="border border-black px-5 py-1 text-left">
+            <th className="border border-black px-2 py-1 text-left w-[30%]" colSpan={2}></th>
+            <th className="border border-black px-2 py-1 text-left">
               Needs <br /> Improvement
             </th>
-            <th className="border border-black px-5 py-1 text-left">Developing</th>
-            <th className="border border-black px-5 py-1 text-left">Sufficient</th>
-            <th className="border border-black px-5 py-1 text-left">Above Average</th>
-            <th className="border border-black px-5 py-1 text-left">Total Mark</th>
+            <th className="border border-black px-2 py-1 text-left">Developing</th>
+            <th className="border border-black px-2 py-1 text-left">Sufficient</th>
+            <th className="border border-black px-2 py-1 text-left">Above Average</th>
+            <th className="border border-black px-2 py-1 text-left">Total Mark</th>
           </tr>
 
           <tr>
             <td className="border border-black px-5 py-1" colSpan={2}>
-              Allocate Mark <br /> & Percentage
+              Allocate mark <br /> & Percentage
             </td>
             <td className="border border-black px-5 py-1">25%</td>
             <td className="border border-black px-5 py-1">50%</td>
             <td className="border border-black px-5 py-1">75%</td>
             <td className="border border-black px-5 py-1">100%</td>
-            <td className="border border-black px-5 py-1 font-semibold">
-              {data.courseType === "theory" ? "5" : 
-              data.courseType==="lab report" || data.courseType==="project"
-              ? "25" :
-              data.courseType==="lab final" ?
-               "40"
-              
-              : "10"}
-            </td>
+            <td className="border border-black px-5 py-1 font-semibold">{`${totalMark}`}</td>
           </tr>
 
-          <tr>
-            <td className="border border-black px-5 py-1">{
-                data.courseType=="lab report" ?`Problem underStanding  &  Analysis `:
-                data.courseType=="lab final" || data.courseType=="project"? 'Problem Understanding':
-                "Clarity" 
-              }</td>
-            <td className="border border-black px-5 py-1">
-              {data.courseType === "theory" ? "1" :
-              data.courseType ==="lab report" ? "5":
-              data.courseType=="project" ? "7" :
-              data.courseType==="lab final"? '10'
-               : "2"}
-            </td>
-            <td className="border border-black px-5 py-1"></td>
-            <td className="border border-black px-5 py-1"></td>
-            <td className="border border-black px-5 py-1"></td>
-            <td className="border border-black px-5 py-1"></td>
-            <td className="border border-black px-5 py-1"></td>
-          </tr>
-
-          <tr>
-            <td className="border border-black px-5 py-1">{
-                data.courseType=="lab report" || data.courseType=="project" ? `Implementation `:
-                data.courseType=='lab final'?"Analysis":
-                "Content Quality" 
-              }</td>
-            <td className="border border-black px-5 py-1">
-              {data.courseType === "theory" ? "2" :
-              data.courseType ==="lab report" ? "10" :
-              data.courseType=="project" ? "8" :
-              data.courseType=='lab final'? '15'
-               : "4"}
-            </td>
-            <td className="border border-black px-5 py-1"></td>
-            <td className="border border-black px-5 py-1"></td>
-            <td className="border border-black px-5 py-1"></td>
-            <td className="border border-black px-5 py-1"></td>
-            <td className="border border-black px-5 py-1"></td>
-          </tr>
-
-          <tr>
-             <td className="border border-black px-5 py-1">{
-                data.courseType=="lab report" || data.courseType=="project"? `Report Writing `:
-                data.courseType=='lab final'?"Implementation":
-                "Spelling & Grammar" 
-              }</td>
-            <td className="border border-black px-5 py-1">
-              {data.courseType === "theory" ? "1" :
-              data.courseType ==="lab report" || data.courseType=="project"? "10":
-               data.courseType=='lab final'? '10'
-               : "2"}
-            </td>
-           
-            <td className="border border-black px-5 py-1"></td>
-            <td className="border border-black px-5 py-1"></td>
-            <td className="border border-black px-5 py-1"></td>
-            <td className="border border-black px-5 py-1"></td>
-            <td className="border border-black px-5 py-1"></td>
-          </tr>
-
-          {
-            data.courseType !== "lab report" && data.courseType !=="project" &&
-            <tr>
-            <td className="border border-black px-5 py-1">{data.courseType === "lab final"?"Task Efficiency":"Organization & Formatting"}</td>
-            <td className="border border-black px-5 py-1">
-              {data.courseType === "theory" ? "1" :
-              data.courseType=='lab final'?"5":
-               "2"}
-            </td>
-            <td className="border border-black px-5 py-1"></td>
-            <td className="border border-black px-5 py-1"></td>
-            <td className="border border-black px-5 py-1"></td>
-            <td className="border border-black px-5 py-1"></td>
-            <td className="border border-black px-5 py-1"></td>
-          </tr>
-          }
+          {evaluationRows.map((row) => (
+            <tr key={`${data.courseType}-${row.label}`}>
+              <td className="border border-black px-2 py-1 w-[25%]">{row.label}</td>
+              <td className="border border-black px-2 py-1 w-[6%] text-center">{row.mark}</td>
+              <td className="border border-black px-5 py-1"></td>
+              <td className="border border-black px-5 py-1"></td>
+              <td className="border border-black px-5 py-1"></td>
+              <td className="border border-black px-5 py-1"></td>
+              <td className="border border-black px-5 py-1"></td>
+            </tr>
+          ))}
 
           <tr>
             <td
               colSpan={6}
               className="border border-black px-5 py-1 font-semibold text-right"
             >
-              Total Obtained Mark
+              Total obtained mark
             </td>
             <td className="border border-black px-5 py-1 font-semibold"></td>
           </tr>
