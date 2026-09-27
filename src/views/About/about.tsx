@@ -15,13 +15,6 @@ import {
 function About() {
   return (
     <div className="min-h-screen pt-20 px-8 md:px-0 py-16 text-gray-800 max-w-5xl mx-auto relative">
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
-      
-        * {
-          font-family: 'Poppins', sans-serif;
-        }
-      `}</style>
 
       {/* Background element */}
       <div className="size-[520px] -top-80 left-1/2 -translate-x-1/2 rounded-full absolute blur-[300px] -z-10 bg-[#FBFFE1]"></div>
@@ -76,7 +69,7 @@ function About() {
               Beginner Friendly
             </h3>
             <p className="text-sm text-slate-500">
-              Easy-to-use interface â€” no technical or design skills required.
+              Easy-to-use interface &mdash; no technical or design skills required.
             </p>
           </div>
         </div>
@@ -124,6 +117,7 @@ function About() {
         </div>
       </div>
 
+
       {/* Developer Section */}
       <div className="mt-32 relative">
         <h2 className="text-3xl font-bold text-center mb-16 text-gray-800">
@@ -145,8 +139,7 @@ function About() {
               <span className="text-indigo-600">Miskatul Masabi</span>
             </h3>
             <p className="text-indigo-500 font-medium mt-2">
-
-              Ai Engineer at  Sparktech limited
+              AI Engineer at Sparktech Limited
             </p>
 
             <p className="mt-6 flex items-center justify-center gap-2 text-gray-700">

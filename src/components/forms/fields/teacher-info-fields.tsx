@@ -40,24 +40,26 @@ export function TeacherInfoFields({
         />
       )}
 
-      <SelectField
-        label="Designation"
-        htmlFor="teacherDesignation"
-        name="teacherDesignation"
-        value={inputData.teacherDesignation}
-        onChange={onChange}
-        icon={<MdWork />}
-        required
-      >
-        <option value="" disabled>
-          Select designation
-        </option>
-        {TEACHER_DESIGNATION_OPTIONS.map((option) => (
-          <option key={option.value} value={option.value}>
-            {option.label}
-          </option>
-        ))}
-      </SelectField>
+      <div>
+        <TextInputField
+          label="Designation"
+          htmlFor="teacherDesignation"
+          name="teacherDesignation"
+          value={inputData.teacherDesignation}
+          onChange={onChange}
+          icon={<MdWork />}
+          placeholder="Select or type designation (e.g. Lecturer, Professor)"
+          required
+          list="teacher-designation-list"
+        />
+        <datalist id="teacher-designation-list">
+          {TEACHER_DESIGNATION_OPTIONS.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </datalist>
+      </div>
     </div>
   );
 }

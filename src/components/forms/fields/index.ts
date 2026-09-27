@@ -8,3 +8,5 @@ export { SemesterField } from "./semester-field";
 export { StudentInfoFields } from "./student-info-fields";
 export { TeacherInfoFields } from "./teacher-info-fields";
 export { TopicField } from "./topic-field";
+export { TextInputField, SelectField, FieldGroup, FieldControl } from "./field-primitives";
+

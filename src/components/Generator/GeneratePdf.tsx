@@ -11,6 +11,8 @@ import {
   createEmptySweCriteriaRows,
   getDefaultSweEvaluation,
 } from "@/components/pdf/department/swe-evaluation-config";
+import ResponsivePreviewContainer from "./ResponsivePreviewContainer";
+import { FiEdit3, FiEye, FiColumns, FiDownload } from "react-icons/fi";
 
 const diulogo = "/assets/daffodil-international-university-seeklogo.png";
 const bglogo = "/assets/BgImage.png";
@@ -77,7 +79,14 @@ function createInitialInputData(): AssignmentFormData {
   };
 }
 
+// Cache inline styles and base64 assets to eliminate redundant work and UI latency
+let cachedStyles: string | null = null;
+let cachedLogoBase64: string | null = null;
+let cachedBgLogoBase64: string | null = null;
+
 const getInlineStyles = () => {
+  if (cachedStyles) return cachedStyles;
+
   const collectedStyles: string[] = [];
 
   for (const sheet of Array.from(document.styleSheets)) {
@@ -91,7 +100,8 @@ const getInlineStyles = () => {
     }
   }
 
-  return collectedStyles.join("\n");
+  cachedStyles = collectedStyles.join("\n");
+  return cachedStyles;
 };
 
 const getHtmlFromPreview = () => {
@@ -129,6 +139,7 @@ function GeneratePdf() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [isAssetPreparationComplete, setIsAssetPreparationComplete] = useState(false);
   const [hasLoadedDraft, setHasLoadedDraft] = useState(false);
+  const [mobileTab, setMobileTab] = useState<"form" | "preview" | "split">("form");
   const router = useRouter();
 
   useEffect(() => {
@@ -141,8 +152,8 @@ function GeneratePdf() {
         setInputData({
           ...baseInputData,
           ...parsedDraft,
-          logo: parsedDraft?.logo || baseInputData.logo,
-          bglogo: parsedDraft?.bglogo || baseInputData.bglogo,
+          logo: cachedLogoBase64 || parsedDraft?.logo || baseInputData.logo,
+          bglogo: cachedBgLogoBase64 || parsedDraft?.bglogo || baseInputData.bglogo,
           teamName:
             Array.isArray(parsedDraft?.teamName) && parsedDraft.teamName.length > 0
               ? parsedDraft.teamName
@@ -164,7 +175,11 @@ function GeneratePdf() {
               : baseInputData.sweCriteriaRows,
         });
       } else {
-        setInputData(baseInputData);
+        setInputData((prev) => ({
+          ...baseInputData,
+          logo: cachedLogoBase64 || baseInputData.logo,
+          bglogo: cachedBgLogoBase64 || baseInputData.bglogo,
+        }));
       }
     } catch (error) {
       console.error("Failed to restore generator draft:", error);
@@ -174,46 +189,62 @@ function GeneratePdf() {
     }
   }, [storageKey]);
 
+  // Save lightweight draft without serializing heavy base64 images on every keystroke
   useEffect(() => {
     if (!hasLoadedDraft) return;
 
     try {
-      sessionStorage.setItem(storageKey, JSON.stringify(inputData));
+      const { logo, bglogo, ...textDraft } = inputData;
+      sessionStorage.setItem(storageKey, JSON.stringify(textDraft));
     } catch (error) {
       console.error("Failed to persist generator draft:", error);
     }
   }, [hasLoadedDraft, inputData, storageKey]);
 
+  // Asset conversion with global caching to eliminate redundant work
   useEffect(() => {
-    const convertToBase64 = async (imgPath: string, key: "logo" | "bglogo") => {
+    if (cachedLogoBase64 && cachedBgLogoBase64) {
+      setInputData((prev) => ({
+        ...prev,
+        logo: cachedLogoBase64!,
+        bglogo: cachedBgLogoBase64!,
+      }));
+      setIsAssetPreparationComplete(true);
+      return;
+    }
+
+    const convertToBase64 = async (imgPath: string): Promise<string | undefined> => {
       try {
         const response = await fetch(imgPath);
-        if (!response.ok) {
-          throw new Error(`Failed to load ${imgPath}`);
-        }
+        if (!response.ok) throw new Error(`Failed to load ${imgPath}`);
         const blob = await response.blob();
-        return new Promise<void>((resolve) => {
+        return new Promise<string>((resolve) => {
           const reader = new FileReader();
-          reader.onloadend = () => {
-            setInputData((prev) => ({ ...prev, [key]: reader.result }));
-            resolve();
-          };
+          reader.onloadend = () => resolve(reader.result as string);
           reader.readAsDataURL(blob);
         });
       } catch (error) {
-        console.error(`Error loading image ${key}:`, error);
+        console.error(`Error loading asset ${imgPath}:`, error);
+        return undefined;
       }
     };
 
     let isMounted = true;
 
     Promise.all([
-      convertToBase64(diulogo, "logo"),
-      convertToBase64(bglogo, "bglogo")
-    ]).finally(() => {
-      if (isMounted) {
-        setIsAssetPreparationComplete(true);
-      }
+      cachedLogoBase64 ? Promise.resolve(cachedLogoBase64) : convertToBase64(diulogo),
+      cachedBgLogoBase64 ? Promise.resolve(cachedBgLogoBase64) : convertToBase64(bglogo),
+    ]).then(([logoResult, bgResult]) => {
+      if (!isMounted) return;
+      if (logoResult) cachedLogoBase64 = logoResult;
+      if (bgResult) cachedBgLogoBase64 = bgResult;
+
+      setInputData((prev) => ({
+        ...prev,
+        logo: logoResult || prev.logo,
+        bglogo: bgResult || prev.bglogo,
+      }));
+      setIsAssetPreparationComplete(true);
     });
 
     return () => {
@@ -230,12 +261,15 @@ function GeneratePdf() {
       return;
     }
 
-    // Use team leader's ID for project or individual student ID
-    const studentIdForFileName = inputData.courseType === "project" 
-      ? inputData.teamName[0]?.studentId || "team" 
-      : inputData.studentId;
+    // Use team leader's ID or individual student ID
+    const studentIdForFileName =
+      inputData.teamName?.[0]?.studentId?.trim() ||
+      inputData.studentId?.trim() ||
+      "student";
 
-    const fileName = ` ${inputData.courseType} ${inputData.courseId}(${studentIdForFileName})`.trim() || "document";
+    const coursePart = inputData.courseId?.trim() || inputData.courseName?.trim() || "Course";
+    const typePart = inputData.courseType?.trim() || "Cover";
+    const fileName = `${typePart}_${coursePart}_(${studentIdForFileName})`.replace(/\s+/g, "_") || "document";
 
     try {
       const pendingDocument = {
@@ -255,95 +289,225 @@ function GeneratePdf() {
 
   // Check if all required fields are filled
   const isFormValid = () => {
-    if (!inputData.courseName) return false;
-    
-    if (inputData.courseType === "project") {
-      // For projects: check if all team members have both ID and name
-      return inputData.teamName && 
-             inputData.teamName.length > 0 && 
-             !inputData.teamName.some(member => !member.studentId || !member.studentName);
-    } else {
-      // For individual assignments: check student name
-      return !!inputData.studentName;
+    if (!inputData.courseName?.trim()) return false;
+
+    const hasMultiple = Array.isArray(inputData.teamName) && inputData.teamName.length > 1;
+    if (hasMultiple || inputData.courseType === "project") {
+      return (
+        Array.isArray(inputData.teamName) &&
+        inputData.teamName.length > 0 &&
+        inputData.teamName.every((member) => Boolean(member.studentName?.trim()))
+      );
     }
+
+    return Boolean(
+      inputData.studentName?.trim() || inputData.teamName?.[0]?.studentName?.trim()
+    );
   };
 
   return (
-    <div className="min-h-screen pt-20 bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen pt-16 sm:pt-20 bg-gradient-to-b from-slate-50 via-gray-50 to-white py-6 sm:py-12 px-3 sm:px-6 lg:px-8 pb-28 sm:pb-12">
       <div className="max-w-7xl mx-auto">
         {/* Header Section */}
-        <div className="flex justify-between items-center mb-8">
-          <BackButton className="px-4 py-2 bg-white text-gray-700 border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 transition-colors duration-200 flex items-center gap-2" />
-          <h1 className="text-3xl font-bold text-gray-900">Generate Your Assignment</h1>
-          <div className="w-10"></div> {/* Spacer for alignment */}
+        <div className="flex flex-wrap items-center justify-between gap-3 mb-6 sm:mb-8">
+          <BackButton />
+          <div className="text-center sm:text-left">
+            <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-slate-900 tracking-tight">
+              Assignment Cover Generator
+            </h1>
+            <p className="text-xs sm:text-sm text-slate-500 hidden sm:block">
+              {selectedTemplate?.fullName || "University Standard Template"}
+            </p>
+          </div>
+          <div className="hidden sm:block w-10"></div>
         </div>
 
-        {/* Main Content */}
-        <div className="bg-white rounded-xl shadow-md overflow-hidden">
-          <div className="p-6 md:p-8">
-            <div className="flex flex-col lg:flex-row gap-8">
-              {/* Input Form Section - 35% width */}
-              <div className="w-full lg:w-[35%] space-y-6">
-                <div className="border-b border-gray-200 pb-4">
-                  <h2 className="text-xl font-semibold text-gray-800">Assignment Details</h2>
-                  <p className="text-gray-500 mt-1">Fill in your assignment information</p>
+        {/* Main Content Card */}
+        <div className="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-4 sm:p-6 md:p-8">
+          {/* Mobile / Tablet Segmented Control (< lg) */}
+          <div className="lg:hidden mb-6 bg-slate-100 p-1.5 rounded-xl flex items-center justify-between gap-1 border border-slate-200">
+            <button
+              type="button"
+              onClick={() => setMobileTab("form")}
+              className={`flex-1 py-2 px-2.5 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition-all ${
+                mobileTab === "form"
+                  ? "bg-white text-indigo-700 shadow-sm"
+                  : "text-slate-600 hover:text-slate-900"
+              }`}
+            >
+              <FiEdit3 className="w-3.5 h-3.5" />
+              <span>Edit Form</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setMobileTab("preview")}
+              className={`flex-1 py-2 px-2.5 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition-all ${
+                mobileTab === "preview"
+                  ? "bg-white text-indigo-700 shadow-sm"
+                  : "text-slate-600 hover:text-slate-900"
+              }`}
+            >
+              <FiEye className="w-3.5 h-3.5" />
+              <span>Live Preview</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setMobileTab("split")}
+              className={`flex-1 py-2 px-2.5 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition-all ${
+                mobileTab === "split"
+                  ? "bg-white text-indigo-700 shadow-sm"
+                  : "text-slate-600 hover:text-slate-900"
+              }`}
+            >
+              <FiColumns className="w-3.5 h-3.5" />
+              <span>Both</span>
+            </button>
+          </div>
+
+          <div className="flex flex-col lg:flex-row gap-8 items-start">
+            {/* Input Form Section - 36% width on desktop */}
+            <div
+              className={`w-full lg:w-[40%] xl:w-[37%] space-y-6 ${
+                mobileTab === "preview" ? "hidden lg:block" : "block"
+              }`}
+            >
+              <div className="border-b border-gray-200 pb-3 flex items-center justify-between">
+                <div>
+                  <h2 className="text-lg sm:text-xl font-bold text-gray-800">
+                    Assignment Details
+                  </h2>
+                  <p className="text-gray-500 text-xs sm:text-sm mt-0.5">
+                    Fill in your course and student details
+                  </p>
                 </div>
-                <AssignmentInputForm
-                  inputData={inputData}
-                  setInputData={setInputData}
-                  templateName={selectedTemplate?.name}
-                />
               </div>
 
-              {/* Preview Section - 65% width */}
-              <div className="w-full lg:w-[65%] space-y-6">
-                <div className="border-b border-gray-200 pb-4">
-                  <h2 className="text-xl font-semibold text-gray-800">Preview</h2>
-                  <p className="text-gray-500 mt-1">Your assignment will appear here</p>
-                </div>
-                <div className="flex justify-center border border-gray-200 rounded-lg p-4 bg-gray-200 ">
-                  {PreviewComponent && <PreviewComponent data={inputData} />}
-                </div>
-              </div>
+              <AssignmentInputForm
+                inputData={inputData}
+                setInputData={setInputData}
+                templateName={selectedTemplate?.name}
+              />
             </div>
 
-            {/* Generate Button */}
-            <div className="mt-30 flex justify-center">
-              <button 
-                onClick={handleGenerate}
-                disabled={isGenerating || !isFormValid() || !isAssetPreparationComplete}
-                className={`px-8 py-3 rounded-lg shadow-md transition-all duration-200 flex items-center justify-center gap-2 w-full max-w-md ${
-                  isGenerating 
-                    ? 'bg-blue-400 cursor-not-allowed' 
-                    : !isFormValid() || !isAssetPreparationComplete
-                      ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                      : 'bg-gradient-to-r from-blue-600 to-indigo-700 text-white hover:shadow-lg hover:from-blue-700 hover:to-indigo-800'
-                }`}
-              >
-                {isGenerating ? (
-                  <>
-                    <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    <span>Generating PDF...</span>
-                  </>
-                ) : (
-                  <>
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                      <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd" />
-                    </svg>
-                    <span>{isAssetPreparationComplete ? "Generate PDF" : "Preparing assets..."}</span>
-                  </>
-                )}
-              </button>
+            {/* Preview Section - 64% width on desktop */}
+            <div
+              className={`w-full lg:w-[60%] xl:w-[63%] lg:sticky lg:top-24 self-start space-y-4 ${
+                mobileTab === "form" ? "hidden lg:block" : "block"
+              }`}
+            >
+              <div className="border-b border-gray-200 pb-3 flex items-center justify-between">
+                <div>
+                  <h2 className="text-lg sm:text-xl font-bold text-gray-800">
+                    Cover Preview
+                  </h2>
+                  <p className="text-gray-500 text-xs sm:text-sm mt-0.5">
+                    Real-time, pixel-perfect document rendering
+                  </p>
+                </div>
+                <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 border border-blue-200">
+                  A4 Page
+                </span>
+              </div>
+
+              <ResponsivePreviewContainer>
+                {PreviewComponent && <PreviewComponent data={inputData} />}
+              </ResponsivePreviewContainer>
             </div>
+          </div>
+
+          {/* Desktop & Tablet Generate Button */}
+          <div className="mt-10 pt-6 border-t border-slate-100 flex flex-col items-center justify-center">
+            <button
+              onClick={handleGenerate}
+              disabled={isGenerating || !isFormValid() || !isAssetPreparationComplete}
+              className={`px-8 py-3.5 rounded-xl shadow-md transition-all duration-200 flex items-center justify-center gap-2.5 w-full max-w-md font-bold text-sm sm:text-base ${
+                isGenerating
+                  ? "bg-blue-400 text-white cursor-not-allowed"
+                  : !isFormValid() || !isAssetPreparationComplete
+                  ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+                  : "bg-gradient-to-r from-blue-600 via-indigo-600 to-indigo-700 text-white hover:shadow-lg hover:from-blue-700 hover:to-indigo-800 active:scale-[0.99] cursor-pointer"
+              }`}
+            >
+              {isGenerating ? (
+                <>
+                  <svg
+                    className="animate-spin h-5 w-5 text-white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    ></path>
+                  </svg>
+                  <span>Generating PDF...</span>
+                </>
+              ) : (
+                <>
+                  <FiDownload className="w-5 h-5" />
+                  <span>
+                    {isAssetPreparationComplete ? "Generate Cover PDF" : "Preparing assets..."}
+                  </span>
+                </>
+              )}
+            </button>
+            <p className="mt-3 text-center text-xs text-slate-400">
+              High-resolution print-ready A4 document • Instant PDF Download
+            </p>
           </div>
         </div>
 
-        {/* Footer Note */}
-        <div className="mt-8 text-center text-sm text-gray-500">
-          <p>Your document will be generated as a high-quality PDF file ready for submission & it can be Edit by mircosoft word or any editor.</p>
+        {/* Floating Quick Action Dock on Mobile Screens (< sm) */}
+        <div className="sm:hidden fixed bottom-3 inset-x-3 z-40 bg-slate-900/95 backdrop-blur-md text-white p-2 rounded-2xl shadow-2xl flex items-center justify-between gap-2 border border-slate-700/60">
+          <button
+            type="button"
+            onClick={() => setMobileTab(mobileTab === "preview" ? "form" : "preview")}
+            className="px-3.5 py-2.5 rounded-xl bg-slate-800 text-slate-100 hover:bg-slate-700 font-semibold text-xs flex items-center gap-1.5 transition-colors border border-slate-700"
+          >
+            {mobileTab === "preview" ? (
+              <>
+                <FiEdit3 className="w-3.5 h-3.5 text-indigo-400" />
+                <span>Edit Form</span>
+              </>
+            ) : (
+              <>
+                <FiEye className="w-3.5 h-3.5 text-indigo-400" />
+                <span>View Preview</span>
+              </>
+            )}
+          </button>
+
+          <button
+            type="button"
+            onClick={handleGenerate}
+            disabled={isGenerating || !isFormValid() || !isAssetPreparationComplete}
+            className={`flex-1 py-2.5 px-3 rounded-xl text-xs font-bold shadow-md flex items-center justify-center gap-1.5 transition-all ${
+              isGenerating || !isFormValid() || !isAssetPreparationComplete
+                ? "bg-slate-700 text-slate-400 cursor-not-allowed"
+                : "bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-500 hover:to-indigo-500 shadow-indigo-500/25"
+            }`}
+          >
+            {isGenerating ? (
+              <span>Generating...</span>
+            ) : (
+              <>
+                <FiDownload className="w-3.5 h-3.5" />
+                <span>Generate PDF</span>
+              </>
+            )}
+          </button>
         </div>
       </div>
     </div>

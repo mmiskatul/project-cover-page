@@ -4,6 +4,7 @@ export const COURSE_TYPE_OPTIONS = [
   { value: "project", label: "Project" },
   { value: "lab report", label: "Lab Report" },
   { value: "lab final", label: "Lab Final" },
+  { value: "thesis", label: "Thesis / Capstone Report" },
 ] as const;
 
 export const TEACHER_DESIGNATION_OPTIONS = [

@@ -42,8 +42,30 @@ PUPPETEER_EXECUTABLE_PATH=optional_custom_chrome_path
 
 If `MONGODB_URI` is missing, stats fall back and feedback persistence is disabled.
 
-## Vercel PDF Runtime
+## Docker & Cloud Deployment
 
-- `/api/generate-pdf` uses `puppeteer-core` with bundled `@sparticuz/chromium`.
-- On Vercel, the function launches Chromium directly from the deployed serverless bundle.
-- For local development, set `PUPPETEER_EXECUTABLE_PATH` if you want to use an installed Chrome/Chromium binary instead of the packaged serverless runtime.
+This app uses Puppeteer to render PDFs. To run reliably on any cloud provider (Render, Railway, Fly.io, DigitalOcean, AWS, VPS), use the Docker container which includes all necessary Chromium binaries and system fonts.
+
+### Run with Docker Compose
+
+```bash
+docker compose up -d --build
+```
+
+Open `http://localhost:3000`.
+
+### Run with Docker CLI
+
+```bash
+# Build the image
+docker build -t cover-page .
+
+# Run the container
+docker run -d --name cover-page -p 3000:3000 -e PORT=3000 cover-page
+```
+
+### Cloud Deployment (Render, Railway, VPS, etc.)
+- Set build type to **Dockerfile**.
+- The Dockerfile automatically installs `chromium` and sets `PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium`.
+- If your host provides a dynamic `$PORT` (e.g. Render, Heroku), the container automatically binds to that port.
+

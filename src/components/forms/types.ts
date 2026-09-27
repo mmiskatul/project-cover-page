@@ -10,6 +10,7 @@ export type TeamMember = {
 };
 
 export type SweCriteriaRow = {
+  id?: string;
   label: string;
   mark: string;
 };

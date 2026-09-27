@@ -55,6 +55,7 @@ type InputFieldProps = {
   placeholder?: string;
   required?: boolean;
   type?: "text" | "date";
+  list?: string;
   groupClassName?: string;
   controlClassName?: string;
   inputClassName?: string;
@@ -86,6 +87,7 @@ export function TextInputField({
   placeholder,
   required = false,
   type = "text",
+  list,
   groupClassName,
   controlClassName,
   inputClassName = DEFAULT_CONTROL_CLASS,
@@ -102,6 +104,7 @@ export function TextInputField({
           className={inputClassName}
           placeholder={placeholder}
           required={required}
+          list={list}
         />
       </FieldControl>
     </FieldGroup>

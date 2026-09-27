@@ -44,17 +44,20 @@ function HistoryPreview() {
 
   // Generate preview URL when an item is selected
   React.useEffect(() => {
+    let previewUrl = "";
     if (selectedItem && selectedItem.html) {
       try {
         const blob = new Blob([selectedItem.html], { type: "text/html" });
-        const url = URL.createObjectURL(blob);
-        setCoverURL(url);
+        previewUrl = URL.createObjectURL(blob);
+        setCoverURL(previewUrl);
       } catch (error) {
         console.error("Error generating preview:", error);
       }
+    } else {
+      setCoverURL("");
     }
     return () => {
-      if (coverURL) URL.revokeObjectURL(coverURL);
+      if (previewUrl) URL.revokeObjectURL(previewUrl);
     };
   }, [selectedItem]);
 
@@ -94,7 +97,9 @@ function HistoryPreview() {
 
   return (
     <div className="min-h-screen pt-20 bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <BackButton className="absolute left-4 top-4 text-gray-600 hover:text-gray-900" />
+      <div className="max-w-5xl mx-auto mb-4">
+        <BackButton />
+      </div>
 
       {/* Main Box */}
       <div className="max-w-5xl mx-auto bg-white rounded-xl shadow-md overflow-hidden p-6">
@@ -140,7 +145,7 @@ function HistoryPreview() {
               <>
                 <FiSearch className="mx-auto h-12 w-12 text-gray-400" />
                 <h3 className="mt-2 text-sm font-medium text-gray-900">No matching results</h3>
-                <p className="mt-1 text-sm text-gray-500">No cover pages found matching "{searchTerm}"</p>
+                <p className="mt-1 text-sm text-gray-500">No cover pages found matching &quot;{searchTerm}&quot;</p>
                 <button
                   onClick={() => setSearchTerm("")}
                   className="mt-4 text-sm text-blue-600 hover:text-blue-800"

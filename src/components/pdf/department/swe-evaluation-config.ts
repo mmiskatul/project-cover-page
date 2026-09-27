@@ -48,6 +48,15 @@ export const SWE_EVALUATION_DEFAULTS: Record<
       { label: "Report Writing", mark: "10" },
     ],
   },
+  thesis: {
+    totalMark: "100",
+    rows: [
+      { label: "Understanding/Analysis", mark: "25" },
+      { label: "Implementation", mark: "35" },
+      { label: "Accuracy", mark: "25" },
+      { label: "Report Writing", mark: "15" },
+    ],
+  },
 };
 
 export function getDefaultSweEvaluation(courseType?: string | null) {
@@ -59,5 +68,9 @@ export function cloneSweCriteriaRows(rows: SweCriteriaRow[]) {
 }
 
 export function createEmptySweCriteriaRows(rows: SweCriteriaRow[]) {
-  return rows.map(() => ({ label: "", mark: "" }));
+  return rows.map((_, i) => ({
+    id: `swe-row-${i}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`,
+    label: "",
+    mark: "",
+  }));
 }

@@ -1,24 +1,30 @@
 import { MdDateRange } from "react-icons/md";
 import type { BasicFieldProps } from "@/components/forms/types";
-import { SelectField } from "./field-primitives";
+import { TextInputField } from "./field-primitives";
 
 export function SemesterField({ inputData, onChange }: BasicFieldProps) {
   const currentYear = new Date().getFullYear();
 
   return (
-    <SelectField
-      label="Semester"
-      htmlFor="semester"
-      name="semester"
-      value={inputData.semester}
-      onChange={onChange}
-      icon={<MdDateRange />}
-      required
-    >
-      <option value="">Select Semester</option>
-      <option value={`Spring ${currentYear}`}>Spring {currentYear}</option>
-      <option value={`Summer ${currentYear}`}>Summer {currentYear}</option>
-      <option value={`Fall ${currentYear}`}>Fall {currentYear}</option>
-    </SelectField>
+    <div>
+      <TextInputField
+        label="Semester"
+        htmlFor="semester"
+        name="semester"
+        value={inputData.semester}
+        onChange={onChange}
+        icon={<MdDateRange />}
+        placeholder="Select or type semester (e.g. Spring 2025)"
+        required
+        list="semester-options-list"
+      />
+      <datalist id="semester-options-list">
+        <option value={`Spring ${currentYear}`} />
+        <option value={`Summer ${currentYear}`} />
+        <option value={`Fall ${currentYear}`} />
+        <option value={`Spring ${currentYear - 1}`} />
+        <option value={`Fall ${currentYear - 1}`} />
+      </datalist>
+    </div>
   );
 }

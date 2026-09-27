@@ -30,6 +30,8 @@ export function getSentenceCaseReportTitle(courseType?: string | null) {
       return "Lab Final Report";
     case "project":
       return "Project Report";
+    case "thesis":
+      return "Thesis Report";
     default:
       return "Select the type of report";
   }
@@ -46,6 +48,8 @@ export function getUppercaseReportTitle(courseType?: string | null) {
       return "LAB FINAL";
     case "project":
       return "PROJECT REPORT";
+    case "thesis":
+      return "THESIS REPORT";
     default:
       return "SELECT THE TYPE OF REPORT";
   }

@@ -58,19 +58,18 @@ export default function Default2PreviewPDF({ data }: { data?: CoverTemplateData 
   return (
     <div
       id="cover-preview"
-      className="w-full EB flex justify-center items-center min-h-screen bg-gray-100"
+      className="mx-auto relative bg-white text-black shadow-sm"
+      style={{
+        width: "794px",
+        minHeight: "1123px",
+        height: "1123px",
+        padding: "30px",
+        boxSizing: "border-box",
+        fontFamily: "Gupter, sans-serif",
+        backgroundColor: "#ffffff",
+      }}
     >
-      <div
-        className="relative bg-white shadow-md border border-gray-400"
-        style={{
-          width: "794px",
-          height: "1123px",
-          padding: "30px",
-          boxSizing: "border-box",
-          fontFamily: "Gupter, sans-serif",
-        }}
-      >
-        <div className="relative z-10 w-full h-full flex flex-col items-center">
+      <div className="relative z-10 w-full h-full flex flex-col items-center">
           <img src={data.logo} alt="DIU Logo" className="w-96 my-20" />
 
           <div className="w-full text-center text-2xl font-bold mb-6 bg-blue-600">
@@ -198,6 +197,5 @@ export default function Default2PreviewPDF({ data }: { data?: CoverTemplateData 
           </div>
         </div>
       </div>
-    </div>
   );
 }

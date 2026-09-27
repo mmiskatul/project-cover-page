@@ -34,7 +34,7 @@ export async function getSiteStats(): Promise<SiteStats> {
     await connectDB();
     const stats = await getOrCreateStats();
 
-    if (isDifferentDay(new Date(), new Date(stats.lastUpdated))) {
+    if (!stats.dailyGenerations || isDifferentDay(new Date(), new Date(stats.lastUpdated))) {
       stats.dailyGenerations = { date: new Date(), count: 0 };
       await stats.save();
     }
@@ -59,7 +59,7 @@ export async function incrementCoverCount() {
     const stats = await getOrCreateStats();
     const now = new Date();
 
-    if (isDifferentDay(now, new Date(stats.lastUpdated))) {
+    if (!stats.dailyGenerations || isDifferentDay(now, new Date(stats.lastUpdated))) {
       stats.dailyGenerations = { date: now, count: 0 };
     }
 

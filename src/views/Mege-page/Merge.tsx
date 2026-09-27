@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import {
@@ -10,6 +10,7 @@ import {
   AiOutlineCloudUpload,
 } from "react-icons/ai";
 import { FiUpload, FiDownload } from "react-icons/fi";
+import BackButton from "@/components/BackButton/BackButton";
 
 type PendingDocument = {
   html: string;
@@ -33,6 +34,16 @@ function Merge() {
   const [coverBlob, setCoverBlob] = useState<Blob | null>(null);
   const [coverURL, setCoverURL] = useState<string | null>(null);
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
+  const uploadedFilesRef = useRef(uploadedFiles);
+  uploadedFilesRef.current = uploadedFiles;
+
+  useEffect(() => {
+    return () => {
+      uploadedFilesRef.current.forEach((file) => {
+        if (file.previewURL) URL.revokeObjectURL(file.previewURL);
+      });
+    };
+  }, []);
   const [isMerging, setIsMerging] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [showDropZone, setShowDropZone] = useState(false);
@@ -54,6 +65,9 @@ function Merge() {
 
   // Generate cover PDF
   useEffect(() => {
+    let active = true;
+    let createdCoverUrl = "";
+
     const generateCover = async () => {
       if (!html) return;
 
@@ -80,32 +94,19 @@ function Merge() {
 
         if (!res.ok) {
           const errorData = await res.json().catch(() => ({}));
-          throw new Error(errorData.message || "Failed to generate PDF");
+          throw new Error(errorData.error || errorData.message || "Failed to generate PDF");
         }
 
         const blob = await res.blob();
-        const url = URL.createObjectURL(blob);
+        if (!active) return;
+        createdCoverUrl = URL.createObjectURL(blob);
 
         setCoverBlob(blob);
-        setCoverURL(url);
+        setCoverURL(createdCoverUrl);
 
         toast.update(toastId, {
           render: (
             <div className="flex items-center">
-              {/* <svg
-                className="w-5 h-5 mr-2 text-green-500"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M5 13l4 4L19 7"
-                />
-              </svg> */}
               <span>Cover PDF ready!</span>
             </div>
           ),
@@ -115,6 +116,7 @@ function Merge() {
         });
       } catch (error) {
         console.error(error);
+        if (!active) return;
         toast.update(toastId, {
           render: (
             <div className="flex items-center">
@@ -145,10 +147,10 @@ function Merge() {
     generateCover();
 
     return () => {
-      if (coverURL) URL.revokeObjectURL(coverURL);
-      uploadedFiles.forEach((file) => {
-        if (file.previewURL) URL.revokeObjectURL(file.previewURL);
-      });
+      active = false;
+      if (createdCoverUrl) {
+        URL.revokeObjectURL(createdCoverUrl);
+      }
     };
   }, [html]);
 
@@ -382,6 +384,9 @@ function Merge() {
       )}
 
       <div className="max-w-7xl mx-auto">
+        <div className="mb-4">
+          <BackButton />
+        </div>
         {/* Header */}
         <div className="text-center mb-12">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">

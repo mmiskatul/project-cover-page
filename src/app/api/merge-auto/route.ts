@@ -4,7 +4,7 @@ import { mergePdfs } from "@/server/services/pdf.service";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-export async function POST(request) {
+export async function POST(request: Request) {
   try {
     const formData = await request.formData();
     const cover = formData.get("cover") as File | null;

@@ -4,7 +4,7 @@ import { createFeedback, validateFeedback } from "@/server/services/feedback.ser
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-export async function POST(request) {
+export async function POST(request: Request) {
   try {
     const body = await request.json();
     const validation = validateFeedback(body || {});
