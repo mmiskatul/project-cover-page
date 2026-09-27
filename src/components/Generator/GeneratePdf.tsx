@@ -667,7 +667,7 @@ function GeneratePdf() {
                   )}
                 </div>
                 <p className="text-xs text-slate-500 mb-3">
-                  Attach your assignment or lab report PDF to automatically merge and download in 1 click!
+                  Attach your assignment or lab report PDF to automatically merge and download together.
                 </p>
 
                 {/* Hidden File Input */}
@@ -838,7 +838,7 @@ function GeneratePdf() {
                       <FiDownload className="w-5 h-5" />
                       <span>
                         {isAssetPreparationComplete
-                          ? "Download Cover PDF (1-Click)"
+                          ? "Download Cover PDF"
                           : "Preparing assets..."}
                       </span>
                     </>
@@ -849,7 +849,7 @@ function GeneratePdf() {
             <p className="mt-3 text-center text-xs text-slate-500">
               {attachedFiles.length > 0
                 ? "Auto-merging: Cover page + attached report PDF into a single document"
-                : "High-resolution print-ready A4 document • Instant 1-Click PDF Download"}
+                : "High-resolution print-ready A4 document • Instant PDF Download"}
             </p>
 
             {/* Quick secondary shortcuts */}
