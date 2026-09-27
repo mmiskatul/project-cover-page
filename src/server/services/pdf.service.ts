@@ -217,21 +217,86 @@ export async function generateCoverPdf(payload: GeneratePdfPayload) {
   }
 }
 
-export async function mergePdfs(coverFile: File | null, files: File[]) {
-  if (!coverFile || files.length === 0) {
-    throw new Error("Cover and files required");
+function findPdfHeaderOffset(bytes: Uint8Array): number {
+  const header = [0x25, 0x50, 0x44, 0x46, 0x2d]; // '%PDF-'
+  for (let i = 0; i < Math.min(bytes.length - 4, 1024); i++) {
+    if (
+      bytes[i] === header[0] &&
+      bytes[i + 1] === header[1] &&
+      bytes[i + 2] === header[2] &&
+      bytes[i + 3] === header[3] &&
+      bytes[i + 4] === header[4]
+    ) {
+      return i;
+    }
+  }
+  return -1;
+}
+
+export async function mergePdfs(
+  coverFile: Blob | File | null,
+  files: (Blob | File)[]
+) {
+  if (!coverFile) {
+    throw new Error("Cover PDF file is missing.");
+  }
+  if (!files || files.length === 0) {
+    throw new Error("At least one report PDF file is required to merge.");
   }
 
   const mergedPdf = await PDFDocument.create();
 
-  const coverBytes = new Uint8Array(await coverFile.arrayBuffer());
-  const coverDoc = await PDFDocument.load(coverBytes);
+  // 1. Process cover file
+  let coverBuffer = new Uint8Array(await coverFile.arrayBuffer());
+  if (coverBuffer.length === 0) {
+    throw new Error("The generated cover PDF is empty (0 bytes). Please regenerate the cover.");
+  }
+
+  const coverHeaderOffset = findPdfHeaderOffset(coverBuffer);
+  if (coverHeaderOffset === -1) {
+    throw new Error("The cover page does not contain a valid PDF header.");
+  }
+  if (coverHeaderOffset > 0) {
+    coverBuffer = coverBuffer.subarray(coverHeaderOffset);
+  }
+
+  let coverDoc: PDFDocument;
+  try {
+    coverDoc = await PDFDocument.load(coverBuffer, { ignoreEncryption: true });
+  } catch (err) {
+    throw new Error(`Failed to parse cover PDF: ${err instanceof Error ? err.message : String(err)}`);
+  }
+
   const coverPages = await mergedPdf.copyPages(coverDoc, coverDoc.getPageIndices());
   coverPages.forEach((page) => mergedPdf.addPage(page));
 
-  for (const file of files) {
-    const bytes = new Uint8Array(await file.arrayBuffer());
-    const doc = await PDFDocument.load(bytes);
+  // 2. Process attached report files
+  for (let i = 0; i < files.length; i++) {
+    const file = files[i];
+    const fileName = "name" in file && typeof file.name === "string" ? file.name : `Report ${i + 1}`;
+    let fileBuffer = new Uint8Array(await file.arrayBuffer());
+
+    if (fileBuffer.length === 0) {
+      throw new Error(`The attached file "${fileName}" is empty (0 bytes). Please attach a valid PDF document.`);
+    }
+
+    const headerOffset = findPdfHeaderOffset(fileBuffer);
+    if (headerOffset === -1) {
+      throw new Error(
+        `The attached file "${fileName}" is not a valid PDF document (missing %PDF- header). Please ensure you uploaded a real PDF, not a renamed Word document or image.`
+      );
+    }
+    if (headerOffset > 0) {
+      fileBuffer = fileBuffer.subarray(headerOffset);
+    }
+
+    let doc: PDFDocument;
+    try {
+      doc = await PDFDocument.load(fileBuffer, { ignoreEncryption: true });
+    } catch (err) {
+      throw new Error(`Could not parse attached PDF "${fileName}": ${err instanceof Error ? err.message : String(err)}`);
+    }
+
     const pages = await mergedPdf.copyPages(doc, doc.getPageIndices());
     pages.forEach((page) => mergedPdf.addPage(page));
   }

@@ -164,15 +164,38 @@ function GeneratePdf() {
 
   const handleFileSelect = (files: FileList | File[]) => {
     const fileList = Array.from(files);
-    const validPdfFiles = fileList.filter((f) =>
-      f.type === "application/pdf" || f.name.toLowerCase().endsWith(".pdf")
-    );
+    let hasZeroByte = false;
+    let hasNonPdf = false;
 
-    if (validPdfFiles.length < fileList.length) {
+    const validPdfFiles = fileList.filter((f) => {
+      const isPdf =
+        f.type === "application/pdf" || f.name.toLowerCase().endsWith(".pdf");
+      if (!isPdf) {
+        hasNonPdf = true;
+        return false;
+      }
+      if (f.size === 0) {
+        hasZeroByte = true;
+        return false;
+      }
+      return true;
+    });
+
+    if (hasNonPdf) {
       toast.warning("Only PDF files are supported. Non-PDF files were ignored.", {
         position: "top-center",
         autoClose: 3000,
       });
+    }
+
+    if (hasZeroByte) {
+      toast.error(
+        "One or more attached files are empty (0 bytes). Please attach a valid PDF document.",
+        {
+          position: "top-center",
+          autoClose: 4000,
+        }
+      );
     }
 
     if (validPdfFiles.length > 0) {
@@ -449,14 +472,23 @@ function GeneratePdf() {
 
       // 2. If files attached, merge immediately!
       if (attachedFiles.length > 0) {
+        if (!coverBlob || coverBlob.size === 0) {
+          throw new Error("The generated cover PDF is empty (0 bytes). Please regenerate.");
+        }
+
+        for (const file of attachedFiles) {
+          if (!file || file.size === 0) {
+            throw new Error(
+              `The attached file "${file?.name || "report"}" is empty (0 bytes). Please attach a valid PDF document.`
+            );
+          }
+        }
+
         const mergeFormData = new FormData();
-        const coverFile = new File([coverBlob], "cover.pdf", {
-          type: "application/pdf",
-        });
-        mergeFormData.append("cover", coverFile);
+        mergeFormData.append("cover", coverBlob, "cover.pdf");
 
         attachedFiles.forEach((file) => {
-          mergeFormData.append("files", file);
+          mergeFormData.append("files", file, file.name);
         });
 
         const mergeRes = await fetch("/api/merge-auto", {
