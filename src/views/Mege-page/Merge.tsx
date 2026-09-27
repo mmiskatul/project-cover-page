@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState, useCallback, useRef } from "react";
+import Link from "next/link";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import {
@@ -9,8 +10,9 @@ import {
   AiOutlineFilePdf,
   AiOutlineCloudUpload,
 } from "react-icons/ai";
-import { FiUpload, FiDownload } from "react-icons/fi";
+import { FiUpload, FiDownload, FiFolderPlus } from "react-icons/fi";
 import BackButton from "@/components/BackButton/BackButton";
+import { mergePdfBlobs } from "@/lib/pdf-merge";
 
 type PendingDocument = {
   html: string;
@@ -47,6 +49,7 @@ function Merge() {
 
   const [coverBlob, setCoverBlob] = useState<Blob | null>(null);
   const [coverURL, setCoverURL] = useState<string | null>(null);
+  const coverInputRef = useRef<HTMLInputElement>(null);
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
   const uploadedFilesRef = useRef(uploadedFiles);
 
@@ -64,6 +67,24 @@ function Merge() {
   const [isMerging, setIsMerging] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [showDropZone, setShowDropZone] = useState(false);
+
+  // Handle manual cover upload
+  const handleCoverSelect = (files: FileList | null) => {
+    if (!files || files.length === 0) return;
+    const file = files[0];
+    if (file.type !== "application/pdf") {
+      toast.error("Please upload a valid PDF document for the cover");
+      return;
+    }
+    if (file.size === 0) {
+      toast.error("The selected file is empty (0 bytes)");
+      return;
+    }
+    const url = URL.createObjectURL(file);
+    setCoverBlob(file);
+    setCoverURL(url);
+    toast.success("Cover page uploaded successfully!");
+  };
 
   // Generate cover PDF
   useEffect(() => {
@@ -286,31 +307,48 @@ function Merge() {
     );
 
     try {
-      const formData = new FormData();
-      formData.append("cover", coverBlob, "cover.pdf");
-      uploadedFiles.forEach((file) => {
-        formData.append("files", file.file);
-      });
+      let blob: Blob;
 
-      const res = await fetch("/api/merge-auto", {
-        method: "POST",
-        body: formData,
-      });
+      try {
+        // Fast client-side merge with pdf-lib: eliminates 4.5MB Vercel upload limits and server latency
+        blob = await mergePdfBlobs(
+          coverBlob,
+          uploadedFiles.map((f) => f.file)
+        );
+      } catch (clientErr) {
+        console.warn("Client-side merge failed, attempting server fallback:", clientErr);
+        const formData = new FormData();
+        formData.append("cover", coverBlob, "cover.pdf");
+        uploadedFiles.forEach((file) => {
+          formData.append("files", file.file);
+        });
 
-      if (!res.ok) {
-        const errorData = await res.json().catch(() => ({}));
-        throw new Error(errorData.error || "Merge failed");
+        const res = await fetch("/api/merge-auto", {
+          method: "POST",
+          body: formData,
+        });
+
+        if (!res.ok) {
+          const errorData = await res.json().catch(() => ({}));
+          throw new Error(
+            errorData.error ||
+              (clientErr instanceof Error ? clientErr.message : "Merge failed")
+          );
+        }
+
+        blob = await res.blob();
       }
 
-      const blob = await res.blob();
       const url = URL.createObjectURL(blob);
 
       const link = document.createElement("a");
       link.href = url;
       link.download = `${fileName || "merged"}_merged.pdf`;
+      document.body.appendChild(link);
       link.click();
+      link.remove();
 
-      setTimeout(() => URL.revokeObjectURL(url), 100);
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
 
       toast.update(toastId, {
         render: (
@@ -414,24 +452,38 @@ function Merge() {
             </div>
             <div className="p-4">
               {coverURL ? (
-                <div className="border border-gray-200 rounded-lg overflow-hidden">
-                  <object
-                    data={coverURL}
-                    type="application/pdf"
-                    width="100%"
-                    height="400px"
-                    className="block"
-                    aria-label="Cover page preview"
-                  >
-                    <div className="flex items-center justify-center h-40 bg-gray-100 text-gray-500">
-                      Preview not available
-                    </div>
-                  </object>
+                <div className="space-y-3">
+                  <div className="border border-gray-200 rounded-lg overflow-hidden">
+                    <object
+                      data={coverURL}
+                      type="application/pdf"
+                      width="100%"
+                      height="400px"
+                      className="block"
+                      aria-label="Cover page preview"
+                    >
+                      <div className="flex items-center justify-center h-40 bg-gray-100 text-gray-500">
+                        Preview not available
+                      </div>
+                    </object>
+                  </div>
+                  <div className="flex justify-between items-center px-1">
+                    <span className="text-xs text-emerald-600 font-medium flex items-center gap-1">
+                      <span>✓ Cover ready</span>
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => coverInputRef.current?.click()}
+                      className="text-xs text-indigo-600 hover:text-indigo-800 font-semibold cursor-pointer"
+                    >
+                      Change Cover PDF
+                    </button>
+                  </div>
                 </div>
-              ) : (
-                <div className="flex flex-col items-center justify-center h-40 bg-gray-100 rounded-lg">
+              ) : html ? (
+                <div className="flex flex-col items-center justify-center h-48 bg-gray-50 border border-gray-200 rounded-lg">
                   <svg
-                    className="animate-spin h-8 w-8 text-gray-400 mb-2"
+                    className="animate-spin h-8 w-8 text-indigo-500 mb-2"
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
                     viewBox="0 0 24 24"
@@ -450,9 +502,44 @@ function Merge() {
                       d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                     ></path>
                   </svg>
-                  <p className="text-gray-500">Generating cover...</p>
+                  <p className="text-gray-600 font-medium text-sm">Preparing cover page...</p>
+                </div>
+              ) : (
+                <div className="flex flex-col items-center justify-center p-8 bg-slate-50 border-2 border-dashed border-slate-300 rounded-xl text-center">
+                  <AiOutlineFilePdf className="w-12 h-12 text-slate-400 mb-3" />
+                  <p className="text-sm font-semibold text-slate-700">No Cover Page Attached</p>
+                  <p className="text-xs text-slate-500 mt-1 mb-4">
+                    Upload an existing cover PDF or create one with a template.
+                  </p>
+                  <div className="flex flex-wrap items-center justify-center gap-3">
+                    <button
+                      type="button"
+                      onClick={() => coverInputRef.current?.click()}
+                      className="inline-flex items-center gap-1.5 px-4 py-2 bg-indigo-600 text-white rounded-lg text-xs font-semibold hover:bg-indigo-700 transition cursor-pointer shadow-xs"
+                    >
+                      <FiUpload className="w-3.5 h-3.5" />
+                      Upload Cover PDF
+                    </button>
+                    <Link
+                      href="/template"
+                      className="inline-flex items-center gap-1.5 px-4 py-2 bg-white text-slate-700 border border-slate-300 rounded-lg text-xs font-semibold hover:bg-slate-100 transition shadow-xs"
+                    >
+                      <FiFolderPlus className="w-3.5 h-3.5" />
+                      Choose Template
+                    </Link>
+                  </div>
                 </div>
               )}
+              <input
+                ref={coverInputRef}
+                type="file"
+                accept="application/pdf"
+                className="hidden"
+                onChange={(e) => {
+                  handleCoverSelect(e.target.files);
+                  e.target.value = "";
+                }}
+              />
             </div>
           </div>
 

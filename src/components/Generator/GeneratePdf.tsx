@@ -24,6 +24,7 @@ import {
   FiArrowRight,
 } from "react-icons/fi";
 import { AiOutlineFilePdf, AiOutlineMergeCells } from "react-icons/ai";
+import { mergePdfBlobs } from "@/lib/pdf-merge";
 
 const diulogo = "/assets/daffodil-international-university-seeklogo.png";
 const bglogo = "/assets/BgImage.png";
@@ -484,28 +485,37 @@ function GeneratePdf() {
           }
         }
 
-        const mergeFormData = new FormData();
-        mergeFormData.append("cover", coverBlob, "cover.pdf");
+        try {
+          // Direct client-side merge with pdf-lib: ultra-fast, zero-network latency, no 4.5MB Vercel upload limits
+          finalBlob = await mergePdfBlobs(coverBlob, attachedFiles);
+        } catch (clientMergeErr) {
+          console.warn("Client-side merge failed, attempting server fallback:", clientMergeErr);
+          const mergeFormData = new FormData();
+          mergeFormData.append("cover", coverBlob, "cover.pdf");
 
-        attachedFiles.forEach((file) => {
-          mergeFormData.append("files", file, file.name);
-        });
+          attachedFiles.forEach((file) => {
+            mergeFormData.append("files", file, file.name);
+          });
 
-        const mergeRes = await fetch("/api/merge-auto", {
-          method: "POST",
-          body: mergeFormData,
-        });
+          const mergeRes = await fetch("/api/merge-auto", {
+            method: "POST",
+            body: mergeFormData,
+          });
 
-        if (!mergeRes.ok) {
-          let mergeError = `Merge failed: ${mergeRes.status}`;
-          try {
-            const mergePayload = await mergeRes.json();
-            if (mergePayload?.error) mergeError = mergePayload.error;
-          } catch {}
-          throw new Error(mergeError);
+          if (!mergeRes.ok) {
+            let mergeError = `Merge failed: ${mergeRes.status}`;
+            try {
+              const mergePayload = await mergeRes.json();
+              if (mergePayload?.error) mergeError = mergePayload.error;
+            } catch {}
+            throw new Error(
+              clientMergeErr instanceof Error ? clientMergeErr.message : mergeError
+            );
+          }
+
+          finalBlob = await mergeRes.blob();
         }
 
-        finalBlob = await mergeRes.blob();
         finalFileName = `${baseFileName}_merged.pdf`;
       }
 
