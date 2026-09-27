@@ -275,6 +275,8 @@ function GeneratePdf() {
       const pendingDocument = {
         html,
         fileName,
+        templateName: selectedTemplate?.name || "default",
+        formData: inputData,
       };
 
       sessionStorage.setItem("pendingDocument", JSON.stringify(pendingDocument));

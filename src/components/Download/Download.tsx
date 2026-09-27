@@ -5,11 +5,22 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import type { AssignmentFormData } from "@/components/forms/types";
 import BackButton from "../BackButton/BackButton";
+
+type PendingDocumentState = {
+  html: string;
+  fileName: string;
+  templateName?: string;
+  formData?: AssignmentFormData;
+};
 
 function Download() {
   const router = useRouter();
-  const [pendingDocument, setPendingDocument] = useState({ html: "", fileName: "" });
+  const [pendingDocument, setPendingDocument] = useState<PendingDocumentState>({
+    html: "",
+    fileName: "",
+  });
 
   useEffect(() => {
     try {
@@ -19,6 +30,8 @@ function Download() {
         setPendingDocument({
           html: parsed?.html || "",
           fileName: parsed?.fileName || "",
+          templateName: parsed?.templateName || "default",
+          formData: parsed?.formData || undefined,
         });
       }
     } catch (error) {
@@ -26,21 +39,34 @@ function Download() {
     }
   }, []);
 
-  const saveToHistory = (html: string, fileName: string) => {
+  const saveToHistory = (
+    html: string,
+    fileName: string,
+    templateName?: string,
+    formData?: AssignmentFormData
+  ) => {
     try {
       const history = JSON.parse(localStorage.getItem("coverHistory") || "[]");
+      // Strip heavy image payloads from formData before persisting into localStorage
+      const sanitizedFormData = formData
+        ? { ...formData, logo: "", bglogo: "" }
+        : undefined;
+
       const newItem = {
         id: Date.now(),
         html,
         fileName: fileName || "Untitled Document",
         timestamp: new Date().toISOString(),
+        templateName: templateName || "default",
+        formData: sanitizedFormData,
       };
+
       let updatedHistory = [newItem, ...history].slice(0, 20);
       try {
         localStorage.setItem("coverHistory", JSON.stringify(updatedHistory));
       } catch {
-        // If localStorage 5MB quota is reached, retain latest 5 items
-        updatedHistory = [newItem, ...history].slice(0, 5);
+        // If localStorage 5MB quota is reached, retain latest 6 items
+        updatedHistory = [newItem, ...history].slice(0, 6);
         localStorage.setItem("coverHistory", JSON.stringify(updatedHistory));
       }
     } catch (error) {
@@ -83,7 +109,14 @@ function Download() {
       const blob = await res.blob();
       const url = window.URL.createObjectURL(blob);
 
-      if (fileName) saveToHistory(html, fileName);
+      if (fileName) {
+        saveToHistory(
+          html,
+          fileName,
+          pendingDocument.templateName,
+          pendingDocument.formData
+        );
+      }
 
       const link = document.createElement("a");
       link.href = url;
