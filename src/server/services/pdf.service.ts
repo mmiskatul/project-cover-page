@@ -9,7 +9,7 @@ type GeneratePdfPayload = {
 };
 
 function getLocalBrowserExecutable(): string | undefined {
-  if (process.env.PUPPETEER_EXECUTABLE_PATH && existsSync(process.env.PUPPETEER_EXECUTABLE_PATH)) {
+  if (process.env.PUPPETEER_EXECUTABLE_PATH && existsSync(/*turbopackIgnore: true*/ process.env.PUPPETEER_EXECUTABLE_PATH)) {
     return process.env.PUPPETEER_EXECUTABLE_PATH;
   }
 
@@ -27,7 +27,7 @@ function getLocalBrowserExecutable(): string | undefined {
         : "",
     ];
     for (const p of winPaths) {
-      if (p && existsSync(p)) return p;
+      if (p && existsSync(/*turbopackIgnore: true*/ p)) return p;
     }
   } else if (process.platform === "darwin") {
     const macPaths = [
@@ -35,7 +35,7 @@ function getLocalBrowserExecutable(): string | undefined {
       "/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge",
     ];
     for (const p of macPaths) {
-      if (existsSync(p)) return p;
+      if (existsSync(/*turbopackIgnore: true*/ p)) return p;
     }
   } else if (process.platform === "linux") {
     const linuxPaths = [
@@ -46,7 +46,7 @@ function getLocalBrowserExecutable(): string | undefined {
       "/snap/bin/chromium",
     ];
     for (const p of linuxPaths) {
-      if (existsSync(p)) return p;
+      if (existsSync(/*turbopackIgnore: true*/ p)) return p;
     }
   }
 

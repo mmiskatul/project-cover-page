@@ -101,7 +101,17 @@ function getTemplateBadgeColor(templateName?: string) {
 
 export default function HistoryPreview() {
   const router = useRouter();
-  const [history, setHistory] = useState<HistoryItem[]>([]);
+  const [history, setHistory] = useState<HistoryItem[]>(() => {
+    if (typeof window === "undefined") return [];
+    try {
+      return (JSON.parse(
+        localStorage.getItem("coverHistory") || "[]"
+      ) as HistoryItem[]);
+    } catch (error) {
+      console.error("Failed to load cover history:", error);
+      return [];
+    }
+  });
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedTemplateFilter, setSelectedTemplateFilter] = useState("all");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
@@ -122,18 +132,6 @@ export default function HistoryPreview() {
     title: "",
     description: "",
   });
-
-  // Load history from localStorage
-  useEffect(() => {
-    try {
-      const savedHistory = JSON.parse(
-        localStorage.getItem("coverHistory") || "[]"
-      ) as HistoryItem[];
-      setHistory(savedHistory);
-    } catch (error) {
-      console.error("Failed to load cover history:", error);
-    }
-  }, []);
 
   // Update modal preview URL when selected item changes
   useEffect(() => {

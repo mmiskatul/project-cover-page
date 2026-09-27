@@ -25,9 +25,23 @@ type UploadedFile = {
 };
 
 function Merge() {
-  const [pendingDocument, setPendingDocument] = useState<PendingDocument>({
-    html: "",
-    fileName: "",
+  const [pendingDocument, setPendingDocument] = useState<PendingDocument>(() => {
+    if (typeof window === "undefined") {
+      return { html: "", fileName: "" };
+    }
+    try {
+      const saved = sessionStorage.getItem("pendingDocument");
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        return {
+          html: parsed?.html || "",
+          fileName: parsed?.fileName || "",
+        };
+      }
+    } catch (error) {
+      console.error("Failed to read pending document:", error);
+    }
+    return { html: "", fileName: "" };
   });
   const { html, fileName } = pendingDocument;
 
@@ -35,7 +49,10 @@ function Merge() {
   const [coverURL, setCoverURL] = useState<string | null>(null);
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
   const uploadedFilesRef = useRef(uploadedFiles);
-  uploadedFilesRef.current = uploadedFiles;
+
+  useEffect(() => {
+    uploadedFilesRef.current = uploadedFiles;
+  }, [uploadedFiles]);
 
   useEffect(() => {
     return () => {
@@ -47,21 +64,6 @@ function Merge() {
   const [isMerging, setIsMerging] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [showDropZone, setShowDropZone] = useState(false);
-
-  useEffect(() => {
-    try {
-      const saved = sessionStorage.getItem("pendingDocument");
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        setPendingDocument({
-          html: parsed?.html || "",
-          fileName: parsed?.fileName || "",
-        });
-      }
-    } catch (error) {
-      console.error("Failed to read pending document:", error);
-    }
-  }, []);
 
   // Generate cover PDF
   useEffect(() => {
