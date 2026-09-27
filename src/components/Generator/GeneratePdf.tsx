@@ -570,7 +570,7 @@ function GeneratePdf() {
   };
 
   return (
-    <div className="min-h-screen pt-16 sm:pt-20 bg-gradient-to-b from-slate-50 via-gray-50 to-white py-6 sm:py-12 px-3 sm:px-6 lg:px-8 pb-28 sm:pb-12">
+    <div className="min-h-screen pt-16 sm:pt-20 bg-gradient-to-b from-slate-50 via-gray-50 to-white py-6 sm:py-12 px-3 sm:px-6 lg:px-8 pb-8 sm:pb-12">
       <div className="max-w-7xl mx-auto">
         {/* Header Section */}
         <div className="flex flex-wrap items-center justify-between gap-3 mb-6 sm:mb-8">
@@ -793,12 +793,12 @@ function GeneratePdf() {
             </div>
           </div>
 
-          {/* Desktop & Tablet Generate Button */}
-          <div className="mt-10 pt-6 border-t border-slate-100 flex flex-col items-center justify-center">
+          {/* Generate Button */}
+          <div className="mt-6 sm:mt-10 pt-4 sm:pt-6 border-t border-slate-100 flex flex-col items-center justify-center">
             <button
               onClick={handleGenerate}
               disabled={isGenerating || !isFormValid() || !isAssetPreparationComplete}
-              className={`px-8 py-3.5 rounded-xl shadow-md transition-all duration-200 flex items-center justify-center gap-2.5 w-full max-w-md font-bold text-sm sm:text-base ${
+              className={`px-6 sm:px-8 py-3 sm:py-3.5 rounded-xl shadow-md transition-all duration-200 flex items-center justify-center gap-2.5 w-full max-w-md font-bold text-sm sm:text-base ${
                 isGenerating
                   ? "bg-indigo-400 text-white cursor-not-allowed"
                   : !isFormValid() || !isAssetPreparationComplete
@@ -856,14 +856,14 @@ function GeneratePdf() {
                 </>
               )}
             </button>
-            <p className="mt-3 text-center text-xs text-slate-500">
+            <p className="mt-2.5 sm:mt-3 text-center text-xs text-slate-500">
               {attachedFiles.length > 0
                 ? "Auto-merging: Cover page + attached report PDF into a single document"
                 : "High-resolution print-ready A4 document • Instant PDF Download"}
             </p>
 
             {/* Quick secondary shortcuts */}
-            <div className="mt-4 flex flex-wrap items-center justify-center gap-3 sm:gap-4 text-xs font-semibold text-slate-500">
+            <div className="mt-3 sm:mt-4 flex flex-wrap items-center justify-center gap-3 sm:gap-4 text-xs font-semibold text-slate-500">
               <button
                 type="button"
                 onClick={handleOpenMergeStudio}
@@ -882,54 +882,6 @@ function GeneratePdf() {
               </button>
             </div>
           </div>
-        </div>
-
-        {/* Floating Quick Action Dock on Mobile Screens (< sm) */}
-        <div className="sm:hidden fixed bottom-3 inset-x-3 z-40 bg-slate-900/95 backdrop-blur-md text-white p-2 rounded-2xl shadow-2xl flex items-center justify-between gap-2 border border-slate-700/60">
-          <button
-            type="button"
-            onClick={() => setMobileTab(mobileTab === "preview" ? "form" : "preview")}
-            className="px-3.5 py-2.5 rounded-xl bg-slate-800 text-slate-100 hover:bg-slate-700 font-semibold text-xs flex items-center gap-1.5 transition-colors border border-slate-700 cursor-pointer"
-          >
-            {mobileTab === "preview" ? (
-              <>
-                <FiEdit3 className="w-3.5 h-3.5 text-indigo-400" />
-                <span>Edit Form</span>
-              </>
-            ) : (
-              <>
-                <FiEye className="w-3.5 h-3.5 text-indigo-400" />
-                <span>View Preview</span>
-              </>
-            )}
-          </button>
-
-          <button
-            type="button"
-            onClick={handleGenerate}
-            disabled={isGenerating || !isFormValid() || !isAssetPreparationComplete}
-            className={`flex-1 py-2.5 px-3 rounded-xl text-xs font-bold shadow-md flex items-center justify-center gap-1.5 transition-all ${
-              isGenerating || !isFormValid() || !isAssetPreparationComplete
-                ? "bg-slate-700 text-slate-400 cursor-not-allowed"
-                : attachedFiles.length > 0
-                ? "bg-gradient-to-r from-emerald-600 to-indigo-600 text-white shadow-emerald-500/25 cursor-pointer"
-                : "bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-500 hover:to-indigo-500 shadow-indigo-500/25 cursor-pointer"
-            }`}
-          >
-            {isGenerating ? (
-              <span>{attachedFiles.length > 0 ? "Merging..." : "Generating..."}</span>
-            ) : attachedFiles.length > 0 ? (
-              <>
-                <AiOutlineMergeCells className="w-3.5 h-3.5" />
-                <span>Merge & Download</span>
-              </>
-            ) : (
-              <>
-                <FiDownload className="w-3.5 h-3.5" />
-                <span>Download PDF</span>
-              </>
-            )}
-          </button>
         </div>
 
         <ToastContainer
