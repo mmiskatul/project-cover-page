@@ -1,7 +1,9 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import AssignmentInputForm from "@/components/forms/AssignmentInputForm";
 import type { AssignmentFormData } from "@/components/forms/types";
 import BackButton from "../BackButton/BackButton";
@@ -12,7 +14,16 @@ import {
   getDefaultSweEvaluation,
 } from "@/components/pdf/department/swe-evaluation-config";
 import ResponsivePreviewContainer from "./ResponsivePreviewContainer";
-import { FiEdit3, FiEye, FiColumns, FiDownload } from "react-icons/fi";
+import {
+  FiEdit3,
+  FiEye,
+  FiColumns,
+  FiDownload,
+  FiTrash2,
+  FiPaperclip,
+  FiArrowRight,
+} from "react-icons/fi";
+import { AiOutlineFilePdf, AiOutlineMergeCells } from "react-icons/ai";
 
 const diulogo = "/assets/daffodil-international-university-seeklogo.png";
 const bglogo = "/assets/BgImage.png";
@@ -140,7 +151,78 @@ function GeneratePdf() {
   const [isAssetPreparationComplete, setIsAssetPreparationComplete] = useState(false);
   const [hasLoadedDraft, setHasLoadedDraft] = useState(false);
   const [mobileTab, setMobileTab] = useState<"form" | "preview" | "split">("form");
+  const [attachedFiles, setAttachedFiles] = useState<File[]>([]);
+  const [isDragging, setIsDragging] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
+
+  const formatFileSize = (bytes: number): string => {
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+  };
+
+  const handleFileSelect = (files: FileList | File[]) => {
+    const fileList = Array.from(files);
+    const validPdfFiles = fileList.filter((f) =>
+      f.type === "application/pdf" || f.name.toLowerCase().endsWith(".pdf")
+    );
+
+    if (validPdfFiles.length < fileList.length) {
+      toast.warning("Only PDF files are supported. Non-PDF files were ignored.", {
+        position: "top-center",
+        autoClose: 3000,
+      });
+    }
+
+    if (validPdfFiles.length > 0) {
+      setAttachedFiles((prev) => [...prev, ...validPdfFiles]);
+      toast.success(
+        `Attached ${validPdfFiles.length} file${validPdfFiles.length > 1 ? "s" : ""} for auto-merge!`,
+        {
+          position: "top-center",
+          autoClose: 2500,
+        }
+      );
+    }
+  };
+
+  const removeFile = (index: number) => {
+    setAttachedFiles((prev) => prev.filter((_, idx) => idx !== index));
+  };
+
+  const saveToHistory = (
+    html: string,
+    fileName: string,
+    templateName?: string,
+    formData?: AssignmentFormData
+  ) => {
+    try {
+      const history = JSON.parse(localStorage.getItem("coverHistory") || "[]");
+      const sanitizedFormData = formData
+        ? { ...formData, logo: "", bglogo: "" }
+        : undefined;
+
+      const newItem = {
+        id: Date.now(),
+        html,
+        fileName: fileName || "Untitled Document",
+        timestamp: new Date().toISOString(),
+        templateName: templateName || "default",
+        formData: sanitizedFormData,
+      };
+
+      let updatedHistory = [newItem, ...history].slice(0, 20);
+      try {
+        localStorage.setItem("coverHistory", JSON.stringify(updatedHistory));
+      } catch {
+        updatedHistory = [newItem, ...history].slice(0, 6);
+        localStorage.setItem("coverHistory", JSON.stringify(updatedHistory));
+      }
+    } catch (error) {
+      console.error("Failed to save to history:", error);
+    }
+  };
 
   useEffect(() => {
     const baseInputData = createInitialInputData();
@@ -252,11 +334,59 @@ function GeneratePdf() {
     };
   }, []);
 
+  const handleOpenMergeStudio = () => {
+    const html = getHtmlFromPreview();
+    if (!html) {
+      toast.error("Please fill in assignment details first.", { position: "top-center" });
+      return;
+    }
+    const studentIdForFileName =
+      inputData.teamName?.[0]?.studentId?.trim() ||
+      inputData.studentId?.trim() ||
+      "student";
+    const coursePart = inputData.courseId?.trim() || inputData.courseName?.trim() || "Course";
+    const typePart = inputData.courseType?.trim() || "Cover";
+    const fileName = `${typePart}_${coursePart}_(${studentIdForFileName})`.replace(/\s+/g, "_") || "document";
+
+    const pendingDocument = {
+      html,
+      fileName,
+      templateName: selectedTemplate?.name || "default",
+      formData: inputData,
+    };
+    sessionStorage.setItem("pendingDocument", JSON.stringify(pendingDocument));
+    router.push("/merge");
+  };
+
+  const handleOpenDownloadPage = () => {
+    const html = getHtmlFromPreview();
+    if (!html) {
+      toast.error("Please fill in assignment details first.", { position: "top-center" });
+      return;
+    }
+    const studentIdForFileName =
+      inputData.teamName?.[0]?.studentId?.trim() ||
+      inputData.studentId?.trim() ||
+      "student";
+    const coursePart = inputData.courseId?.trim() || inputData.courseName?.trim() || "Course";
+    const typePart = inputData.courseType?.trim() || "Cover";
+    const fileName = `${typePart}_${coursePart}_(${studentIdForFileName})`.replace(/\s+/g, "_") || "document";
+
+    const pendingDocument = {
+      html,
+      fileName,
+      templateName: selectedTemplate?.name || "default",
+      formData: inputData,
+    };
+    sessionStorage.setItem("pendingDocument", JSON.stringify(pendingDocument));
+    router.push("/download");
+  };
+
   const handleGenerate = async () => {
     setIsGenerating(true);
     const html = getHtmlFromPreview();
     if (!html) {
-      alert("Preview not found. Please try again.");
+      toast.error("Preview not found. Please try again.", { position: "top-center" });
       setIsGenerating(false);
       return;
     }
@@ -269,21 +399,111 @@ function GeneratePdf() {
 
     const coursePart = inputData.courseId?.trim() || inputData.courseName?.trim() || "Course";
     const typePart = inputData.courseType?.trim() || "Cover";
-    const fileName = `${typePart}_${coursePart}_(${studentIdForFileName})`.replace(/\s+/g, "_") || "document";
+    const baseFileName = `${typePart}_${coursePart}_(${studentIdForFileName})`.replace(/\s+/g, "_") || "document";
+
+    const loadingToastId = toast.loading(
+      attachedFiles.length > 0
+        ? "Generating cover & merging report..."
+        : "Generating cover PDF...",
+      { position: "top-center" }
+    );
 
     try {
+      // 1. Generate cover PDF
+      const res = await fetch("/api/generate-pdf", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ html }),
+      });
+
+      if (!res.ok) {
+        let errorMessage = `Server error: ${res.status}`;
+        try {
+          const errorPayload = await res.json();
+          if (errorPayload?.error) errorMessage = errorPayload.error;
+        } catch {}
+        throw new Error(errorMessage);
+      }
+
+      const coverBlob = await res.blob();
+
+      // Persist pendingDocument in sessionStorage so user can still visit /download or /merge
       const pendingDocument = {
         html,
-        fileName,
+        fileName: baseFileName,
         templateName: selectedTemplate?.name || "default",
         formData: inputData,
       };
-
       sessionStorage.setItem("pendingDocument", JSON.stringify(pendingDocument));
-      router.push("/download");
+
+      // Save cover to history
+      saveToHistory(
+        html,
+        baseFileName,
+        selectedTemplate?.name || "default",
+        inputData
+      );
+
+      let finalBlob: Blob = coverBlob;
+      let finalFileName = `${baseFileName}.pdf`;
+
+      // 2. If files attached, merge immediately!
+      if (attachedFiles.length > 0) {
+        const mergeFormData = new FormData();
+        const coverFile = new File([coverBlob], "cover.pdf", {
+          type: "application/pdf",
+        });
+        mergeFormData.append("cover", coverFile);
+
+        attachedFiles.forEach((file) => {
+          mergeFormData.append("files", file);
+        });
+
+        const mergeRes = await fetch("/api/merge-auto", {
+          method: "POST",
+          body: mergeFormData,
+        });
+
+        if (!mergeRes.ok) {
+          let mergeError = `Merge failed: ${mergeRes.status}`;
+          try {
+            const mergePayload = await mergeRes.json();
+            if (mergePayload?.error) mergeError = mergePayload.error;
+          } catch {}
+          throw new Error(mergeError);
+        }
+
+        finalBlob = await mergeRes.blob();
+        finalFileName = `${baseFileName}_merged.pdf`;
+      }
+
+      // 3. Trigger immediate browser download
+      const url = window.URL.createObjectURL(finalBlob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = finalFileName;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+
+      toast.update(loadingToastId, {
+        render:
+          attachedFiles.length > 0
+            ? "Cover and report merged & downloaded! 🎉"
+            : "Cover PDF downloaded successfully! ✨",
+        type: "success",
+        isLoading: false,
+        autoClose: 3500,
+      });
     } catch (error) {
       console.error("Generation error:", error);
-      alert("An error occurred while generating the PDF. Please try again.");
+      toast.update(loadingToastId, {
+        render: error instanceof Error ? error.message : "Failed to generate PDF. Please try again.",
+        type: "error",
+        isLoading: false,
+        autoClose: 4000,
+      });
     } finally {
       setIsGenerating(false);
     }
@@ -391,6 +611,118 @@ function GeneratePdf() {
                 setInputData={setInputData}
                 templateName={selectedTemplate?.name}
               />
+
+              {/* Optional Report PDF Auto-Merge Attachment Section */}
+              <div className="pt-5 border-t border-slate-200/80">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-bold text-slate-800 flex items-center gap-1.5">
+                      <AiOutlineMergeCells className="w-4 h-4 text-indigo-600" />
+                      Attach Report PDF
+                    </span>
+                    <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200">
+                      Optional
+                    </span>
+                  </div>
+                  {attachedFiles.length > 0 && (
+                    <button
+                      type="button"
+                      onClick={() => setAttachedFiles([])}
+                      className="text-xs text-rose-600 hover:text-rose-700 font-medium hover:underline cursor-pointer"
+                    >
+                      Clear all
+                    </button>
+                  )}
+                </div>
+                <p className="text-xs text-slate-500 mb-3">
+                  Attach your assignment or lab report PDF to automatically merge and download in 1 click!
+                </p>
+
+                {/* Hidden File Input */}
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="application/pdf"
+                  multiple
+                  onChange={(e) => {
+                    if (e.target.files) handleFileSelect(e.target.files);
+                    e.target.value = "";
+                  }}
+                  className="hidden"
+                />
+
+                {/* Drag & Drop Area */}
+                <div
+                  onDragOver={(e) => {
+                    e.preventDefault();
+                    setIsDragging(true);
+                  }}
+                  onDragLeave={() => setIsDragging(false)}
+                  onDrop={(e) => {
+                    e.preventDefault();
+                    setIsDragging(false);
+                    if (e.dataTransfer.files) handleFileSelect(e.dataTransfer.files);
+                  }}
+                  onClick={() => fileInputRef.current?.click()}
+                  className={`border-2 border-dashed rounded-xl p-4 text-center cursor-pointer transition-all duration-200 ${
+                    isDragging
+                      ? "border-indigo-500 bg-indigo-50/80 scale-[1.01]"
+                      : "border-slate-300 hover:border-indigo-400 bg-slate-50/70 hover:bg-indigo-50/20"
+                  }`}
+                >
+                  <div className="flex flex-col items-center justify-center gap-1.5">
+                    <div className="w-9 h-9 rounded-full bg-indigo-100/70 text-indigo-600 flex items-center justify-center">
+                      <FiPaperclip className="w-4 h-4" />
+                    </div>
+                    <p className="text-xs font-semibold text-slate-700">
+                      Click or drag & drop report PDF
+                    </p>
+                    <p className="text-[11px] text-slate-400">
+                      Supports .pdf files • Cover page becomes Page 1 automatically
+                    </p>
+                  </div>
+                </div>
+
+                {/* Attached Files List */}
+                {attachedFiles.length > 0 && (
+                  <div className="mt-3 space-y-2">
+                    {attachedFiles.map((file, idx) => (
+                      <div
+                        key={`${file.name}-${idx}`}
+                        className="bg-indigo-50/40 border border-indigo-200/80 rounded-lg p-2.5 flex items-center justify-between gap-2 shadow-xs"
+                      >
+                        <div className="flex items-center gap-2.5 min-w-0">
+                          <div className="w-7 h-7 rounded bg-red-100 text-red-600 flex items-center justify-center shrink-0">
+                            <AiOutlineFilePdf className="w-4 h-4" />
+                          </div>
+                          <div className="min-w-0">
+                            <p className="text-xs font-semibold text-slate-800 truncate" title={file.name}>
+                              {file.name}
+                            </p>
+                            <p className="text-[10px] text-slate-500">
+                              {formatFileSize(file.size)} • Follows Cover Page
+                            </p>
+                          </div>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            removeFile(idx);
+                          }}
+                          className="p-1 rounded text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors shrink-0 cursor-pointer"
+                          title="Remove attachment"
+                        >
+                          <FiTrash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    ))}
+                    <div className="bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-1.5 flex items-center gap-2 text-[11px] text-emerald-800">
+                      <span className="font-bold">✓ Ready:</span> Cover Page + {attachedFiles.length} file{attachedFiles.length > 1 ? "s" : ""} will be merged
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
 
             {/* Preview Section - 64% width on desktop */}
@@ -426,9 +758,11 @@ function GeneratePdf() {
               disabled={isGenerating || !isFormValid() || !isAssetPreparationComplete}
               className={`px-8 py-3.5 rounded-xl shadow-md transition-all duration-200 flex items-center justify-center gap-2.5 w-full max-w-md font-bold text-sm sm:text-base ${
                 isGenerating
-                  ? "bg-blue-400 text-white cursor-not-allowed"
+                  ? "bg-indigo-400 text-white cursor-not-allowed"
                   : !isFormValid() || !isAssetPreparationComplete
                   ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+                  : attachedFiles.length > 0
+                  ? "bg-gradient-to-r from-emerald-600 via-teal-600 to-indigo-600 text-white hover:shadow-lg hover:from-emerald-700 hover:to-indigo-700 active:scale-[0.99] cursor-pointer"
                   : "bg-gradient-to-r from-blue-600 via-indigo-600 to-indigo-700 text-white hover:shadow-lg hover:from-blue-700 hover:to-indigo-800 active:scale-[0.99] cursor-pointer"
               }`}
             >
@@ -454,20 +788,57 @@ function GeneratePdf() {
                       d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                     ></path>
                   </svg>
-                  <span>Generating PDF...</span>
+                  <span>
+                    {attachedFiles.length > 0
+                      ? "Generating & Merging PDF..."
+                      : "Generating Cover PDF..."}
+                  </span>
                 </>
               ) : (
                 <>
-                  <FiDownload className="w-5 h-5" />
-                  <span>
-                    {isAssetPreparationComplete ? "Generate Cover PDF" : "Preparing assets..."}
-                  </span>
+                  {attachedFiles.length > 0 ? (
+                    <>
+                      <AiOutlineMergeCells className="w-5 h-5" />
+                      <span>Generate & Merge PDF ({attachedFiles.length})</span>
+                    </>
+                  ) : (
+                    <>
+                      <FiDownload className="w-5 h-5" />
+                      <span>
+                        {isAssetPreparationComplete
+                          ? "Download Cover PDF (1-Click)"
+                          : "Preparing assets..."}
+                      </span>
+                    </>
+                  )}
                 </>
               )}
             </button>
-            <p className="mt-3 text-center text-xs text-slate-400">
-              High-resolution print-ready A4 document • Instant PDF Download
+            <p className="mt-3 text-center text-xs text-slate-500">
+              {attachedFiles.length > 0
+                ? "Auto-merging: Cover page + attached report PDF into a single document"
+                : "High-resolution print-ready A4 document • Instant 1-Click PDF Download"}
             </p>
+
+            {/* Quick secondary shortcuts */}
+            <div className="mt-4 flex flex-wrap items-center justify-center gap-3 sm:gap-4 text-xs font-semibold text-slate-500">
+              <button
+                type="button"
+                onClick={handleOpenMergeStudio}
+                className="text-indigo-600 hover:text-indigo-800 transition-colors flex items-center gap-1 cursor-pointer"
+              >
+                <span>Need custom page reordering? Open Merge Studio</span>
+                <FiArrowRight className="w-3 h-3" />
+              </button>
+              <span className="text-slate-300 hidden sm:inline">•</span>
+              <button
+                type="button"
+                onClick={handleOpenDownloadPage}
+                className="text-slate-600 hover:text-slate-900 transition-colors cursor-pointer"
+              >
+                Dedicated Download Page →
+              </button>
+            </div>
           </div>
         </div>
 
@@ -476,7 +847,7 @@ function GeneratePdf() {
           <button
             type="button"
             onClick={() => setMobileTab(mobileTab === "preview" ? "form" : "preview")}
-            className="px-3.5 py-2.5 rounded-xl bg-slate-800 text-slate-100 hover:bg-slate-700 font-semibold text-xs flex items-center gap-1.5 transition-colors border border-slate-700"
+            className="px-3.5 py-2.5 rounded-xl bg-slate-800 text-slate-100 hover:bg-slate-700 font-semibold text-xs flex items-center gap-1.5 transition-colors border border-slate-700 cursor-pointer"
           >
             {mobileTab === "preview" ? (
               <>
@@ -498,19 +869,39 @@ function GeneratePdf() {
             className={`flex-1 py-2.5 px-3 rounded-xl text-xs font-bold shadow-md flex items-center justify-center gap-1.5 transition-all ${
               isGenerating || !isFormValid() || !isAssetPreparationComplete
                 ? "bg-slate-700 text-slate-400 cursor-not-allowed"
-                : "bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-500 hover:to-indigo-500 shadow-indigo-500/25"
+                : attachedFiles.length > 0
+                ? "bg-gradient-to-r from-emerald-600 to-indigo-600 text-white shadow-emerald-500/25 cursor-pointer"
+                : "bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-500 hover:to-indigo-500 shadow-indigo-500/25 cursor-pointer"
             }`}
           >
             {isGenerating ? (
-              <span>Generating...</span>
+              <span>{attachedFiles.length > 0 ? "Merging..." : "Generating..."}</span>
+            ) : attachedFiles.length > 0 ? (
+              <>
+                <AiOutlineMergeCells className="w-3.5 h-3.5" />
+                <span>Merge & Download</span>
+              </>
             ) : (
               <>
                 <FiDownload className="w-3.5 h-3.5" />
-                <span>Generate PDF</span>
+                <span>Download PDF</span>
               </>
             )}
           </button>
         </div>
+
+        <ToastContainer
+          position="top-right"
+          autoClose={3000}
+          hideProgressBar={false}
+          newestOnTop
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="light"
+        />
       </div>
     </div>
   );
